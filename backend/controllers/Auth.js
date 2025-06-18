@@ -71,7 +71,7 @@ exports.login=async(req,res)=>{
         }
 
         res.clearCookie('token');
-        return res.status(404).json({message:"Invalid Credentails"})
+        return res.status(401).json({message: "Invalid Credentials"}) 
     } catch (error) {
         console.log(error);
         res.status(500).json({message:'Some error occured while logging in, please try again later'})
