@@ -109,31 +109,31 @@ export const AdminOrders = () => {
                 {
                 orders.length && orders.map((order,index) => (
 
-                  <TableRow key={order._id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                  <TableRow key={order?._id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
 
                     <TableCell component="th" scope="row">{index}</TableCell>
-                    <TableCell align="right">{order._id}</TableCell>
+                    <TableCell align="right">{order?._id || 'N/A'}</TableCell>
                     <TableCell align="right">
                       {
-                        order.item.map((product)=>(
-                          <Stack mt={2} flexDirection={'row'} alignItems={'center'} columnGap={2}>
-                            <Avatar src={product.product.thumbnail}></Avatar>
-                            <Typography>{product.product.title}</Typography>
+                        order?.item?.map((product, productIndex)=>(
+                          <Stack key={product?.product?._id || productIndex} mt={2} flexDirection={'row'} alignItems={'center'} columnGap={2}>
+                            <Avatar src={product?.product?.thumbnail}></Avatar>
+                            <Typography>{product?.product?.title || 'Unknown Product'}</Typography>
                           </Stack>
                         ))
                       }
                     </TableCell>
-                    <TableCell align="right">{order.total}</TableCell>
+                    <TableCell align="right">{order?.total || 0}</TableCell>
                     <TableCell align="right">
                       <Stack>
-                        <Typography>{order.address[0].street}</Typography>
-                        <Typography>{order.address[0].city}</Typography>
-                        <Typography>{order.address[0].state}</Typography>
-                        <Typography>{order.address[0].postalCode}</Typography>
+                        <Typography>{order?.address?.[0]?.street || 'N/A'}</Typography>
+                        <Typography>{order?.address?.[0]?.city || 'N/A'}</Typography>
+                        <Typography>{order?.address?.[0]?.state || 'N/A'}</Typography>
+                        <Typography>{order?.address?.[0]?.postalCode || 'N/A'}</Typography>
                       </Stack>
                     </TableCell>
-                    <TableCell align="right">{order.paymentMode}</TableCell>
-                    <TableCell align="right">{new Date(order.createdAt).toDateString()}</TableCell>
+                    <TableCell align="right">{order?.paymentMode || 'N/A'}</TableCell>
+                    <TableCell align="right">{order?.createdAt ? new Date(order.createdAt).toDateString() : 'N/A'}</TableCell>
 
                     {/* order status */}
                     <TableCell align="right">

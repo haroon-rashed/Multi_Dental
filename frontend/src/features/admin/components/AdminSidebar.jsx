@@ -11,6 +11,9 @@ import {
   Divider,
   IconButton,
   Collapse,
+  Menu,
+  MenuItem,
+  Button,
 } from "@mui/material";
 import {
   FaHome,
@@ -24,8 +27,13 @@ import {
   FaCog,
   FaListAlt,
   FaSitemap,
+  FaClipboardList,
+  FaUser,
+  FaSignOutAlt,
 } from "react-icons/fa";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { selectLoggedInUser, logoutAsync } from "../../auth/AuthSlice";
 
 const AdminSidebar = () => {
   const [openSubmenus, setOpenSubmenus] = useState({
@@ -34,9 +42,18 @@ const AdminSidebar = () => {
     sales: false,
     subcategories: false,
   });
+  
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const loggedInUser = useSelector(selectLoggedInUser);
 
   const handleToggle = (key) => {
     setOpenSubmenus((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const handleSignOut = () => {
+    dispatch(logoutAsync());
+    navigate("/");
   };
 
   return (
@@ -86,6 +103,8 @@ const AdminSidebar = () => {
             </ListItemIcon>
             <ListItemText primary="Customers" />
           </ListItem>
+
+
 
           {/* Products Dropdown */}
           <ListItem button onClick={() => handleToggle("products")} sx={{ color: "#92400e" }}>
@@ -164,6 +183,9 @@ const AdminSidebar = () => {
               <ListItem button sx={{ color: "#b45309" }}>
                 <ListItemText primary="Breakdown" />
               </ListItem>
+              <ListItem button component={Link} to="/admin/orders" sx={{ color: "#b45309" }}>
+                <ListItemText primary="Orders" />
+              </ListItem>
             </List>
           </Collapse>
 
@@ -182,23 +204,41 @@ const AdminSidebar = () => {
             </ListItemIcon>
             <ListItemText primary="Admin" />
           </ListItem>
+
+          {/* Logout */}
+          <ListItem button onClick={handleSignOut} sx={{ color: "#dc2626" }}>
+            <ListItemIcon sx={{ color: "#dc2626" }}>
+              <FaSignOutAlt />
+            </ListItemIcon>
+            <ListItemText primary="Logout" />
+          </ListItem>
         </List>
       </Box>
 
-      {/* Bottom Avatar */}
-      <Box
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          px: 1,
-          mb: 2,
-        }}
-      >
-        <Avatar src="https://randomuser.me/api/portraits/women/44.jpg" />
-        <IconButton>
-          <FaCog color="#92400e" />
-        </IconButton>
+      {/* Bottom Profile Section */}
+      <Box>
+        <Divider sx={{ mb: 2 }} />
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            px: 1,
+            mb: 2,
+          }}
+        >
+          <Avatar 
+            src={loggedInUser?.profilePicture || "https://randomuser.me/api/portraits/women/44.jpg"} 
+            sx={{ width: 40, height: 40, mr: 2 }}
+          />
+          <Box>
+            <Typography variant="body2" sx={{ fontWeight: 600, color: "#92400e" }}>
+              {loggedInUser?.name || "Admin User"}
+            </Typography>
+            <Typography variant="caption" sx={{ color: "#b45309" }}>
+              Administrator
+            </Typography>
+          </Box>
+        </Box>
       </Box>
     </Drawer>
   );

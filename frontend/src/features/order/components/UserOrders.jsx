@@ -6,7 +6,8 @@ import { Button, IconButton, Paper, Stack, Typography, useMediaQuery, useTheme }
 import {Link} from 'react-router-dom'
 import { addToCartAsync, resetCartItemAddStatus, selectCartItemAddStatus, selectCartItems } from '../../cart/CartSlice'
 import Lottie from 'lottie-react'
-import { loadingAnimation, noOrdersAnimation } from '../../../assets'
+import { noOrdersAnimation } from '../../../assets'
+import ListSkeleton from '../../../components/skeletons/ListSkeleton';
 import { toast } from 'react-toastify'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import {motion} from 'framer-motion'
@@ -75,8 +76,8 @@ export const UserOrders = () => {
     <Stack justifyContent={'center'} alignItems={'center'}>
         {
             orderFetchStatus==='pending'?
-            <Stack width={is480?'auto':'25rem'} height={'calc(100vh - 4rem)'} justifyContent={'center'} alignItems={'center'}>
-                <Lottie animationData={loadingAnimation}/>
+            <Stack width={'100%'} sx={{ py: 4 }}>
+                <ListSkeleton count={5} />
             </Stack>
             :
             <Stack width={is1200?"auto":"60rem"} p={is480?2:4} mb={'5rem'}>
@@ -103,29 +104,29 @@ export const UserOrders = () => {
                         {/* orders mapping */}
                         {
                             orders && orders.map((order)=>(
-                                <Stack p={is480?0:2} component={is480?"":Paper} elevation={1} rowGap={2}>
+                                <Stack key={order?._id} p={is480?0:2} component={is480?"":Paper} elevation={1} rowGap={2}>
                                     
                                     {/* upper */}
                                     <Stack flexDirection={'row'} rowGap={'1rem'}  justifyContent={'space-between'} flexWrap={'wrap'}>
                                         <Stack flexDirection={'row'} columnGap={4} rowGap={'1rem'} flexWrap={'wrap'}>
                                             <Stack>
                                                 <Typography>Order Number</Typography>
-                                                <Typography color={'text.secondary'}>{order._id}</Typography>
+                                                <Typography color={'text.secondary'}>{order?._id || 'N/A'}</Typography>
                                             </Stack>
 
                                             <Stack>
                                                 <Typography>Date Placed</Typography>
-                                                <Typography color={'text.secondary'}>{new Date(order.createdAt).toDateString()}</Typography>
+                                                <Typography color={'text.secondary'}>{order?.createdAt ? new Date(order.createdAt).toDateString() : 'N/A'}</Typography>
                                             </Stack>
 
                                             <Stack>
                                                 <Typography>Total Amount</Typography>
-                                                <Typography>${order.total}</Typography>
+                                                <Typography>${order?.total || 0}</Typography>
                                             </Stack>
                                         </Stack>
 
                                         <Stack>
-                                            <Typography>Item: {order.item.length}</Typography>
+                                            <Typography>Item: {order?.item?.length || 0}</Typography>
                                         </Stack>
                                     </Stack>
 
@@ -133,33 +134,33 @@ export const UserOrders = () => {
                                     <Stack rowGap={2}>
 
                                         {
-                                            order.item.map((product)=>(
+                                            order?.item?.map((product, index)=>(
                                                 
-                                                <Stack mt={2} flexDirection={'row'} rowGap={is768?'2rem':''} columnGap={4} flexWrap={is768?"wrap":"nowrap"}>
+                                                <Stack key={product?.product?._id || index} mt={2} flexDirection={'row'} rowGap={is768?'2rem':''} columnGap={4} flexWrap={is768?"wrap":"nowrap"}>
                                                     
                                                     <Stack>
-                                                        <img style={{width:"100%",aspectRatio:is480?3/2:1/1,objectFit:"contain"}} src={product.product.images[0]} alt="" />
+                                                        <img style={{width:"100%",aspectRatio:is480?3/2:1/1,objectFit:"contain"}} src={product?.product?.images?.[0] || '/placeholder-image.jpg'} alt={product?.product?.title || 'Product'} />
                                                     </Stack>
 
                                                     <Stack rowGap={1} width={'100%'}>
 
                                                         <Stack flexDirection={'row'} justifyContent={'space-between'}>
                                                             <Stack>
-                                                                <Typography variant='h6' fontSize={'1rem'} fontWeight={500}>{product.product.title}</Typography>
-                                                                <Typography variant='body1'  fontSize={'.9rem'}  color={'text.secondary'}>{product.product.brand.name}</Typography>
-                                                                <Typography color={'text.secondary'} fontSize={'.9rem'}>Qty: {product.quantity}</Typography>
+                                                                <Typography variant='h6' fontSize={'1rem'} fontWeight={500}>{product?.product?.title || 'Unknown Product'}</Typography>
+                                                                <Typography variant='body1'  fontSize={'.9rem'}  color={'text.secondary'}>{product?.product?.brand?.name || 'Unknown Brand'}</Typography>
+                                                                <Typography color={'text.secondary'} fontSize={'.9rem'}>Qty: {product?.quantity || 0}</Typography>
                                                             </Stack>
-                                                            <Typography>${product.product.price}</Typography>
+                                                            <Typography>${product?.product?.price || 0}</Typography>
                                                         </Stack>
 
-                                                        <Typography color={'text.secondary'}>{product.product.description}</Typography>
+                                                        <Typography color={'text.secondary'}>{product?.product?.description || 'No description available'}</Typography>
 
                                                         <Stack mt={2} alignSelf={is480?"flex-start":'flex-end'} flexDirection={'row'} columnGap={2} >
-                                                            <Button size='small' component={Link} to={`/product-details/${product.product._id}`} variant='outlined'>View Product</Button>
+                                                            <Button size='small' component={Link} to={`/product-details/${product?.product?._id || ''}`} variant='outlined' disabled={!product?.product?._id}>View Product</Button>
                                                             {
-                                                                cartItems.some((cartItem)=>cartItem.product._id===product.product._id)?
+                                                                cartItems.some((cartItem)=>cartItem?.product?._id===product?.product?._id)?
                                                                 <Button  size='small' variant='contained' component={Link} to={"/cart"}>Already in Cart</Button>
-                                                                :<Button  size='small' variant='contained' onClick={()=>handleAddToCart(product.product)}>Buy Again</Button>
+                                                                :<Button  size='small' variant='contained' onClick={()=>handleAddToCart(product?.product)} disabled={!product?.product}>Buy Again</Button>
                                                             }
                                                         </Stack>
 
@@ -175,7 +176,7 @@ export const UserOrders = () => {
 
                                     {/* lower */}
                                     <Stack mt={2} flexDirection={'row'} justifyContent={'space-between'}>
-                                        <Typography mb={2}>Status : {order.status}</Typography>
+                                        <Typography mb={2}>Status : {order?.status || 'Unknown'}</Typography>
                                     </Stack>
                                         
                                 </Stack>
@@ -185,7 +186,7 @@ export const UserOrders = () => {
                         
                         {/* no orders animation */}
                         {
-                        !orders.length && 
+                        !orders?.length && 
                             <Stack mt={is480?'2rem':0} mb={'7rem'} alignSelf={'center'} rowGap={2}>
 
                                 <Stack width={is660?"auto":'30rem'} height={is660?"auto":'30rem'}>

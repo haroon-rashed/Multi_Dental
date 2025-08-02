@@ -7,7 +7,8 @@ import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { selectLoggedInUser } from '../../auth/AuthSlice';
-import { emptyWishlistAnimation, loadingAnimation } from '../../../assets';
+import { emptyWishlistAnimation } from '../../../assets';
+import CardSkeleton from '../../../components/skeletons/CardSkeleton';
 import Lottie from 'lottie-react' 
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import { useForm } from "react-hook-form"
@@ -139,8 +140,8 @@ export const Wishlist = () => {
     <Stack justifyContent={'flex-start'} mt={is480?3:5} mb={'14rem'} alignItems={'center'}>
         {
           wishlistFetchStatus==='pending'?
-          <Stack width={is480?'auto':'25rem'} height={'calc(100vh - 4rem)'} justifyContent={'center'} alignItems={'center'}>
-                <Lottie animationData={loadingAnimation}/>
+          <Stack width={'100%'} sx={{ py: 4 }}>
+            <CardSkeleton count={6} />
           </Stack>
           :
 

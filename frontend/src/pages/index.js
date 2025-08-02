@@ -14,22 +14,34 @@ import { SignupPage } from "./SignupPage";
 import { UserOrdersPage } from "./UserOrdersPage";
 import { UserProfilePage } from "./UserProfilePage";
 import { WishlistPage } from "./WishlistPage";
+import { SubCategoryPage } from "./SubCategoryPage";
+import { AboutUsPage } from "./AboutUsPage";
+import { TermsConditionsPage } from "./TermsConditionsPage";
+import { PrivacyPolicyPage } from "./PrivacyPolicyPage";
+import { ReturnPolicyPage } from "./ReturnPolicyPage";
+import { ProductsPage } from "./ProductsPage";
 
 export {
-    SignupPage,
-    LoginPage,
-    ForgotPasswordPage,
-    ResetPasswordPage,
-    HomePage,
-    ProductDetailsPage,
-    CartPage,
-    UserProfilePage,
-    CheckoutPage,
-    OrderSuccessPage,
-    UserOrdersPage,
-    ProductUpdatePage,
+  SignupPage,
+  LoginPage,
+  ForgotPasswordPage,
+  ResetPasswordPage,
+  HomePage,
+  ProductDetailsPage,
+  CartPage,
+  UserProfilePage,
+  CheckoutPage,
+  OrderSuccessPage,
+  UserOrdersPage,
+      ProductUpdatePage,
     AddProductPage,
     AdminOrdersPage,
     WishlistPage,
-    OtpVerificationPage
-}
+    OtpVerificationPage,
+    SubCategoryPage,
+    AboutUsPage,
+    TermsConditionsPage,
+    PrivacyPolicyPage,
+    ReturnPolicyPage,
+    ProductsPage,
+};

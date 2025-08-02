@@ -1,17 +1,33 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button, Menu, MenuItem, Box, Popper, Paper } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import { useSelector } from "react-redux";
+import ClearIcon from "@mui/icons-material/Clear";
+import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { selectCategories } from "../../categories/CategoriesSlice";
+import { selectBrands, fetchAllBrandsAsync } from "../../brands/BrandSlice";
 
 const SecondNav = () => {
   const categories = useSelector(selectCategories);
+  const brands = useSelector(selectBrands);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
   const [submenuAnchorEl, setSubmenuAnchorEl] = useState(null);
   const [hoveredCategory, setHoveredCategory] = useState(null);
   const [hoverTimeout, setHoverTimeout] = useState(null);
+  const [brandAnchorEl, setBrandAnchorEl] = useState(null);
+  const [brandHoverTimeout, setBrandHoverTimeout] = useState(null);
+  const [pagesAnchorEl, setPagesAnchorEl] = useState(null);
+
+  // Fetch brands on component mount
+  useEffect(() => {
+    if (brands.length === 0) {
+      dispatch(fetchAllBrandsAsync());
+    }
+  }, [dispatch, brands.length]);
 
   const clearHoverTimeout = () => {
     if (hoverTimeout) {
@@ -26,12 +42,13 @@ const SecondNav = () => {
   };
 
   const handleMouseLeave = () => {
-    const timeout = setTimeout(() => {
-      setAnchorEl(null);
-      setHoveredCategory(null);
-      setSubmenuAnchorEl(null);
-    }, 200); // Increased delay
-    setHoverTimeout(timeout);
+    // Don't close the menu automatically - let user click to close
+    // const timeout = setTimeout(() => {
+    //   setAnchorEl(null);
+    //   setHoveredCategory(null);
+    //   setSubmenuAnchorEl(null);
+    // }, 500);
+    // setHoverTimeout(timeout);
   };
 
   const handleSubmenuEnter = (event, category) => {
@@ -50,14 +67,81 @@ const SecondNav = () => {
   };
 
   const handleSubmenuMouseLeave = () => {
-    const timeout = setTimeout(() => {
-      setHoveredCategory(null);
-      setSubmenuAnchorEl(null);
-    }, 200);
-    setHoverTimeout(timeout);
+    // Don't close the submenu automatically
+    // const timeout = setTimeout(() => {
+    //   setHoveredCategory(null);
+    //   setSubmenuAnchorEl(null);
+    // }, 500);
+    // setHoverTimeout(timeout);
   };
 
   const handleCompleteMouseLeave = () => {
+    setAnchorEl(null);
+    setHoveredCategory(null);
+    setSubmenuAnchorEl(null);
+    clearHoverTimeout();
+  };
+
+  // Brand hover handlers
+  const handleBrandMouseEnter = (event) => {
+    if (brandHoverTimeout) {
+      clearTimeout(brandHoverTimeout);
+      setBrandHoverTimeout(null);
+    }
+    setBrandAnchorEl(event.currentTarget);
+  };
+
+  const handleBrandMouseLeave = () => {
+    const timeout = setTimeout(() => {
+      setBrandAnchorEl(null);
+    }, 200);
+    setBrandHoverTimeout(timeout);
+  };
+
+  const handleBrandMenuMouseEnter = () => {
+    if (brandHoverTimeout) {
+      clearTimeout(brandHoverTimeout);
+      setBrandHoverTimeout(null);
+    }
+  };
+
+  const handleBrandMenuMouseLeave = () => {
+    const timeout = setTimeout(() => {
+      setBrandAnchorEl(null);
+    }, 200);
+    setBrandHoverTimeout(timeout);
+  };
+
+  // Contact scroll handler
+  const handleContactClick = () => {
+    const footer = document.querySelector("#footer");
+    if (footer) {
+      footer.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  // Home navigation handler
+  const handleHomeClick = () => {
+    const currentPath = window.location.pathname;
+    if (currentPath === "/") {
+      // If already on home page, scroll to top
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+      // Navigate to home page
+      navigate("/");
+    }
+  };
+
+  // Shop navigation handler
+  const handleShopClick = () => {
+    navigate("/products");
+  };
+
+  // Subcategory navigation handler
+  const handleSubcategoryClick = (subcategory) => {
+    const subcategoryId = subcategory._id || subcategory.id;
+    navigate(`/subcategory/${subcategoryId}`);
+    // Close all menus
     setAnchorEl(null);
     setHoveredCategory(null);
     setSubmenuAnchorEl(null);
@@ -70,12 +154,13 @@ const SecondNav = () => {
   };
 
   const handleMenuMouseLeave = () => {
-    const timeout = setTimeout(() => {
-      setAnchorEl(null);
-      setHoveredCategory(null);
-      setSubmenuAnchorEl(null);
-    }, 200);
-    setHoverTimeout(timeout);
+    // Don't close the menu automatically
+    // const timeout = setTimeout(() => {
+    //   setAnchorEl(null);
+    //   setHoveredCategory(null);
+    //   setSubmenuAnchorEl(null);
+    // }, 500);
+    // setHoverTimeout(timeout);
   };
 
   // Fixed subcategory filtering logic
@@ -151,11 +236,13 @@ const SecondNav = () => {
           MenuListProps={{
             onMouseEnter: handleMenuMouseEnter,
             onMouseLeave: handleMenuMouseLeave,
+            onMouseMove: handleMenuMouseEnter, // Additional event to keep menu open
             sx: { padding: 0, maxHeight: "400px", overflowY: "auto" },
           }}
           PaperProps={{
             onMouseEnter: handleMenuMouseEnter,
             onMouseLeave: handleMenuMouseLeave,
+            onMouseMove: handleMenuMouseEnter, // Additional event to keep menu open
             style: {
               backgroundColor: "#1A2E4D",
               color: "white",
@@ -165,6 +252,10 @@ const SecondNav = () => {
               maxHeight: "400px",
             },
           }}
+          // Keep menu open until manually closed
+          disableAutoFocus
+          disableEnforceFocus
+          disableRestoreFocus
           anchorOrigin={{
             vertical: "bottom",
             horizontal: "left",
@@ -174,6 +265,20 @@ const SecondNav = () => {
             horizontal: "left",
           }}
         >
+          {/* Close button */}
+          <Box sx={{ display: "flex", justifyContent: "flex-end", p: 1 }}>
+            <Button
+              onClick={handleCompleteMouseLeave}
+              sx={{
+                color: "white",
+                minWidth: "auto",
+                p: 0.5,
+                "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.1)" },
+              }}
+            >
+              <ClearIcon fontSize="small" />
+            </Button>
+          </Box>
           {parentCategories.map((category) => {
             const categoryId = category._id || category.id;
             const subcategories = getSubcategories(categoryId);
@@ -221,11 +326,18 @@ const SecondNav = () => {
                   offset: [0, 0], // Reduced gap between main menu and submenu
                 },
               },
+              {
+                name: "preventOverflow",
+                options: {
+                  boundary: "viewport",
+                },
+              },
             ]}
           >
             <Paper
               onMouseEnter={handleSubmenuMouseEnter}
               onMouseLeave={handleSubmenuMouseLeave}
+              onMouseMove={handleSubmenuMouseEnter} // Additional event to keep menu open
               sx={{
                 backgroundColor: "#1A2E4D",
                 color: "white",
@@ -251,11 +363,13 @@ const SecondNav = () => {
                 (sub) => (
                   <MenuItem
                     key={sub._id || sub.id}
+                    onClick={() => handleSubcategoryClick(sub)}
                     sx={{
                       color: "white",
                       padding: "12px 16px",
                       "&:hover": {
                         backgroundColor: "rgba(255, 255, 255, 0.1)",
+                        cursor: "pointer",
                       },
                       minHeight: "48px",
                     }}
@@ -271,9 +385,39 @@ const SecondNav = () => {
 
       {/* Other Nav Items */}
       <Box sx={{ display: "flex", gap: "16px" }}>
-        {["Home", "Shop", "Brand", "Pages", "Contact"].map((item) => (
+        <Button
+          onClick={handleHomeClick}
+          sx={{
+            color: "white",
+            textTransform: "none",
+            "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.1)" },
+            padding: "8px 16px",
+            borderRadius: "4px",
+          }}
+        >
+          Home
+        </Button>
+
+        <Button
+          onClick={handleShopClick}
+          sx={{
+            color: "white",
+            textTransform: "none",
+            "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.1)" },
+            padding: "8px 16px",
+            borderRadius: "4px",
+          }}
+        >
+          Shop
+        </Button>
+
+        {/* Brand with hover dropdown */}
+        <Box
+          onMouseEnter={handleBrandMouseEnter}
+          onMouseLeave={handleBrandMouseLeave}
+          sx={{ position: "relative" }}
+        >
           <Button
-            key={item}
             sx={{
               color: "white",
               textTransform: "none",
@@ -281,13 +425,240 @@ const SecondNav = () => {
               padding: "8px 16px",
               borderRadius: "4px",
             }}
-            endIcon={
-              ["Brand", "Pages"].includes(item) ? <ExpandMoreIcon /> : null
-            }
+            endIcon={<ExpandMoreIcon />}
           >
-            {item}
+            Brand
           </Button>
-        ))}
+
+          {/* Brand Dropdown Menu */}
+          <Menu
+            anchorEl={brandAnchorEl}
+            open={Boolean(brandAnchorEl)}
+            onClose={() => setBrandAnchorEl(null)}
+            MenuListProps={{
+              onMouseEnter: handleBrandMenuMouseEnter,
+              onMouseLeave: handleBrandMenuMouseLeave,
+              sx: { padding: 0, maxHeight: "400px", overflowY: "auto" },
+            }}
+            PaperProps={{
+              onMouseEnter: handleBrandMenuMouseEnter,
+              onMouseLeave: handleBrandMenuMouseLeave,
+              style: {
+                backgroundColor: "#1A2E4D",
+                color: "white",
+                minWidth: "200px",
+                marginTop: "8px",
+                maxHeight: "400px",
+              },
+            }}
+            anchorOrigin={{
+              vertical: "bottom",
+              horizontal: "left",
+            }}
+            transformOrigin={{
+              vertical: "top",
+              horizontal: "left",
+            }}
+          >
+            {brands?.slice(0, 10).map((brand) => (
+              <MenuItem
+                key={brand._id || brand.id}
+                onClick={() => {
+                  navigate(`/products?brand=${brand._id || brand.id}`);
+                  setBrandAnchorEl(null);
+                }}
+                sx={{
+                  color: "white",
+                  padding: "12px 16px",
+                  "&:hover": {
+                    backgroundColor: "rgba(255, 255, 255, 0.1)",
+                  },
+                  minHeight: "48px",
+                }}
+              >
+                {brand.name}
+              </MenuItem>
+            ))}
+            {brands?.length > 10 && (
+              <MenuItem
+                onClick={() => {
+                  navigate("/brands");
+                  setBrandAnchorEl(null);
+                }}
+                sx={{
+                  color: "white",
+                  padding: "12px 16px",
+                  "&:hover": {
+                    backgroundColor: "rgba(255, 255, 255, 0.1)",
+                  },
+                  minHeight: "48px",
+                  fontStyle: "italic",
+                }}
+              >
+                View All Brands...
+              </MenuItem>
+            )}
+          </Menu>
+        </Box>
+
+        {/* Pages with dropdown */}
+        <Box
+          onMouseEnter={(e) => {
+            if (brandHoverTimeout) {
+              clearTimeout(brandHoverTimeout);
+              setBrandHoverTimeout(null);
+            }
+            setPagesAnchorEl(e.currentTarget);
+          }}
+          onMouseLeave={() => {
+            const timeout = setTimeout(() => {
+              setPagesAnchorEl(null);
+            }, 200);
+            setBrandHoverTimeout(timeout);
+          }}
+          sx={{ position: "relative" }}
+        >
+          <Button
+            sx={{
+              color: "white",
+              textTransform: "none",
+              "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.1)" },
+              padding: "8px 16px",
+              borderRadius: "4px",
+            }}
+            endIcon={<ExpandMoreIcon />}
+          >
+            Pages
+          </Button>
+
+          {/* Pages Dropdown Menu */}
+          <Menu
+            anchorEl={pagesAnchorEl}
+            open={Boolean(pagesAnchorEl)}
+            onClose={() => setPagesAnchorEl(null)}
+            MenuListProps={{
+              onMouseEnter: () => {
+                if (brandHoverTimeout) {
+                  clearTimeout(brandHoverTimeout);
+                  setBrandHoverTimeout(null);
+                }
+              },
+              onMouseLeave: () => {
+                const timeout = setTimeout(() => {
+                  setPagesAnchorEl(null);
+                }, 200);
+                setBrandHoverTimeout(timeout);
+              },
+              sx: { padding: 0, minWidth: "200px" },
+            }}
+            PaperProps={{
+              onMouseEnter: () => {
+                if (brandHoverTimeout) {
+                  clearTimeout(brandHoverTimeout);
+                  setBrandHoverTimeout(null);
+                }
+              },
+              onMouseLeave: () => {
+                const timeout = setTimeout(() => {
+                  setPagesAnchorEl(null);
+                }, 200);
+                setBrandHoverTimeout(timeout);
+              },
+              style: {
+                backgroundColor: "#1A2E4D",
+                color: "white",
+                marginTop: "8px",
+              },
+            }}
+            anchorOrigin={{
+              vertical: "bottom",
+              horizontal: "left",
+            }}
+            transformOrigin={{
+              vertical: "top",
+              horizontal: "left",
+            }}
+          >
+            <MenuItem
+              onClick={() => {
+                navigate("/about-us");
+                setPagesAnchorEl(null);
+              }}
+              sx={{
+                color: "white",
+                padding: "12px 16px",
+                "&:hover": {
+                  backgroundColor: "rgba(255, 255, 255, 0.1)",
+                },
+                minHeight: "48px",
+              }}
+            >
+              About Us
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                navigate("/terms-conditions");
+                setPagesAnchorEl(null);
+              }}
+              sx={{
+                color: "white",
+                padding: "12px 16px",
+                "&:hover": {
+                  backgroundColor: "rgba(255, 255, 255, 0.1)",
+                },
+                minHeight: "48px",
+              }}
+            >
+              Terms & Conditions
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                navigate("/privacy-policy");
+                setPagesAnchorEl(null);
+              }}
+              sx={{
+                color: "white",
+                padding: "12px 16px",
+                "&:hover": {
+                  backgroundColor: "rgba(255, 255, 255, 0.1)",
+                },
+                minHeight: "48px",
+              }}
+            >
+              Privacy Policy
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                navigate("/return-policy");
+                setPagesAnchorEl(null);
+              }}
+              sx={{
+                color: "white",
+                padding: "12px 16px",
+                "&:hover": {
+                  backgroundColor: "rgba(255, 255, 255, 0.1)",
+                },
+                minHeight: "48px",
+              }}
+            >
+              Return Policy
+            </MenuItem>
+          </Menu>
+        </Box>
+
+        {/* Contact */}
+        <Button
+          onClick={handleContactClick}
+          sx={{
+            color: "white",
+            textTransform: "none",
+            "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.1)" },
+            padding: "8px 16px",
+            borderRadius: "4px",
+          }}
+        >
+          Contact
+        </Button>
       </Box>
     </Box>
   );

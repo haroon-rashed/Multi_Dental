@@ -31,6 +31,7 @@ import {
   UserOrdersPage,
   UserProfilePage,
   WishlistPage,
+  ProductsPage,
 } from "./pages";
 import { AdminDashboardPage } from "./pages/AdminDashboardPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
@@ -39,6 +40,11 @@ import { AddCategoryPage } from "./pages/AddCategoryPage";
 import { ViewCategoryPage } from "./pages/ViewCategoryPage";
 import { AddSubCategoryPage } from "./pages/AddSubCategoryPage";
 import { ViewSubCategoryPage } from "./pages/ViewSubCategoryPage";
+import { SubCategoryPage } from "./pages/SubCategoryPage";
+import { AboutUsPage } from "./pages/AboutUsPage";
+import { TermsConditionsPage } from "./pages/TermsConditionsPage";
+import { PrivacyPolicyPage } from "./pages/PrivacyPolicyPage";
+import { ReturnPolicyPage } from "./pages/ReturnPolicyPage";
 import Loader from "./features/navigation/components/Loader";
 
 function App() {
@@ -74,6 +80,14 @@ function App() {
           element={
             <Protected>
               <ProductDetailsPage />
+            </Protected>
+          }
+        />
+        <Route
+          path="/products"
+          element={
+            <Protected>
+              <ProductsPage />
             </Protected>
           }
         />
@@ -217,6 +231,46 @@ function App() {
               element={
                 <Protected>
                   <WishlistPage />
+                </Protected>
+              }
+            />
+            <Route
+              path="/subcategory/:subcategoryId"
+              element={
+                <Protected>
+                  <SubCategoryPage />
+                </Protected>
+              }
+            />
+            <Route
+              path="/about-us"
+              element={
+                <Protected>
+                  <AboutUsPage />
+                </Protected>
+              }
+            />
+            <Route
+              path="/terms-conditions"
+              element={
+                <Protected>
+                  <TermsConditionsPage />
+                </Protected>
+              }
+            />
+            <Route
+              path="/privacy-policy"
+              element={
+                <Protected>
+                  <PrivacyPolicyPage />
+                </Protected>
+              }
+            />
+            <Route
+              path="/return-policy"
+              element={
+                <Protected>
+                  <ReturnPolicyPage />
                 </Protected>
               }
             />
