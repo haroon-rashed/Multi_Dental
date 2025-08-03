@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
-import { Navbar } from "../features/navigation/components/Navbar";
+import { Box } from "@mui/material";
+import UserNavbar from "../features/navigation/components/UserNavbar";
 import { ProductList } from "../features/products/components/ProductList";
 import {
   resetAddressStatus,
@@ -20,9 +21,11 @@ export const HomePage = () => {
 
   return (
     <>
-      <Navbar isProductList={true} />
-      <ProductList />
-      <Footer />
+      <UserNavbar />
+      <Box sx={{ paddingTop: 0 }}>
+        <ProductList />
+        <Footer />
+      </Box>
     </>
   );
 };

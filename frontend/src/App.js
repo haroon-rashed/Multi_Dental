@@ -46,6 +46,7 @@ import { TermsConditionsPage } from "./pages/TermsConditionsPage";
 import { PrivacyPolicyPage } from "./pages/PrivacyPolicyPage";
 import { ReturnPolicyPage } from "./pages/ReturnPolicyPage";
 import Loader from "./features/navigation/components/Loader";
+import globals from "./globals.css"; // Assuming you have a global CSS file
 
 function App() {
   const isAuthChecked = useSelector(selectIsAuthChecked);

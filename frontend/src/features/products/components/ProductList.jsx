@@ -60,7 +60,7 @@ import {
 import { motion } from "framer-motion";
 import ClearIcon from "@mui/icons-material/Clear";
 import Lottie from "lottie-react";
-import { ProductBanner } from "./ProductBanner";
+import { VideoHero } from "./VideoHero";
 import CategoryProductsSlider from "./Categories";
 import { BrandSection } from "./BrandSection";
 
@@ -380,7 +380,7 @@ export const ProductList = () => {
                   objectFit: "cover",
                 }}
               >
-                <ProductBanner images={bannerImages} />
+                <VideoHero />
               </Stack>
             )}
             {/*categories*/}
