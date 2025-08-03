@@ -7,15 +7,18 @@ import {
 import { FaEdit, FaTrash, FaFolder, FaFolderOpen, FaChevronDown, FaChevronRight, FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { TableRowSkeleton } from '../../../components/skeletons/SkeletonLoaders';
 
 import {
   selectCategories,
+  selectCategoryStatus,
   deleteCategoryAsync,
   fetchAllCategoriesAsync,
 } from '../../categories/CategoriesSlice';
 
 const ViewCategories = () => {
   const categories = useSelector(selectCategories);
+  const categoryStatus = useSelector(selectCategoryStatus);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [expandedCategories, setExpandedCategories] = useState(new Set());
@@ -224,7 +227,13 @@ const ViewCategories = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {parentCategories.length === 0 ? (
+            {categoryStatus === 'loading' ? (
+              Array.from({ length: 5 }).map((_, index) => (
+                <TableRow key={index}>
+                  <TableRowSkeleton columns={5} />
+                </TableRow>
+              ))
+            ) : parentCategories.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={5} align="center" sx={{ py: 4 }}>
                   <Typography variant="h6" color="text.secondary">

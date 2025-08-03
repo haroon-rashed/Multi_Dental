@@ -244,6 +244,14 @@ function App() {
               }
             />
             <Route
+              path="/category/:id"
+              element={
+                <Protected>
+                  {require("./pages/CategoryDetailsPage").default()}
+                </Protected>
+              }
+            />
+            <Route
               path="/about-us"
               element={
                 <Protected>

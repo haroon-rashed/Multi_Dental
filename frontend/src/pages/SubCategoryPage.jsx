@@ -22,7 +22,7 @@ import { selectCategories } from "../features/categories/CategoriesSlice";
 import { ITEMS_PER_PAGE } from "../constants";
 import { motion } from "framer-motion";
 import Lottie from "lottie-react";
-import CardSkeleton from '../components/skeletons/CardSkeleton';
+import { ProductListSkeleton } from '../components/skeletons/SkeletonLoaders';
 import Pagination from "@mui/material/Pagination";
 import { selectLoggedInUser } from "../features/auth/AuthSlice";
 import {
@@ -144,7 +144,7 @@ export const SubCategoryPage = () => {
   if (productFetchStatus === "pending") {
     return (
       <Stack width={'100%'} sx={{ py: 4 }}>
-        <CardSkeleton count={8} />
+        <ProductListSkeleton count={8} />
       </Stack>
     );
   }
@@ -176,11 +176,11 @@ export const SubCategoryPage = () => {
             sx={{ cursor: "pointer" }}
             underline="hover"
           >
-            {parentCategory.name}
+            {typeof parentCategory.name === 'string' ? parentCategory.name : (parentCategory.name?.name || 'Category')}
           </Link>
         )}
         <Typography color="text.primary">
-          {subcategory?.name || "Subcategory"}
+          {typeof subcategory?.name === 'string' ? subcategory.name : (subcategory?.name?.name || 'Subcategory')}
         </Typography>
       </Breadcrumbs>
 
@@ -192,7 +192,7 @@ export const SubCategoryPage = () => {
       >
         <Stack spacing={2}>
           <Typography variant="h3" component="h1" sx={{ fontWeight: "bold" }}>
-            {subcategory?.name || "Subcategory Products"}
+            {typeof subcategory?.name === 'string' ? subcategory.name : (subcategory?.name?.name || 'Subcategory Products')}
           </Typography>
           {subcategory?.description && (
             <Typography variant="body1" color="text.secondary">

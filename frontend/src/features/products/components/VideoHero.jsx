@@ -7,7 +7,7 @@ export const VideoHero = () => {
       sx={{
         position: "relative",
         width: "100%",
-        height: "150vh", // increased height
+        height: "200vh", // increased height
         overflow: "hidden",
         display: "flex",
         alignItems: "center",

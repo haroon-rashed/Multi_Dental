@@ -370,10 +370,10 @@ const UserNavbar = () => {
       {userInfo && (
         <Box sx={{ px: 2, pb: 2, borderBottom: "1px solid #eee" }}>
           <Stack direction="row" alignItems="center" spacing={2}>
-            <Avatar alt={userInfo?.name} />
+            <Avatar alt={typeof userInfo?.name === 'string' ? userInfo.name : 'User'} />
             <Box>
               <Typography variant="subtitle1" fontWeight="bold">
-                {userInfo?.name}
+                {typeof userInfo?.name === 'string' ? userInfo.name : (typeof userInfo?.firstName === 'string' ? userInfo.firstName : 'User')}
               </Typography>
               <Typography variant="body2" color="text.secondary">
                 Welcome back!
@@ -412,7 +412,7 @@ const UserNavbar = () => {
                 sx={{ pl: 4 }}
                 onClick={() => handleSubcategoryClick(category)}
               >
-                <ListItemText primary={category.name} />
+                <ListItemText primary={typeof category.name === 'string' ? category.name : (category.name?.name || 'Category')} />
               </ListItem>
             ))}
           </List>
@@ -499,7 +499,7 @@ const UserNavbar = () => {
                   setMobileDrawerOpen(false);
                 }}
               >
-                <ListItemText primary={brand.name} />
+                <ListItemText primary={typeof brand.name === 'string' ? brand.name : (brand.name?.name || 'Brand')} />
               </ListItem>
             ))}
             {brands?.length > 10 && (
@@ -618,7 +618,7 @@ const UserNavbar = () => {
                       mr: 1,
                     }}
                   >
-                    Hi, {userInfo.name}!
+                    Hi, {typeof userInfo?.name === 'string' ? userInfo.name : (typeof userInfo?.firstName === 'string' ? userInfo.firstName : 'User')}!
                   </Typography>
                 )}
                 <Tooltip title="User Menu">
@@ -626,7 +626,7 @@ const UserNavbar = () => {
                     onClick={(e) => setUserMenuAnchor(e.currentTarget)}
                     sx={{ p: 0 }}
                   >
-                    <Avatar alt={userInfo?.name} />
+                    <Avatar alt={typeof userInfo?.name === 'string' ? userInfo.name : (typeof userInfo?.firstName === 'string' ? userInfo.firstName : 'User')} />
                   </IconButton>
                 </Tooltip>
               </>
@@ -719,7 +719,7 @@ const UserNavbar = () => {
                 minHeight: "48px",
               }}
             >
-              <span>{category.name}</span>
+              <span>{typeof category.name === 'string' ? category.name : (category.name?.name || 'Category')}</span>
               {hasSubcategories && (
                 <ExpandMoreIcon sx={{ fontSize: "20px", marginLeft: "8px" }} />
               )}
@@ -783,7 +783,7 @@ const UserNavbar = () => {
                   minHeight: "48px",
                 }}
               >
-                {subcategory.name}
+                {typeof subcategory.name === 'string' ? subcategory.name : (subcategory.name?.name || 'Subcategory')}
               </MenuItem>
             )
           )}
@@ -838,7 +838,7 @@ const UserNavbar = () => {
               minHeight: "48px",
             }}
           >
-            {brand.name}
+            {typeof brand.name === 'string' ? brand.name : (brand.name?.name || 'Brand')}
           </MenuItem>
         ))}
         {brands?.length > 10 && (

@@ -10,6 +10,7 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
+import { ProductListSkeleton } from "../../../components/skeletons/SkeletonLoaders";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation } from "react-router-dom";
@@ -421,25 +422,29 @@ export const ProductList = () => {
               </Stack>
 
               {/* product grid */}
-              <Grid
-                gap={is700 ? 1 : 2}
-                container
-                justifyContent={"center"}
-                alignContent={"center"}
-              >
-                {products?.map((product) => (
-                  <ProductCard
-                    key={product?._id}
-                    id={product?._id}
-                    title={product?.title || "Unknown Product"}
-                    thumbnail={product?.thumbnail}
-                    brand={product?.brand?.name || "Unknown Brand"}
-                    price={product?.price || 0}
-                    stockQuantity={product?.stockQuantity || 0}
-                    handleAddRemoveFromWishlist={handleAddRemoveFromWishlist}
-                  />
-                ))}
-              </Grid>
+              {productFetchStatus === 'loading' ? (
+                <ProductListSkeleton count={8} />
+              ) : (
+                <Grid
+                  gap={is700 ? 1 : 2}
+                  container
+                  justifyContent={"center"}
+                  alignContent={"center"}
+                >
+                  {products?.map((product) => (
+                    <ProductCard
+                      key={product?._id}
+                      id={product?._id}
+                      title={product?.title || "Unknown Product"}
+                      thumbnail={product?.thumbnail}
+                      brand={product?.brand?.name || "Unknown Brand"}
+                      price={product?.price || 0}
+                      stockQuantity={product?.stockQuantity || 0}
+                      handleAddRemoveFromWishlist={handleAddRemoveFromWishlist}
+                    />
+                  ))}
+                </Grid>
+              )}
 
               {/* pagination */}
               <Stack
