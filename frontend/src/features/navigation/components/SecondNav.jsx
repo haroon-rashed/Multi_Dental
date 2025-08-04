@@ -129,12 +129,34 @@ const SecondNav = () => {
     } else {
       // Navigate to home page
       navigate("/");
+      // Scroll to top after navigation
+      window.scrollTo(0, 0);
     }
   };
 
   // Shop navigation handler
   const handleShopClick = () => {
     navigate("/products");
+  };
+
+  // Category navigation handler
+  const handleCategoryClick = (category) => {
+    const categoryId = category._id || category.id;
+    const subcategories = getSubcategories(categoryId);
+    
+    if (subcategories.length > 0) {
+      // If has subcategories, navigate to the first subcategory
+      navigate(`/subcategory/${subcategories[0]._id || subcategories[0].id}`);
+    } else {
+      // If no subcategories, navigate to category page
+      navigate(`/category/${categoryId}`);
+    }
+    
+    // Close all menus
+    setAnchorEl(null);
+    setHoveredCategory(null);
+    setSubmenuAnchorEl(null);
+    clearHoverTimeout();
   };
 
   // Subcategory navigation handler
@@ -287,6 +309,7 @@ const SecondNav = () => {
             return (
               <MenuItem
                 key={categoryId}
+                onClick={() => handleCategoryClick(category)}
                 onMouseEnter={(e) => handleSubmenuEnter(e, category)}
                 onMouseLeave={handleSubmenuLeave}
                 sx={{
@@ -299,6 +322,7 @@ const SecondNav = () => {
                     backgroundColor: "rgba(255, 255, 255, 0.1)",
                   },
                   minHeight: "48px",
+                  cursor: 'pointer',
                 }}
               >
                 <span>{category.name}</span>

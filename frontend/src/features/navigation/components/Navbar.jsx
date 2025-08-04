@@ -16,6 +16,14 @@ import {
   Stack,
   useMediaQuery,
   useTheme,
+  Box,
+  Drawer,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemIcon,
+  Divider,
+  Collapse,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { selectUserInfo } from "../../user/UserSlice";
@@ -25,6 +33,14 @@ import { selectLoggedInUser } from "../../auth/AuthSlice";
 import { selectWishlistItems } from "../../wishlist/WishlistSlice";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import TuneIcon from "@mui/icons-material/Tune";
+import MenuIcon from "@mui/icons-material/Menu";
+import CloseIcon from "@mui/icons-material/Close";
+import CategoryIcon from "@mui/icons-material/Category";
+import StoreIcon from "@mui/icons-material/Store";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import { selectCategories } from "../../categories/CategoriesSlice";
+import { selectBrands } from "../../brands/BrandSlice";
 import {
   selectProductIsFilterOpen,
   toggleFilters,
@@ -33,16 +49,53 @@ import {
 export const Navbar = ({ isProductList = false }) => {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const [mobileDrawerOpen, setMobileDrawerOpen] = React.useState(false);
+  const [mobileCategoriesOpen, setMobileCategoriesOpen] = React.useState(false);
+  const [mobileBrandsOpen, setMobileBrandsOpen] = React.useState(false);
+
   const userInfo = useSelector(selectUserInfo);
   const cartItems = useSelector(selectCartItems);
   const loggedInUser = useSelector(selectLoggedInUser);
+  const categories = useSelector(selectCategories);
+  const brands = useSelector(selectBrands);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const theme = useTheme();
   const is480 = useMediaQuery(theme.breakpoints.down(480));
+  const is900 = useMediaQuery(theme.breakpoints.down(900));
 
   const wishlistItems = useSelector(selectWishlistItems);
   const isProductFilterOpen = useSelector(selectProductIsFilterOpen);
+
+  // Toggle mobile drawer
+  const toggleDrawer = (open) => (event) => {
+    if (event && event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+      return;
+    }
+    setMobileDrawerOpen(open);
+  };
+
+  // Toggle categories in mobile drawer
+  const toggleCategories = () => {
+    setMobileCategoriesOpen(!mobileCategoriesOpen);
+  };
+
+  // Toggle brands in mobile drawer
+  const toggleBrands = () => {
+    setMobileBrandsOpen(!mobileBrandsOpen);
+  };
+
+  // Handle category click
+  const handleCategoryClick = (category) => {
+    navigate(`/products/category/${category._id}`);
+    setMobileDrawerOpen(false);
+  };
+
+  // Handle brand click
+  const handleBrandClick = (brand) => {
+    navigate(`/products/brand/${brand._id}`);
+    setMobileDrawerOpen(false);
+  };
 
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
@@ -69,6 +122,196 @@ export const Navbar = ({ isProductList = false }) => {
     { name: "Logout", to: "/logout" },
   ];
 
+  // Mobile drawer content
+  const drawer = (
+    <Box
+      sx={{
+        width: 280,
+        height: "100%",
+        backgroundColor: "background.paper",
+        overflowY: "auto",
+      }}
+      role="presentation"
+      onKeyDown={toggleDrawer(false)}
+    >
+      <Box
+        sx={{
+          p: 2,
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          backgroundColor: "#1A2E4D",
+          color: "white"
+        }}
+      >
+        <Typography variant="h6" component="div">
+          Menu
+        </Typography>
+        <IconButton onClick={toggleDrawer(false)} sx={{ color: "white" }}>
+          <CloseIcon />
+        </IconButton>
+      </Box>
+
+      {/* Home Link */}
+      <ListItem 
+        button 
+        component={Link} 
+        to="/" 
+        onClick={toggleDrawer(false)}
+        sx={{
+          '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.04)' },
+          borderBottom: '1px solid #f0f0f0'
+        }}
+      >
+        <ListItemText primary="Home" primaryTypographyProps={{ fontWeight: 'medium' }} />
+      </ListItem>
+
+      {/* Shop Link */}
+      <ListItem 
+        button 
+        component={Link} 
+        to="/products" 
+        onClick={toggleDrawer(false)}
+        sx={{
+          '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.04)' },
+          borderBottom: '1px solid #f0f0f0'
+        }}
+      >
+        <ListItemText primary="Shop" primaryTypographyProps={{ fontWeight: 'medium' }} />
+      </ListItem>
+
+      {/* Categories Section */}
+      <Box>
+        <ListItem 
+          button 
+          onClick={toggleCategories}
+          sx={{
+            '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.04)' },
+            borderBottom: '1px solid #f0f0f0'
+          }}
+        >
+          <ListItemIcon>
+            <CategoryIcon />
+          </ListItemIcon>
+          <ListItemText primary="Categories" primaryTypographyProps={{ fontWeight: 'medium' }} />
+          {mobileCategoriesOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+        </ListItem>
+        <Collapse in={mobileCategoriesOpen} timeout="auto" unmountOnExit>
+          <List component="div" disablePadding>
+            {categories.map((category) => (
+              <ListItem
+                button
+                key={category._id}
+                sx={{ 
+                  pl: 4,
+                  '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.04)' },
+                  borderBottom: '1px solid #f0f0f0'
+                }}
+                onClick={() => {
+                  handleCategoryClick(category);
+                  toggleDrawer(false)();
+                }}
+              >
+                <ListItemText primary={category.name} />
+              </ListItem>
+            ))}
+          </List>
+        </Collapse>
+      </Box>
+
+      {/* Brands Section */}
+      <Box>
+        <ListItem 
+          button 
+          onClick={toggleBrands}
+          sx={{
+            '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.04)' },
+            borderBottom: '1px solid #f0f0f0'
+          }}
+        >
+          <ListItemIcon>
+            <StoreIcon />
+          </ListItemIcon>
+          <ListItemText primary="Brands" primaryTypographyProps={{ fontWeight: 'medium' }} />
+          {mobileBrandsOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+        </ListItem>
+        <Collapse in={mobileBrandsOpen} timeout="auto" unmountOnExit>
+          <List component="div" disablePadding>
+            {brands.map((brand) => (
+              <ListItem
+                button
+                key={brand._id}
+                sx={{ 
+                  pl: 4,
+                  '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.04)' },
+                  borderBottom: '1px solid #f0f0f0'
+                }}
+                onClick={() => {
+                  handleBrandClick(brand);
+                  toggleDrawer(false)();
+                }}
+              >
+                <ListItemText primary={brand.name} />
+              </ListItem>
+            ))}
+          </List>
+        </Collapse>
+      </Box>
+
+      {/* Pages Section */}
+      <Box>
+        <ListItem 
+          button 
+          component={Link}
+          to="/about"
+          onClick={toggleDrawer(false)}
+          sx={{
+            '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.04)' },
+            borderBottom: '1px solid #f0f0f0'
+          }}
+        >
+          <ListItemText primary="About Us" primaryTypographyProps={{ fontWeight: 'medium' }} />
+        </ListItem>
+        <ListItem 
+          button 
+          component={Link}
+          to="/contact"
+          onClick={toggleDrawer(false)}
+          sx={{
+            '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.04)' },
+            borderBottom: '1px solid #f0f0f0'
+          }}
+        >
+          <ListItemText primary="Contact Us" primaryTypographyProps={{ fontWeight: 'medium' }} />
+        </ListItem>
+        <ListItem 
+          button 
+          component={Link}
+          to="/terms-conditions"
+          onClick={toggleDrawer(false)}
+          sx={{
+            '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.04)' },
+            borderBottom: '1px solid #f0f0f0'
+          }}
+        >
+          <ListItemText primary="Terms & Conditions" primaryTypographyProps={{ fontWeight: 'medium' }} />
+        </ListItem>
+        <ListItem 
+          button 
+          component={Link}
+          to="/privacy-policy"
+          onClick={toggleDrawer(false)}
+          sx={{
+            '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.04)' },
+            borderBottom: '1px solid #f0f0f0'
+          }}
+        >
+          <ListItemText primary="Privacy Policy" primaryTypographyProps={{ fontWeight: 'medium' }} />
+        </ListItem>
+      </Box>
+    </Box>
+  );
+
   return (
     <AppBar
       position="sticky"
@@ -76,6 +319,7 @@ export const Navbar = ({ isProductList = false }) => {
         backgroundColor: "white",
         boxShadow: "none",
         color: "text.primary",
+        overflowX: "hidden", // Prevent horizontal scroll
       }}
     >
       <Toolbar
@@ -83,25 +327,73 @@ export const Navbar = ({ isProductList = false }) => {
           p: 1,
           height: "4rem",
           display: "flex",
-          justifyContent: "space-around",
+          justifyContent: { xs: "space-between", md: "space-around" },
+          maxWidth: "100%",
+          mx: "auto",
+          px: { xs: 2, md: 0 },
         }}
       >
-        <Typography
-          variant="h6"
-          noWrap
-          component="a"
-          href="/"
-          sx={{
-            mr: 2,
-            display: { xs: "none", md: "flex" },
-            fontWeight: 700,
-            letterSpacing: ".3rem",
-            color: "inherit",
-            textDecoration: "none",
-          }}
-        >
-          MULTI DENTAL SUPPLY
-        </Typography>
+        {/* Left side with menu button and logo */}
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          {/* Menu Button - Only visible on mobile */}
+          <IconButton
+            size="large"
+            edge="start"
+            color="inherit"
+            aria-label="menu"
+            onClick={toggleDrawer(true)}
+            sx={{ 
+              mr: 1, 
+              display: { xs: 'flex', md: 'none' },
+              color: 'black'
+            }}
+          >
+            <MenuIcon />
+          </IconButton>
+          
+          {/* Logo - Shows full text when there's enough space */}
+          <Typography
+            variant="h6"
+            noWrap
+            component="a"
+            href="/"
+            sx={{
+              fontWeight: 700,
+              letterSpacing: '.3rem',
+              color: 'black',
+              textDecoration: 'none',
+              display: { xs: is900 ? 'none' : 'flex', md: 'flex' },
+              alignItems: 'center',
+              mr: { md: 2 },
+              fontSize: { xs: '1rem', md: '1.25rem' },
+            }}
+          >
+            MULTI DENTAL SUPPLY
+          </Typography>
+          
+          {/* Mobile Logo - Only shows MDS when menu button is visible */}
+          <Typography
+            variant="h6"
+            noWrap
+            component="a"
+            href="/"
+            sx={{
+              fontWeight: 700,
+              letterSpacing: '.3rem',
+              color: 'black',
+              textDecoration: 'none',
+              display: { xs: is900 ? 'flex' : 'none', md: 'none' },
+              alignItems: 'center',
+              mr: 2,
+              fontSize: '1rem',
+            }}
+          >
+            MDS
+          </Typography>
+        </Box>
+        
+        {/* Spacer to push content to the right */}
+        <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }} />
 
         <Stack
           flexDirection={"row"}
@@ -196,7 +488,26 @@ export const Navbar = ({ isProductList = false }) => {
           </Stack>
         </Stack>
       </Toolbar>
-      <SecondNav />
+      {!is900 && <SecondNav />}
+      
+      {/* Mobile Drawer */}
+      <Drawer
+        anchor="left"
+        open={mobileDrawerOpen}
+        onClose={toggleDrawer(false)}
+        ModalProps={{
+          keepMounted: true, // Better open performance on mobile
+        }}
+        sx={{
+          display: { xs: 'block', md: 'none' },
+          '& .MuiDrawer-paper': { 
+            boxSizing: 'border-box',
+            width: 280,
+          },
+        }}
+      >
+        {drawer}
+      </Drawer>
     </AppBar>
   );
 };

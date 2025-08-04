@@ -46,6 +46,7 @@ import { TermsConditionsPage } from "./pages/TermsConditionsPage";
 import { PrivacyPolicyPage } from "./pages/PrivacyPolicyPage";
 import { ReturnPolicyPage } from "./pages/ReturnPolicyPage";
 import Loader from "./features/navigation/components/Loader";
+import CategoryDetailsPage from "./pages/CategoryDetailsPage";
 import globals from "./globals.css"; // Assuming you have a global CSS file
 
 function App() {
@@ -247,7 +248,7 @@ function App() {
               path="/category/:id"
               element={
                 <Protected>
-                  {require("./pages/CategoryDetailsPage").default()}
+                  <CategoryDetailsPage />
                 </Protected>
               }
             />

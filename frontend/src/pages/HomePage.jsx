@@ -8,6 +8,8 @@ import {
 } from "../features/address/AddressSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { Footer } from "../features/footer/Footer";
+import DentalServices from "../features/products/components/DentalServices";
+import AboutUsSection from "../features/products/components/AboutUsSection";
 
 export const HomePage = () => {
   const dispatch = useDispatch();
@@ -24,6 +26,7 @@ export const HomePage = () => {
       <UserNavbar />
       <Box sx={{ paddingTop: 0 }}>
         <ProductList />
+        <DentalServices />
         <Footer />
       </Box>
     </>

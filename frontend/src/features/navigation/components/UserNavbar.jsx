@@ -49,6 +49,7 @@ const UserNavbar = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const isSmall = useMediaQuery(theme.breakpoints.down("sm"));
+  const isHomePage = window.location.pathname === "/";
 
   const categories = useSelector(selectCategories);
   const brands = useSelector(selectBrands);
@@ -92,7 +93,7 @@ const UserNavbar = () => {
     const handleScroll = () => {
       const scrollTop =
         window.pageYOffset || document.documentElement.scrollTop;
-      setIsScrolled(scrollTop > 10);
+      setIsScrolled(scrollTop > 50);
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -108,7 +109,7 @@ const UserNavbar = () => {
   };
 
   // Helper function to set hover timeout
-  const setHoverTimeout = (key, callback, delay = 200) => {
+  const setHoverTimeout = (key, callback, delay = 300) => {
     clearHoverTimeout(key);
     const timeout = setTimeout(callback, delay);
     setHoverTimeouts((prev) => ({ ...prev, [key]: timeout }));
@@ -131,9 +132,19 @@ const UserNavbar = () => {
   };
 
   const handleContactClick = () => {
-    const footer = document.querySelector("#footer");
-    if (footer) {
-      footer.scrollIntoView({ behavior: "smooth" });
+    if (window.location.pathname !== "/") {
+      navigate("/");
+      setTimeout(() => {
+        const footer = document.querySelector("#footer");
+        if (footer) {
+          footer.scrollIntoView({ behavior: "smooth" });
+        }
+      }, 100);
+    } else {
+      const footer = document.querySelector("#footer");
+      if (footer) {
+        footer.scrollIntoView({ behavior: "smooth" });
+      }
     }
     setMobileDrawerOpen(false);
   };
@@ -147,7 +158,7 @@ const UserNavbar = () => {
     setMobileDrawerOpen(false);
   };
 
-  // Category helpers - Fixed logic from SecondNav
+  // Category helpers
   const getSubcategories = (parentId) => {
     return categories.filter((cat) => {
       let catParentId = cat.parent_id;
@@ -168,72 +179,87 @@ const UserNavbar = () => {
     return !parentId || parentId === null || parentId === undefined;
   });
 
-  // Hover handlers - exactly like SecondNav
-  const handleCategoriesMouseEnter = (e) => {
-    clearHoverTimeout('categories');
-    setCategoriesAnchor(e.currentTarget);
-  };
-
-  const handleCategoriesMouseLeave = () => {
-    // Don't set timeout here - let menu handle it
-  };
-
-  const handleBrandsMouseEnter = (e) => {
-    clearHoverTimeout('brands');
-    setBrandsAnchor(e.currentTarget);
-  };
-
-  const handleBrandsMouseLeave = () => {
-    setHoverTimeout('brands', () => {
-      setBrandsAnchor(null);
-    }, 200);
-  };
-
-  const handlePagesMouseEnter = (e) => {
-    clearHoverTimeout('pages');
-    setPagesAnchor(e.currentTarget);
-  };
-
-  const handlePagesMouseLeave = () => {
-    setHoverTimeout('pages', () => {
-      setPagesAnchor(null);
-    }, 200);
-  };
-
-  const handleMenuMouseEnter = (menuType) => {
+  // Enhanced hover handlers for better UX
+  const handleMenuMouseEnter = (menuType, event) => {
     clearHoverTimeout(menuType);
-  };
 
-  const handleMenuMouseLeave = (menuType) => {
-    if (menuType === 'categories') {
-      // Don't close categories menu automatically
-    } else {
-      setHoverTimeout(menuType, () => {
-        if (menuType === 'brands') {
-          setBrandsAnchor(null);
-        } else if (menuType === 'pages') {
-          setPagesAnchor(null);
-        }
-      }, 200);
+    switch (menuType) {
+      case "categories":
+        setCategoriesAnchor(event.currentTarget);
+        break;
+      case "brands":
+        setBrandsAnchor(event.currentTarget);
+        break;
+      case "pages":
+        setPagesAnchor(event.currentTarget);
+        break;
     }
   };
 
-  const handleCompleteMouseLeave = () => {
-    setCategoriesAnchor(null);
-    setHoveredCategory(null);
-    setSubmenuAnchor(null);
-    clearHoverTimeout('categories');
+  const handleMenuMouseLeave = (menuType) => {
+    // Remove automatic closing on mouse leave
+    // setHoverTimeout(menuType, () => {
+    //   switch(menuType) {
+    //     case 'categories':
+    //       setCategoriesAnchor(null);
+    //       setSubmenuAnchor(null);
+    //       setHoveredCategory(null);
+    //       break;
+    //     case 'brands':
+    //       setBrandsAnchor(null);
+    //       break;
+    //     case 'pages':
+    //       setPagesAnchor(null);
+    //       break;
+    //   }
+    // }, 300);
+  };
+
+  const handleDropdownMouseEnter = (menuType) => {
+    clearHoverTimeout(menuType);
+  };
+
+  const handleDropdownMouseLeave = (menuType) => {
+    // Remove automatic closing on mouse leave
+    // setHoverTimeout(menuType, () => {
+    //   switch(menuType) {
+    //     case 'categories':
+    //       setCategoriesAnchor(null);
+    //       setSubmenuAnchor(null);
+    //       setHoveredCategory(null);
+    //       break;
+    //     case 'brands':
+    //       setBrandsAnchor(null);
+    //       break;
+    //     case 'pages':
+    //       setPagesAnchor(null);
+    //       break;
+    //   }
+    // }, 300);
   };
 
   const handleSubmenuEnter = (e, category) => {
-    clearHoverTimeout('categories');
+    clearHoverTimeout("categories");
     setSubmenuAnchor(e.currentTarget);
     setHoveredCategory(category);
   };
 
-  const handleSubmenuLeave = () => {
-    // Don't close immediately - let main menu handle it
-  };
+  // Handle clicks outside to close dropdowns
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      // Close all dropdowns when clicking outside
+      setCategoriesAnchor(null);
+      setBrandsAnchor(null);
+      setPagesAnchor(null);
+      setSubmenuAnchor(null);
+      setHoveredCategory(null);
+    };
+
+    document.addEventListener("click", handleClickOutside);
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+    };
+  }, []);
 
   // User menu settings
   const userMenuSettings = [
@@ -242,22 +268,40 @@ const UserNavbar = () => {
     { name: "Logout", path: "/logout" },
   ];
 
+  // Color scheme for dental theme
+  const dentalTheme = {
+    primary: isScrolled ? "#ffffff" : "#f8fffe", // Clean white/off-white
+    secondary: "#00a8cc", // Medical blue
+    accent: "#28a745", // Fresh green
+    text: "#2c3e50", // Dark blue-gray
+    textSecondary: "#5a6c7d", // Medium gray
+    hover: "rgba(0, 168, 204, 0.1)", // Light blue hover
+    shadow: isScrolled
+      ? "0 4px 20px rgba(0, 0, 0, 0.1)"
+      : "0 2px 10px rgba(0, 0, 0, 0.05)",
+    border: "#e1f4f8", // Very light blue
+  };
+
   // Desktop Navigation Links Component
   const DesktopNavLinks = () => {
-    const linkColor = "black";
-    const hoverBg = "rgba(0, 0, 0, 0.1)";
-
     return (
-      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+      <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
         {/* Home */}
         <Button
           onClick={handleHomeClick}
           sx={{
-            color: linkColor,
+            color: dentalTheme.text,
             textTransform: "none",
-            "&:hover": { backgroundColor: hoverBg },
-            px: 2,
-            transition: "color 0.3s ease-in-out",
+            fontWeight: 500,
+            fontSize: "16px",
+            "&:hover": {
+              backgroundColor: dentalTheme.hover,
+              color: dentalTheme.secondary,
+            },
+            px: 3,
+            py: 1.5,
+            borderRadius: "8px",
+            transition: "all 0.3s ease-in-out",
           }}
         >
           Home
@@ -265,21 +309,25 @@ const UserNavbar = () => {
 
         {/* Categories */}
         <Box
-          onMouseEnter={handleCategoriesMouseEnter}
-          onMouseLeave={handleCategoriesMouseLeave}
-          sx={{ 
-            position: "relative",
-            display: "inline-block"
-          }}
+          onMouseEnter={(e) => handleMenuMouseEnter("categories", e)}
+          onMouseLeave={() => handleMenuMouseLeave("categories")}
+          sx={{ position: "relative" }}
         >
           <Button
-            endIcon={<ExpandMoreIcon />}
+            endIcon={<ExpandMoreIcon sx={{ fontSize: "18px" }} />}
             sx={{
-              color: linkColor,
+              color: dentalTheme.text,
               textTransform: "none",
-              "&:hover": { backgroundColor: hoverBg },
-              px: 2,
-              transition: "color 0.3s ease-in-out",
+              fontWeight: 500,
+              fontSize: "16px",
+              "&:hover": {
+                backgroundColor: dentalTheme.hover,
+                color: dentalTheme.secondary,
+              },
+              px: 3,
+              py: 1.5,
+              borderRadius: "8px",
+              transition: "all 0.3s ease-in-out",
             }}
           >
             Categories
@@ -288,21 +336,25 @@ const UserNavbar = () => {
 
         {/* Pages */}
         <Box
-          onMouseEnter={handlePagesMouseEnter}
-          onMouseLeave={handlePagesMouseLeave}
-          sx={{ 
-            position: "relative",
-            display: "inline-block"
-          }}
+          onMouseEnter={(e) => handleMenuMouseEnter("pages", e)}
+          onMouseLeave={() => handleMenuMouseLeave("pages")}
+          sx={{ position: "relative" }}
         >
           <Button
-            endIcon={<ExpandMoreIcon />}
+            endIcon={<ExpandMoreIcon sx={{ fontSize: "18px" }} />}
             sx={{
-              color: linkColor,
+              color: dentalTheme.text,
               textTransform: "none",
-              "&:hover": { backgroundColor: hoverBg },
-              px: 2,
-              transition: "color 0.3s ease-in-out",
+              fontWeight: 500,
+              fontSize: "16px",
+              "&:hover": {
+                backgroundColor: dentalTheme.hover,
+                color: dentalTheme.secondary,
+              },
+              px: 3,
+              py: 1.5,
+              borderRadius: "8px",
+              transition: "all 0.3s ease-in-out",
             }}
           >
             Pages
@@ -313,11 +365,18 @@ const UserNavbar = () => {
         <Button
           onClick={handleShopClick}
           sx={{
-            color: linkColor,
+            color: dentalTheme.text,
             textTransform: "none",
-            "&:hover": { backgroundColor: hoverBg },
-            px: 2,
-            transition: "color 0.3s ease-in-out",
+            fontWeight: 500,
+            fontSize: "16px",
+            "&:hover": {
+              backgroundColor: dentalTheme.hover,
+              color: dentalTheme.secondary,
+            },
+            px: 3,
+            py: 1.5,
+            borderRadius: "8px",
+            transition: "all 0.3s ease-in-out",
           }}
         >
           Shop
@@ -325,21 +384,25 @@ const UserNavbar = () => {
 
         {/* Brands */}
         <Box
-          onMouseEnter={handleBrandsMouseEnter}
-          onMouseLeave={handleBrandsMouseLeave}
-          sx={{ 
-            position: "relative",
-            display: "inline-block"
-          }}
+          onMouseEnter={(e) => handleMenuMouseEnter("brands", e)}
+          onMouseLeave={() => handleMenuMouseLeave("brands")}
+          sx={{ position: "relative" }}
         >
           <Button
-            endIcon={<ExpandMoreIcon />}
+            endIcon={<ExpandMoreIcon sx={{ fontSize: "18px" }} />}
             sx={{
-              color: linkColor,
+              color: dentalTheme.text,
               textTransform: "none",
-              "&:hover": { backgroundColor: hoverBg },
-              px: 2,
-              transition: "color 0.3s ease-in-out",
+              fontWeight: 500,
+              fontSize: "16px",
+              "&:hover": {
+                backgroundColor: dentalTheme.hover,
+                color: dentalTheme.secondary,
+              },
+              px: 3,
+              py: 1.5,
+              borderRadius: "8px",
+              transition: "all 0.3s ease-in-out",
             }}
           >
             Brands
@@ -350,11 +413,18 @@ const UserNavbar = () => {
         <Button
           onClick={handleContactClick}
           sx={{
-            color: linkColor,
+            color: dentalTheme.text,
             textTransform: "none",
-            "&:hover": { backgroundColor: hoverBg },
-            px: 2,
-            transition: "color 0.3s ease-in-out",
+            fontWeight: 500,
+            fontSize: "16px",
+            "&:hover": {
+              backgroundColor: dentalTheme.hover,
+              color: dentalTheme.secondary,
+            },
+            px: 3,
+            py: 1.5,
+            borderRadius: "8px",
+            transition: "all 0.3s ease-in-out",
           }}
         >
           Contact
@@ -368,14 +438,32 @@ const UserNavbar = () => {
     <Box sx={{ width: 280, pt: 2 }}>
       {/* User Info in Mobile */}
       {userInfo && (
-        <Box sx={{ px: 2, pb: 2, borderBottom: "1px solid #eee" }}>
+        <Box
+          sx={{ px: 2, pb: 2, borderBottom: `1px solid ${dentalTheme.border}` }}
+        >
           <Stack direction="row" alignItems="center" spacing={2}>
-            <Avatar alt={typeof userInfo?.name === 'string' ? userInfo.name : 'User'} />
+            <Avatar
+              alt={typeof userInfo?.name === "string" ? userInfo.name : "User"}
+              sx={{
+                bgcolor: dentalTheme.secondary,
+                color: "white",
+                width: 50,
+                height: 50,
+              }}
+            />
             <Box>
-              <Typography variant="subtitle1" fontWeight="bold">
-                {typeof userInfo?.name === 'string' ? userInfo.name : (typeof userInfo?.firstName === 'string' ? userInfo.firstName : 'User')}
+              <Typography
+                variant="subtitle1"
+                fontWeight="600"
+                color={dentalTheme.text}
+              >
+                {typeof userInfo?.name === "string"
+                  ? userInfo.name
+                  : typeof userInfo?.firstName === "string"
+                  ? userInfo.firstName
+                  : "User"}
               </Typography>
-              <Typography variant="body2" color="text.secondary">
+              <Typography variant="body2" color={dentalTheme.textSecondary}>
                 Welcome back!
               </Typography>
             </Box>
@@ -383,25 +471,62 @@ const UserNavbar = () => {
         </Box>
       )}
 
-      <List>
+      <List sx={{ px: 1 }}>
         {/* Home */}
-        <ListItem button onClick={handleHomeClick}>
-          <ListItemIcon>
+        <ListItem
+          button
+          onClick={handleHomeClick}
+          sx={{
+            borderRadius: "8px",
+            mb: 0.5,
+            "&:hover": {
+              backgroundColor: dentalTheme.hover,
+            },
+          }}
+        >
+          <ListItemIcon sx={{ color: dentalTheme.secondary }}>
             <HomeIcon />
           </ListItemIcon>
-          <ListItemText primary="Home" />
+          <ListItemText
+            primary="Home"
+            sx={{
+              "& .MuiListItemText-primary": {
+                color: dentalTheme.text,
+                fontWeight: 500,
+              },
+            }}
+          />
         </ListItem>
 
         {/* Categories */}
         <ListItem
           button
           onClick={() => setMobileCategoriesOpen(!mobileCategoriesOpen)}
+          sx={{
+            borderRadius: "8px",
+            mb: 0.5,
+            "&:hover": {
+              backgroundColor: dentalTheme.hover,
+            },
+          }}
         >
-          <ListItemIcon>
+          <ListItemIcon sx={{ color: dentalTheme.secondary }}>
             <CategoryIcon />
           </ListItemIcon>
-          <ListItemText primary="Categories" />
-          {mobileCategoriesOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+          <ListItemText
+            primary="Categories"
+            sx={{
+              "& .MuiListItemText-primary": {
+                color: dentalTheme.text,
+                fontWeight: 500,
+              },
+            }}
+          />
+          {mobileCategoriesOpen ? (
+            <ExpandLessIcon sx={{ color: dentalTheme.secondary }} />
+          ) : (
+            <ExpandMoreIcon sx={{ color: dentalTheme.secondary }} />
+          )}
         </ListItem>
         <Collapse in={mobileCategoriesOpen}>
           <List component="div" disablePadding>
@@ -409,83 +534,224 @@ const UserNavbar = () => {
               <ListItem
                 key={category._id || category.id}
                 button
-                sx={{ pl: 4 }}
+                sx={{
+                  pl: 4,
+                  borderRadius: "8px",
+                  mx: 1,
+                  "&:hover": {
+                    backgroundColor: dentalTheme.hover,
+                  },
+                }}
                 onClick={() => handleSubcategoryClick(category)}
               >
-                <ListItemText primary={typeof category.name === 'string' ? category.name : (category.name?.name || 'Category')} />
+                <ListItemText
+                  primary={
+                    typeof category.name === "string"
+                      ? category.name
+                      : category.name?.name || "Category"
+                  }
+                  sx={{
+                    "& .MuiListItemText-primary": {
+                      color: dentalTheme.textSecondary,
+                      fontSize: "14px",
+                    },
+                  }}
+                />
               </ListItem>
             ))}
           </List>
         </Collapse>
 
         {/* Pages */}
-        <ListItem button onClick={() => setMobilePagesOpen(!mobilePagesOpen)}>
-          <ListItemIcon>
+        <ListItem
+          button
+          onClick={() => setMobilePagesOpen(!mobilePagesOpen)}
+          sx={{
+            borderRadius: "8px",
+            mb: 0.5,
+            "&:hover": {
+              backgroundColor: dentalTheme.hover,
+            },
+          }}
+        >
+          <ListItemIcon sx={{ color: dentalTheme.secondary }}>
             <PagesIcon />
           </ListItemIcon>
-          <ListItemText primary="Pages" />
-          {mobilePagesOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+          <ListItemText
+            primary="Pages"
+            sx={{
+              "& .MuiListItemText-primary": {
+                color: dentalTheme.text,
+                fontWeight: 500,
+              },
+            }}
+          />
+          {mobilePagesOpen ? (
+            <ExpandLessIcon sx={{ color: dentalTheme.secondary }} />
+          ) : (
+            <ExpandMoreIcon sx={{ color: dentalTheme.secondary }} />
+          )}
         </ListItem>
         <Collapse in={mobilePagesOpen}>
           <List component="div" disablePadding>
             <ListItem
               button
-              sx={{ pl: 4 }}
+              sx={{
+                pl: 4,
+                borderRadius: "8px",
+                mx: 1,
+                "&:hover": {
+                  backgroundColor: dentalTheme.hover,
+                },
+              }}
               onClick={() => {
                 navigate("/about-us");
                 setMobileDrawerOpen(false);
               }}
             >
-              <ListItemText primary="About Us" />
+              <ListItemText
+                primary="About Us"
+                sx={{
+                  "& .MuiListItemText-primary": {
+                    color: dentalTheme.textSecondary,
+                    fontSize: "14px",
+                  },
+                }}
+              />
             </ListItem>
             <ListItem
               button
-              sx={{ pl: 4 }}
+              sx={{
+                pl: 4,
+                borderRadius: "8px",
+                mx: 1,
+                "&:hover": {
+                  backgroundColor: dentalTheme.hover,
+                },
+              }}
               onClick={() => {
                 navigate("/terms-conditions");
                 setMobileDrawerOpen(false);
               }}
             >
-              <ListItemText primary="Terms & Conditions" />
+              <ListItemText
+                primary="Terms & Conditions"
+                sx={{
+                  "& .MuiListItemText-primary": {
+                    color: dentalTheme.textSecondary,
+                    fontSize: "14px",
+                  },
+                }}
+              />
             </ListItem>
             <ListItem
               button
-              sx={{ pl: 4 }}
+              sx={{
+                pl: 4,
+                borderRadius: "8px",
+                mx: 1,
+                "&:hover": {
+                  backgroundColor: dentalTheme.hover,
+                },
+              }}
               onClick={() => {
                 navigate("/privacy-policy");
                 setMobileDrawerOpen(false);
               }}
             >
-              <ListItemText primary="Privacy Policy" />
+              <ListItemText
+                primary="Privacy Policy"
+                sx={{
+                  "& .MuiListItemText-primary": {
+                    color: dentalTheme.textSecondary,
+                    fontSize: "14px",
+                  },
+                }}
+              />
             </ListItem>
             <ListItem
               button
-              sx={{ pl: 4 }}
+              sx={{
+                pl: 4,
+                borderRadius: "8px",
+                mx: 1,
+                "&:hover": {
+                  backgroundColor: dentalTheme.hover,
+                },
+              }}
               onClick={() => {
                 navigate("/return-policy");
                 setMobileDrawerOpen(false);
               }}
             >
-              <ListItemText primary="Return Policy" />
+              <ListItemText
+                primary="Return Policy"
+                sx={{
+                  "& .MuiListItemText-primary": {
+                    color: dentalTheme.textSecondary,
+                    fontSize: "14px",
+                  },
+                }}
+              />
             </ListItem>
           </List>
         </Collapse>
 
         {/* Shop */}
-        <ListItem button onClick={handleShopClick}>
-          <ListItemIcon>
+        <ListItem
+          button
+          onClick={handleShopClick}
+          sx={{
+            borderRadius: "8px",
+            mb: 0.5,
+            "&:hover": {
+              backgroundColor: dentalTheme.hover,
+            },
+          }}
+        >
+          <ListItemIcon sx={{ color: dentalTheme.secondary }}>
             <StoreIcon />
           </ListItemIcon>
-          <ListItemText primary="Shop" />
+          <ListItemText
+            primary="Shop"
+            sx={{
+              "& .MuiListItemText-primary": {
+                color: dentalTheme.text,
+                fontWeight: 500,
+              },
+            }}
+          />
         </ListItem>
 
         {/* Brands */}
-        <ListItem button onClick={() => setMobileBrandsOpen(!mobileBrandsOpen)}>
-          <ListItemIcon>
+        <ListItem
+          button
+          onClick={() => setMobileBrandsOpen(!mobileBrandsOpen)}
+          sx={{
+            borderRadius: "8px",
+            mb: 0.5,
+            "&:hover": {
+              backgroundColor: dentalTheme.hover,
+            },
+          }}
+        >
+          <ListItemIcon sx={{ color: dentalTheme.secondary }}>
             <BusinessIcon />
           </ListItemIcon>
-          <ListItemText primary="Brands" />
-          {mobileBrandsOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+          <ListItemText
+            primary="Brands"
+            sx={{
+              "& .MuiListItemText-primary": {
+                color: dentalTheme.text,
+                fontWeight: 500,
+              },
+            }}
+          />
+          {mobileBrandsOpen ? (
+            <ExpandLessIcon sx={{ color: dentalTheme.secondary }} />
+          ) : (
+            <ExpandMoreIcon sx={{ color: dentalTheme.secondary }} />
+          )}
         </ListItem>
         <Collapse in={mobileBrandsOpen}>
           <List component="div" disablePadding>
@@ -493,51 +759,119 @@ const UserNavbar = () => {
               <ListItem
                 key={brand._id || brand.id}
                 button
-                sx={{ pl: 4 }}
+                sx={{
+                  pl: 4,
+                  borderRadius: "8px",
+                  mx: 1,
+                  "&:hover": {
+                    backgroundColor: dentalTheme.hover,
+                  },
+                }}
                 onClick={() => {
                   navigate(`/products?brand=${brand._id || brand.id}`);
                   setMobileDrawerOpen(false);
                 }}
               >
-                <ListItemText primary={typeof brand.name === 'string' ? brand.name : (brand.name?.name || 'Brand')} />
+                <ListItemText
+                  primary={
+                    typeof brand.name === "string"
+                      ? brand.name
+                      : brand.name?.name || "Brand"
+                  }
+                  sx={{
+                    "& .MuiListItemText-primary": {
+                      color: dentalTheme.textSecondary,
+                      fontSize: "14px",
+                    },
+                  }}
+                />
               </ListItem>
             ))}
             {brands?.length > 10 && (
               <ListItem
                 button
-                sx={{ pl: 4 }}
+                sx={{
+                  pl: 4,
+                  borderRadius: "8px",
+                  mx: 1,
+                  "&:hover": {
+                    backgroundColor: dentalTheme.hover,
+                  },
+                }}
                 onClick={() => {
                   navigate("/brands");
                   setMobileDrawerOpen(false);
                 }}
               >
-                <ListItemText primary="View All Brands..." />
+                <ListItemText
+                  primary="View All Brands..."
+                  sx={{
+                    "& .MuiListItemText-primary": {
+                      color: dentalTheme.secondary,
+                      fontSize: "14px",
+                      fontStyle: "italic",
+                    },
+                  }}
+                />
               </ListItem>
             )}
           </List>
         </Collapse>
 
         {/* Contact */}
-        <ListItem button onClick={handleContactClick}>
-          <ListItemIcon>
+        <ListItem
+          button
+          onClick={handleContactClick}
+          sx={{
+            borderRadius: "8px",
+            mb: 0.5,
+            "&:hover": {
+              backgroundColor: dentalTheme.hover,
+            },
+          }}
+        >
+          <ListItemIcon sx={{ color: dentalTheme.secondary }}>
             <ContactIcon />
           </ListItemIcon>
-          <ListItemText primary="Contact" />
+          <ListItemText
+            primary="Contact"
+            sx={{
+              "& .MuiListItemText-primary": {
+                color: dentalTheme.text,
+                fontWeight: 500,
+              },
+            }}
+          />
         </ListItem>
 
-        <Divider sx={{ my: 2 }} />
+        <Divider sx={{ my: 2, backgroundColor: dentalTheme.border }} />
 
         {/* User Menu Items in Mobile */}
         {userMenuSettings.map((setting) => (
           <ListItem
             key={setting.name}
             button
+            sx={{
+              borderRadius: "8px",
+              mb: 0.5,
+              "&:hover": {
+                backgroundColor: dentalTheme.hover,
+              },
+            }}
             onClick={() => {
               navigate(setting.path);
               setMobileDrawerOpen(false);
             }}
           >
-            <ListItemText primary={setting.name} />
+            <ListItemText
+              primary={setting.name}
+              sx={{
+                "& .MuiListItemText-primary": {
+                  color: dentalTheme.text,
+                  fontWeight: 500,
+                },
+              }}
+            />
           </ListItem>
         ))}
       </List>
@@ -547,23 +881,40 @@ const UserNavbar = () => {
   return (
     <>
       <AppBar
-        position="static"
+        position="fixed"
         sx={{
-          backgroundColor: "white",
-          boxShadow: 1,
+          backgroundColor: dentalTheme.primary,
+          boxShadow: dentalTheme.shadow,
           zIndex: 1100,
+          backdropFilter: isScrolled ? "blur(10px)" : "none",
+          borderBottom: `1px solid ${dentalTheme.border}`,
+          transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
         }}
       >
-        <Toolbar sx={{ justifyContent: "space-between", minHeight: "64px" }}>
+        <Toolbar
+          sx={{
+            justifyContent: "space-between",
+            minHeight: "70px",
+            px: { xs: 2, md: 4 },
+          }}
+        >
           {/* Left: MDS Brand */}
           <Typography
-            variant="h5"
+            variant="h4"
             component="div"
             sx={{
-              fontWeight: "bold",
-              color: "black",
-              letterSpacing: 1,
+              fontWeight: "700",
+              color: dentalTheme.secondary,
+              letterSpacing: 2,
+              fontSize: { xs: "24px", md: "28px" },
+              textShadow: "0 2px 4px rgba(0, 168, 204, 0.1)",
+              cursor: "pointer",
+              "&:hover": {
+                transform: "scale(1.05)",
+                transition: "transform 0.2s ease-in-out",
+              },
             }}
+            onClick={handleHomeClick}
           >
             MDS
           </Typography>
@@ -582,20 +933,58 @@ const UserNavbar = () => {
             {/* Cart */}
             <IconButton
               onClick={() => navigate("/cart")}
-              sx={{ color: "black" }}
+              sx={{
+                color: dentalTheme.text,
+                backgroundColor: "transparent",
+                "&:hover": {
+                  backgroundColor: dentalTheme.hover,
+                  transform: "scale(1.1)",
+                },
+                transition: "all 0.2s ease-in-out",
+                p: 1.5,
+              }}
             >
-              <Badge badgeContent={cartItems?.length || 0} color="error">
-                <ShoppingCartIcon />
+              <Badge
+                badgeContent={cartItems?.length || 0}
+                color="error"
+                sx={{
+                  "& .MuiBadge-badge": {
+                    backgroundColor: dentalTheme.accent,
+                    color: "white",
+                    fontWeight: 600,
+                  },
+                }}
+              >
+                <ShoppingCartIcon sx={{ fontSize: "24px" }} />
               </Badge>
             </IconButton>
 
             {/* Wishlist */}
             <IconButton
               onClick={() => navigate("/wishlist")}
-              sx={{ color: "black" }}
+              sx={{
+                color: dentalTheme.text,
+                backgroundColor: "transparent",
+                "&:hover": {
+                  backgroundColor: dentalTheme.hover,
+                  transform: "scale(1.1)",
+                },
+                transition: "all 0.2s ease-in-out",
+                p: 1.5,
+              }}
             >
-              <Badge badgeContent={wishlistItems?.length || 0} color="error">
-                <FavoriteIcon />
+              <Badge
+                badgeContent={wishlistItems?.length || 0}
+                color="error"
+                sx={{
+                  "& .MuiBadge-badge": {
+                    backgroundColor: dentalTheme.accent,
+                    color: "white",
+                    fontWeight: 600,
+                  },
+                }}
+              >
+                <FavoriteIcon sx={{ fontSize: "24px" }} />
               </Badge>
             </IconButton>
 
@@ -603,30 +992,68 @@ const UserNavbar = () => {
             {isMobile ? (
               <IconButton
                 onClick={() => setMobileDrawerOpen(true)}
-                sx={{ color: "black" }}
+                sx={{
+                  color: dentalTheme.text,
+                  backgroundColor: "transparent",
+                  "&:hover": {
+                    backgroundColor: dentalTheme.hover,
+                    transform: "scale(1.1)",
+                  },
+                  transition: "all 0.2s ease-in-out",
+                  p: 1.5,
+                }}
               >
-                <MenuIcon />
+                <MenuIcon sx={{ fontSize: "24px" }} />
               </IconButton>
             ) : (
               <>
                 {/* Desktop User Menu */}
                 {!isSmall && userInfo && (
                   <Typography
-                    variant="body2"
+                    variant="body1"
                     sx={{
-                      color: "black",
-                      mr: 1,
+                      color: dentalTheme.text,
+                      mr: 2,
+                      fontWeight: 500,
                     }}
                   >
-                    Hi, {typeof userInfo?.name === 'string' ? userInfo.name : (typeof userInfo?.firstName === 'string' ? userInfo.firstName : 'User')}!
+                    Hi,{" "}
+                    {typeof userInfo?.name === "string"
+                      ? userInfo.name
+                      : typeof userInfo?.firstName === "string"
+                      ? userInfo.firstName
+                      : "User"}
+                    !
                   </Typography>
                 )}
-                <Tooltip title="User Menu">
+                <Tooltip title="User Menu" arrow>
                   <IconButton
                     onClick={(e) => setUserMenuAnchor(e.currentTarget)}
-                    sx={{ p: 0 }}
+                    sx={{
+                      p: 0.5,
+                      "&:hover": {
+                        transform: "scale(1.1)",
+                      },
+                      transition: "all 0.2s ease-in-out",
+                    }}
                   >
-                    <Avatar alt={typeof userInfo?.name === 'string' ? userInfo.name : (typeof userInfo?.firstName === 'string' ? userInfo.firstName : 'User')} />
+                    <Avatar
+                      alt={
+                        typeof userInfo?.name === "string"
+                          ? userInfo.name
+                          : typeof userInfo?.firstName === "string"
+                          ? userInfo.firstName
+                          : "User"
+                      }
+                      sx={{
+                        bgcolor: dentalTheme.secondary,
+                        color: "white",
+                        width: 40,
+                        height: 40,
+                        fontWeight: 600,
+                        fontSize: "16px",
+                      }}
+                    />
                   </IconButton>
                 </Tooltip>
               </>
@@ -635,18 +1062,58 @@ const UserNavbar = () => {
         </Toolbar>
       </AppBar>
 
+      {/* Spacer to push content below fixed navbar */}
+      <Box sx={{ height: "70px" }} />
+
       {/* Mobile Drawer */}
       <Drawer
-        anchor="right"
+        anchor="left"
         open={mobileDrawerOpen}
         onClose={() => setMobileDrawerOpen(false)}
+        sx={{
+          "& .MuiDrawer-paper": {
+            width: 320,
+            boxSizing: "border-box",
+            backgroundColor: dentalTheme.primary,
+            color: dentalTheme.text,
+            borderRight: `1px solid ${dentalTheme.border}`,
+            "& a": {
+              textDecoration: "none",
+              color: "inherit",
+            },
+          },
+        }}
+        ModalProps={{
+          keepMounted: true,
+        }}
       >
-        <Box sx={{ display: "flex", justifyContent: "flex-end", p: 1 }}>
-          <IconButton onClick={() => setMobileDrawerOpen(false)}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            p: 2,
+            borderBottom: `1px solid ${dentalTheme.border}`,
+            backgroundColor: dentalTheme.secondary,
+          }}
+        >
+          <Typography
+            variant="h6"
+            component="div"
+            sx={{ color: "white", fontWeight: 600 }}
+          >
+            Menu
+          </Typography>
+          <IconButton
+            onClick={() => setMobileDrawerOpen(false)}
+            sx={{ color: "white" }}
+          >
             <CloseIcon />
           </IconButton>
         </Box>
-        <MobileDrawerContent />
+        <Box sx={{ overflowY: "auto", height: "100%" }}>
+          <MobileDrawerContent />
+        </Box>
       </Drawer>
 
       {/* Desktop Menus */}
@@ -654,34 +1121,38 @@ const UserNavbar = () => {
       <Menu
         anchorEl={categoriesAnchor}
         open={Boolean(categoriesAnchor)}
-        onClose={handleCompleteMouseLeave}
+        onClose={(event) => {
+          event.stopPropagation();
+          setCategoriesAnchor(null);
+          setSubmenuAnchor(null);
+          setHoveredCategory(null);
+        }}
         MenuListProps={{
-          onMouseEnter: () => handleMenuMouseEnter('categories'),
-          onMouseLeave: () => handleMenuMouseLeave('categories'),
-          onMouseMove: () => handleMenuMouseEnter('categories'),
-          sx: { padding: 0, maxHeight: "400px", overflowY: "auto" },
+          onMouseEnter: () => handleDropdownMouseEnter("categories"),
+          onMouseLeave: () => handleDropdownMouseLeave("categories"),
+          sx: { padding: 1, maxHeight: "400px", overflowY: "auto" },
+          onClick: (event) => event.stopPropagation(),
         }}
         PaperProps={{
-          onMouseEnter: () => handleMenuMouseEnter('categories'),
-          onMouseLeave: () => handleMenuMouseLeave('categories'),
-          onMouseMove: () => handleMenuMouseEnter('categories'),
+          onMouseEnter: () => handleDropdownMouseEnter("categories"),
+          onMouseLeave: () => handleDropdownMouseLeave("categories"),
+          onClick: (event) => event.stopPropagation(),
           style: {
-            backgroundColor: "#1A2E4D",
-            color: "white",
-            minWidth: "250px",
+            backgroundColor: "white",
+            color: dentalTheme.text,
+            minWidth: "280px",
             overflow: "visible",
-            marginTop: "8px",
             maxHeight: "400px",
+            border: `1px solid ${dentalTheme.border}`,
+            borderRadius: "12px",
+            boxShadow: "0 8px 32px rgba(0, 0, 0, 0.12)",
+            position: "fixed",
+            top: "65px",
+            left: "265px",
+            transform: "none",
           },
         }}
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "left",
-        }}
-        transformOrigin={{
-          vertical: "top",
-          horizontal: "left",
-        }}
+        anchorReference="none"
         disableAutoFocus
         disableEnforceFocus
         disableRestoreFocus
@@ -699,29 +1170,47 @@ const UserNavbar = () => {
                   handleSubmenuEnter(e, category);
                 }
               }}
-              onClick={() => {
+              onClick={(event) => {
+                event.stopPropagation();
                 if (!hasSubcategories) {
                   handleSubcategoryClick(category);
                 } else {
                   navigate(`/category/${categoryId}`);
-                  handleCompleteMouseLeave();
+                  setCategoriesAnchor(null);
+                  setSubmenuAnchor(null);
+                  setHoveredCategory(null);
                 }
               }}
               sx={{
-                color: "white",
+                color: dentalTheme.text,
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
-                padding: "12px 16px",
+                padding: "12px 20px",
+                borderRadius: "8px",
+                margin: "2px 4px",
                 "&:hover": {
-                  backgroundColor: "rgba(255, 255, 255, 0.1)",
+                  backgroundColor: dentalTheme.hover,
+                  color: dentalTheme.secondary,
                 },
                 minHeight: "48px",
+                fontWeight: 500,
+                transition: "all 0.2s ease-in-out",
               }}
             >
-              <span>{typeof category.name === 'string' ? category.name : (category.name?.name || 'Category')}</span>
+              <span>
+                {typeof category.name === "string"
+                  ? category.name
+                  : category.name?.name || "Category"}
+              </span>
               {hasSubcategories && (
-                <ExpandMoreIcon sx={{ fontSize: "20px", marginLeft: "8px" }} />
+                <ExpandMoreIcon
+                  sx={{
+                    fontSize: "20px",
+                    marginLeft: "8px",
+                    color: dentalTheme.secondary,
+                  }}
+                />
               )}
             </MenuItem>
           );
@@ -732,37 +1221,36 @@ const UserNavbar = () => {
       <Menu
         anchorEl={submenuAnchor}
         open={Boolean(submenuAnchor && hoveredCategory)}
-        onClose={() => {
+        onClose={(event) => {
+          event.stopPropagation();
           setSubmenuAnchor(null);
           setHoveredCategory(null);
         }}
         MenuListProps={{
-          onMouseEnter: () => handleMenuMouseEnter('categories'),
-          onMouseLeave: () => handleMenuMouseLeave('categories'),
-          onMouseMove: () => handleMenuMouseEnter('categories'),
-          sx: { padding: 0, maxHeight: "300px", overflowY: "auto" },
+          onMouseEnter: () => handleDropdownMouseEnter("categories"),
+          onMouseLeave: () => handleDropdownMouseLeave("categories"),
+          sx: { padding: 1, maxHeight: "300px", overflowY: "auto" },
+          onClick: (event) => event.stopPropagation(),
         }}
         PaperProps={{
-          onMouseEnter: () => handleMenuMouseEnter('categories'),
-          onMouseLeave: () => handleMenuMouseLeave('categories'),
-          onMouseMove: () => handleMenuMouseEnter('categories'),
+          onMouseEnter: () => handleDropdownMouseEnter("categories"),
+          onMouseLeave: () => handleDropdownMouseLeave("categories"),
+          onClick: (event) => event.stopPropagation(),
           style: {
-            backgroundColor: "#1A2E4D",
-            color: "white",
-            minWidth: "200px",
-            border: "1px solid rgba(255, 255, 255, 0.1)",
-            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
+            backgroundColor: "white",
+            color: dentalTheme.text,
+            minWidth: "220px",
+            border: `1px solid ${dentalTheme.border}`,
+            borderRadius: "12px",
+            boxShadow: "0 8px 32px rgba(0, 0, 0, 0.12)",
             maxHeight: "300px",
+            position: "fixed",
+            top: "65px",
+            left: "545px", // 265 + 280 = 545px (categories width + offset)
+            transform: "none",
           },
         }}
-        anchorOrigin={{
-          vertical: "top",
-          horizontal: "right",
-        }}
-        transformOrigin={{
-          vertical: "top",
-          horizontal: "left",
-        }}
+        anchorReference="none"
         disableAutoFocus
         disableEnforceFocus
         disableRestoreFocus
@@ -772,54 +1260,191 @@ const UserNavbar = () => {
             (subcategory) => (
               <MenuItem
                 key={subcategory._id || subcategory.id}
-                onClick={() => handleSubcategoryClick(subcategory)}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  handleSubcategoryClick(subcategory);
+                }}
                 sx={{
-                  color: "white",
-                  "&:hover": { 
-                    backgroundColor: "rgba(255, 255, 255, 0.1)",
+                  color: dentalTheme.text,
+                  "&:hover": {
+                    backgroundColor: dentalTheme.hover,
+                    color: dentalTheme.secondary,
                     cursor: "pointer",
                   },
-                  padding: "12px 16px",
+                  padding: "12px 20px",
+                  borderRadius: "8px",
+                  margin: "2px 4px",
                   minHeight: "48px",
+                  fontWeight: 500,
+                  transition: "all 0.2s ease-in-out",
                 }}
               >
-                {typeof subcategory.name === 'string' ? subcategory.name : (subcategory.name?.name || 'Subcategory')}
+                {typeof subcategory.name === "string"
+                  ? subcategory.name
+                  : subcategory.name?.name || "Subcategory"}
               </MenuItem>
             )
           )}
+      </Menu>
+
+      {/* Pages Menu */}
+      <Menu
+        anchorEl={pagesAnchor}
+        open={Boolean(pagesAnchor)}
+        onClose={(event) => {
+          event.stopPropagation();
+          setPagesAnchor(null);
+        }}
+        MenuListProps={{
+          onMouseEnter: () => handleDropdownMouseEnter("pages"),
+          onMouseLeave: () => handleDropdownMouseLeave("pages"),
+          sx: { padding: 1, minWidth: "220px" },
+          onClick: (event) => event.stopPropagation(),
+        }}
+        PaperProps={{
+          onMouseEnter: () => handleDropdownMouseEnter("pages"),
+          onMouseLeave: () => handleDropdownMouseLeave("pages"),
+          onClick: (event) => event.stopPropagation(),
+          style: {
+            backgroundColor: "white",
+            color: dentalTheme.text,
+            border: `1px solid ${dentalTheme.border}`,
+            borderRadius: "12px",
+            boxShadow: "0 8px 32px rgba(0, 0, 0, 0.12)",
+            position: "fixed",
+            top: "65px",
+            left: "370px", // 265 + 105 = 370px (adjusted for pages position)
+            transform: "none",
+          },
+        }}
+        anchorReference="none"
+        disableAutoFocus
+        disableEnforceFocus
+        disableRestoreFocus
+      >
+        <MenuItem
+          onClick={(event) => {
+            event.stopPropagation();
+            navigate("/about-us");
+            setPagesAnchor(null);
+          }}
+          sx={{
+            color: dentalTheme.text,
+            "&:hover": {
+              backgroundColor: dentalTheme.hover,
+              color: dentalTheme.secondary,
+            },
+            padding: "12px 20px",
+            borderRadius: "8px",
+            margin: "2px 4px",
+            minHeight: "48px",
+            fontWeight: 500,
+            transition: "all 0.2s ease-in-out",
+          }}
+        >
+          About Us
+        </MenuItem>
+        <MenuItem
+          onClick={(event) => {
+            event.stopPropagation();
+            navigate("/terms-conditions");
+            setPagesAnchor(null);
+          }}
+          sx={{
+            color: dentalTheme.text,
+            "&:hover": {
+              backgroundColor: dentalTheme.hover,
+              color: dentalTheme.secondary,
+            },
+            padding: "12px 20px",
+            borderRadius: "8px",
+            margin: "2px 4px",
+            minHeight: "48px",
+            fontWeight: 500,
+            transition: "all 0.2s ease-in-out",
+          }}
+        >
+          Terms & Conditions
+        </MenuItem>
+        <MenuItem
+          onClick={(event) => {
+            event.stopPropagation();
+            navigate("/privacy-policy");
+            setPagesAnchor(null);
+          }}
+          sx={{
+            color: dentalTheme.text,
+            "&:hover": {
+              backgroundColor: dentalTheme.hover,
+              color: dentalTheme.secondary,
+            },
+            padding: "12px 20px",
+            borderRadius: "8px",
+            margin: "2px 4px",
+            minHeight: "48px",
+            fontWeight: 500,
+            transition: "all 0.2s ease-in-out",
+          }}
+        >
+          Privacy Policy
+        </MenuItem>
+        <MenuItem
+          onClick={(event) => {
+            event.stopPropagation();
+            navigate("/return-policy");
+            setPagesAnchor(null);
+          }}
+          sx={{
+            color: dentalTheme.text,
+            "&:hover": {
+              backgroundColor: dentalTheme.hover,
+              color: dentalTheme.secondary,
+            },
+            padding: "12px 20px",
+            borderRadius: "8px",
+            margin: "2px 4px",
+            minHeight: "48px",
+            fontWeight: 500,
+            transition: "all 0.2s ease-in-out",
+          }}
+        >
+          Return Policy
+        </MenuItem>
       </Menu>
 
       {/* Brands Menu */}
       <Menu
         anchorEl={brandsAnchor}
         open={Boolean(brandsAnchor)}
-        onClose={() => setBrandsAnchor(null)}
+        onClose={(event) => {
+          event.stopPropagation();
+          setBrandsAnchor(null);
+        }}
         MenuListProps={{
-          onMouseEnter: () => handleMenuMouseEnter('brands'),
-          onMouseLeave: () => handleMenuMouseLeave('brands'),
-          onMouseMove: () => handleMenuMouseEnter('brands'),
-          sx: { padding: 0, maxHeight: "400px", overflowY: "auto" },
+          onMouseEnter: () => handleDropdownMouseEnter("brands"),
+          onMouseLeave: () => handleDropdownMouseLeave("brands"),
+          sx: { padding: 1, maxHeight: "400px", overflowY: "auto" },
+          onClick: (event) => event.stopPropagation(),
         }}
         PaperProps={{
-          onMouseEnter: () => handleMenuMouseEnter('brands'),
-          onMouseLeave: () => handleMenuMouseLeave('brands'),
-          onMouseMove: () => handleMenuMouseEnter('brands'),
+          onMouseEnter: () => handleDropdownMouseEnter("brands"),
+          onMouseLeave: () => handleDropdownMouseLeave("brands"),
+          onClick: (event) => event.stopPropagation(),
           style: {
-            backgroundColor: "#1A2E4D",
-            color: "white",
-            minWidth: "200px",
-            marginTop: "8px",
+            backgroundColor: "white",
+            color: dentalTheme.text,
+            minWidth: "220px",
             maxHeight: "400px",
+            border: `1px solid ${dentalTheme.border}`,
+            borderRadius: "12px",
+            boxShadow: "0 8px 32px rgba(0, 0, 0, 0.12)",
+            position: "fixed",
+            top: "65px",
+            left: "530px", // 265 + 265 = 530px (adjusted for brands position)
+            transform: "none",
           },
         }}
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "left",
-        }}
-        transformOrigin={{
-          vertical: "top",
-          horizontal: "left",
-        }}
+        anchorReference="none"
         disableAutoFocus
         disableEnforceFocus
         disableRestoreFocus
@@ -827,128 +1452,55 @@ const UserNavbar = () => {
         {brands?.slice(0, 10).map((brand) => (
           <MenuItem
             key={brand._id || brand.id}
-            onClick={() => {
+            onClick={(event) => {
+              event.stopPropagation();
               navigate(`/products?brand=${brand._id || brand.id}`);
               setBrandsAnchor(null);
             }}
             sx={{
-              color: "white",
-              "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.1)" },
-              padding: "12px 16px",
+              color: dentalTheme.text,
+              "&:hover": {
+                backgroundColor: dentalTheme.hover,
+                color: dentalTheme.secondary,
+              },
+              padding: "12px 20px",
+              borderRadius: "8px",
+              margin: "2px 4px",
               minHeight: "48px",
+              fontWeight: 500,
+              transition: "all 0.2s ease-in-out",
             }}
           >
-            {typeof brand.name === 'string' ? brand.name : (brand.name?.name || 'Brand')}
+            {typeof brand.name === "string"
+              ? brand.name
+              : brand.name?.name || "Brand"}
           </MenuItem>
         ))}
         {brands?.length > 10 && (
           <MenuItem
-            onClick={() => {
+            onClick={(event) => {
+              event.stopPropagation();
               navigate("/brands");
               setBrandsAnchor(null);
             }}
             sx={{
-              color: "white",
-              "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.1)" },
-              padding: "12px 16px",
+              color: dentalTheme.secondary,
+              "&:hover": {
+                backgroundColor: dentalTheme.hover,
+                color: dentalTheme.secondary,
+              },
+              padding: "12px 20px",
+              borderRadius: "8px",
+              margin: "2px 4px",
               minHeight: "48px",
               fontStyle: "italic",
+              fontWeight: 500,
+              transition: "all 0.2s ease-in-out",
             }}
           >
             View All Brands...
           </MenuItem>
         )}
-      </Menu>
-
-      {/* Pages Menu */}
-      <Menu
-        anchorEl={pagesAnchor}
-        open={Boolean(pagesAnchor)}
-        onClose={() => setPagesAnchor(null)}
-        MenuListProps={{
-          onMouseEnter: () => handleMenuMouseEnter('pages'),
-          onMouseLeave: () => handleMenuMouseLeave('pages'),
-          onMouseMove: () => handleMenuMouseEnter('pages'),
-          sx: { padding: 0, minWidth: "200px" },
-        }}
-        PaperProps={{
-          onMouseEnter: () => handleMenuMouseEnter('pages'),
-          onMouseLeave: () => handleMenuMouseLeave('pages'),
-          onMouseMove: () => handleMenuMouseEnter('pages'),
-          style: {
-            backgroundColor: "#1A2E4D",
-            color: "white",
-            marginTop: "8px",
-          },
-        }}
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "left",
-        }}
-        transformOrigin={{
-          vertical: "top",
-          horizontal: "left",
-        }}
-        disableAutoFocus
-        disableEnforceFocus
-        disableRestoreFocus
-      >
-        <MenuItem
-          onClick={() => {
-            navigate("/about-us");
-            setPagesAnchor(null);
-          }}
-          sx={{
-            color: "white",
-            "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.1)" },
-            padding: "12px 16px",
-            minHeight: "48px",
-          }}
-        >
-          About Us
-        </MenuItem>
-        <MenuItem
-          onClick={() => {
-            navigate("/terms-conditions");
-            setPagesAnchor(null);
-          }}
-          sx={{
-            color: "white",
-            "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.1)" },
-            padding: "12px 16px",
-            minHeight: "48px",
-          }}
-        >
-          Terms & Conditions
-        </MenuItem>
-        <MenuItem
-          onClick={() => {
-            navigate("/privacy-policy");
-            setPagesAnchor(null);
-          }}
-          sx={{
-            color: "white",
-            "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.1)" },
-            padding: "12px 16px",
-            minHeight: "48px",
-          }}
-        >
-          Privacy Policy
-        </MenuItem>
-        <MenuItem
-          onClick={() => {
-            navigate("/return-policy");
-            setPagesAnchor(null);
-          }}
-          sx={{
-            color: "white",
-            "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.1)" },
-            padding: "12px 16px",
-            minHeight: "48px",
-          }}
-        >
-          Return Policy
-        </MenuItem>
       </Menu>
 
       {/* User Menu */}
@@ -957,6 +1509,16 @@ const UserNavbar = () => {
         open={Boolean(userMenuAnchor)}
         onClose={() => setUserMenuAnchor(null)}
         sx={{ mt: "45px" }}
+        PaperProps={{
+          style: {
+            backgroundColor: "white",
+            color: dentalTheme.text,
+            border: `1px solid ${dentalTheme.border}`,
+            borderRadius: "12px",
+            boxShadow: "0 8px 32px rgba(0, 0, 0, 0.12)",
+            minWidth: "180px",
+          },
+        }}
         anchorOrigin={{
           vertical: "top",
           horizontal: "right",
@@ -972,6 +1534,18 @@ const UserNavbar = () => {
               navigate("/admin/add-product");
               setUserMenuAnchor(null);
             }}
+            sx={{
+              color: dentalTheme.text,
+              "&:hover": {
+                backgroundColor: dentalTheme.hover,
+                color: dentalTheme.secondary,
+              },
+              padding: "12px 20px",
+              borderRadius: "8px",
+              margin: "2px 4px",
+              fontWeight: 500,
+              transition: "all 0.2s ease-in-out",
+            }}
           >
             Add new Product
           </MenuItem>
@@ -982,6 +1556,18 @@ const UserNavbar = () => {
             onClick={() => {
               navigate(setting.path);
               setUserMenuAnchor(null);
+            }}
+            sx={{
+              color: dentalTheme.text,
+              "&:hover": {
+                backgroundColor: dentalTheme.hover,
+                color: dentalTheme.secondary,
+              },
+              padding: "12px 20px",
+              borderRadius: "8px",
+              margin: "2px 4px",
+              fontWeight: 500,
+              transition: "all 0.2s ease-in-out",
             }}
           >
             {setting.name}

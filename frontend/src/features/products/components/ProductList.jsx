@@ -1,4 +1,5 @@
 import {
+  Box,
   FormControl,
   Grid,
   IconButton,
@@ -64,6 +65,7 @@ import Lottie from "lottie-react";
 import { VideoHero } from "./VideoHero";
 import CategoryProductsSlider from "./Categories";
 import { BrandSection } from "./BrandSection";
+import AboutUsSection from "./AboutUsSection";
 
 const sortOptions = [
   { name: "Best Rating", sort: "rating", order: "desc" },
@@ -344,6 +346,7 @@ export const ProductList = () => {
                     aria-controls="brand-filters"
                     id="brand-filters"
                   >
+                    {/* <AboutUsSection /> */}
                     <Typography>Category</Typography>
                   </AccordionSummary>
 
@@ -372,18 +375,28 @@ export const ProductList = () => {
           </motion.div>
 
           <Stack mb={"3rem"}>
-            {/* banners section */}
-            {!is600 && (
-              <Stack
-                sx={{
-                  width: "100%",
-                  height: is800 ? "300px" : is1200 ? "400px" : "500px",
-                  objectFit: "cover",
-                }}
-              >
-                <VideoHero />
-              </Stack>
-            )}
+            {/* Video Hero Section - Always visible */}
+            <Box
+              sx={{
+                width: "100%",
+                minHeight: { xs: "400px", sm: "500px" },
+                maxHeight: { xs: "100vh", md: "800px" },
+                position: "relative",
+                overflow: "hidden",
+                marginBottom: 0,
+                "@supports (-webkit-touch-callout: none)": {
+                  minHeight: { xs: "-webkit-fill-available", sm: "500px" },
+                },
+              }}
+            >
+              <VideoHero />
+            </Box>
+            
+            {/* About Us Section */}
+            <Box sx={{ backgroundColor: 'background.paper' }}>
+              <AboutUsSection />
+            </Box>
+            
             {/*categories*/}
             <CategoryProductsSlider />
             {/* brands section */}
@@ -422,7 +435,7 @@ export const ProductList = () => {
               </Stack>
 
               {/* product grid */}
-              {productFetchStatus === 'loading' ? (
+              {productFetchStatus === "loading" ? (
                 <ProductListSkeleton count={8} />
               ) : (
                 <Grid

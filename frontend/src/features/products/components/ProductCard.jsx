@@ -6,7 +6,7 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import FavoriteBorder from "@mui/icons-material/FavoriteBorder";
 import Favorite from "@mui/icons-material/Favorite";
@@ -17,6 +17,25 @@ import { selectLoggedInUser } from "../../auth/AuthSlice";
 import { addToCartAsync, selectCartItems } from "../../cart/CartSlice";
 import { motion } from "framer-motion";
 import PlaceholderImage from "../../../components/PlaceholderImage";
+
+// Helper function to safely extract string values from objects
+const getSafeString = (value, defaultValue = '') => {
+  if (typeof value === 'string') return value;
+  if (value && typeof value === 'object') {
+    // Handle common object structures
+    if (value.name) return String(value.name);
+    if (value.title) return String(value.title);
+    if (value.toString) return value.toString();
+  }
+  return String(defaultValue);
+};
+
+// Helper function to safely format price
+const formatPrice = (price) => {
+  if (price == null) return '0.00';
+  const num = typeof price === 'number' ? price : parseFloat(price);
+  return isNaN(num) ? '0.00' : num.toFixed(2);
+};
 
 export const ProductCard = ({
   id,
@@ -60,9 +79,20 @@ export const ProductCard = ({
     dispatch(addToCartAsync(data));
   };
 
+  // Safely process props
+  const safeTitle = useMemo(() => getSafeString(title, 'Product Title'), [title]);
+  const safeBrand = useMemo(() => getSafeString(brand, 'Brand'), [brand]);
+  const safePrice = useMemo(() => formatPrice(price), [price]);
+  const safeThumbnail = useMemo(() => {
+    if (!thumbnail) return '';
+    if (typeof thumbnail === 'string') return thumbnail;
+    if (thumbnail.url) return thumbnail.url;
+    return '';
+  }, [thumbnail]);
+
   return (
     <>
-      {isProductAlreadyinWishlist !== -1 ? (
+      {isProductAlreadyinWishlist !== -1 && (
         <Stack
           component={
             isAdminCard ? "" : isWishlistCard ? "" : is408 ? "" : Paper
@@ -101,9 +131,10 @@ export const ProductCard = ({
                 width={"100%"}
                 style={{ aspectRatio: 1 / 1, objectFit: "contain" }}
                 height={"100%"}
-                src={thumbnail}
-                alt={`${title} photo unavailable`}
+                src={safeThumbnail}
+                alt={`${safeTitle} photo unavailable`}
                 onError={() => setImageError(true)}
+                loading="lazy"
               />
             )}
           </Stack>
@@ -116,8 +147,17 @@ export const ProductCard = ({
                 alignItems={"center"}
                 justifyContent={"space-between"}
               >
-                <Typography variant="h6" fontWeight={400}>
-                  {title}
+                <Typography 
+                  variant="h6" 
+                  fontWeight={400}
+                  sx={{
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    maxWidth: '200px'
+                  }}
+                >
+                  {safeTitle}
                 </Typography>
                 {!isAdminCard && (
                   <motion.div
@@ -135,7 +175,17 @@ export const ProductCard = ({
                   </motion.div>
                 )}
               </Stack>
-              <Typography color={"text.secondary"}>{brand}</Typography>
+              <Typography 
+                color={"text.secondary"}
+                sx={{
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  maxWidth: '200px'
+                }}
+              >
+                {safeBrand}
+              </Typography>
             </Stack>
 
             <Stack
@@ -145,7 +195,7 @@ export const ProductCard = ({
                 alignItems: "center",
               }}
             >
-              <Typography>${price}</Typography>
+              <Typography>${safePrice}</Typography>
               {!isWishlistCard
                 ? isProductAlreadyInCart
                   ? "Added to cart"
@@ -193,8 +243,6 @@ export const ProductCard = ({
             )}
           </Stack>
         </Stack>
-      ) : (
-        ""
       )}
     </>
   );
