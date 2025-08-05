@@ -64,6 +64,7 @@ import ClearIcon from "@mui/icons-material/Clear";
 import Lottie from "lottie-react";
 import CategoryProductsSlider from "./Categories";
 import { BrandSection } from "./BrandSection";
+import PopularCategoryProductsSlider from "./PopularCategories";
 
 const sortOptions = [
   { name: "Best Rating", sort: "rating", order: "desc" },
@@ -375,6 +376,7 @@ export const ProductList = () => {
           <Stack mb={"3rem"}>
             {/* Categories Section */}
             <CategoryProductsSlider />
+            <PopularCategoryProductsSlider />
             {/* brands section */}
             <BrandSection />
             {/* products */}

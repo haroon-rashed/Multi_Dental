@@ -56,7 +56,7 @@ const CategorySkeleton = () => (
   </Card>
 );
 
-const CategoryProductsSlider = () => {
+const PopularCategoryProductsSlider = () => {
   const categoriesData = useSelector(selectCategories);
   const navigate = useNavigate();
 
@@ -77,7 +77,7 @@ const CategoryProductsSlider = () => {
         fontWeight={700}
         textAlign="left"
         sx={{
-          mb: 4,
+          my: 6,
           color: "#1A2E4D",
           letterSpacing: "1px",
           pl: { xs: 1, md: 2 },
@@ -94,7 +94,7 @@ const CategoryProductsSlider = () => {
           },
         }}
       >
-        Featured Categories
+        Popular Categories
       </Typography>
 
       <Box
@@ -382,4 +382,4 @@ const CategoryProductsSlider = () => {
   );
 };
 
-export default CategoryProductsSlider;
+export default PopularCategoryProductsSlider;
