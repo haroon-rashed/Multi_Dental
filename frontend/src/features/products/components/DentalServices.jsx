@@ -64,13 +64,13 @@ const DentalServices = () => {
       sx={{
         minHeight: "100vh",
         backgroundColor: "background.paper",
-        py: 16,
+        py: 8,
         px: 2,
       }}
     >
       <Box sx={{ maxWidth: "1200px", mx: "auto" }}>
         {/* Header Section */}
-        <Box sx={{ textAlign: "center", mb: 8 }}>
+        <Box sx={{ textAlign: "center", mb: 4 }}>
           <Box
             sx={{
               display: "flex",
