@@ -89,7 +89,6 @@ export const PrivacyPolicyPage = () => {
   return (
     <>
       <Navbar />
-      <SecondNav />
       <Stack spacing={4} sx={{ padding: is600 ? "1rem" : "2rem" }}>
         {/* Header */}
         <motion.div

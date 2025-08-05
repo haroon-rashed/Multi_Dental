@@ -62,10 +62,8 @@ import {
 import { motion } from "framer-motion";
 import ClearIcon from "@mui/icons-material/Clear";
 import Lottie from "lottie-react";
-import { VideoHero } from "./VideoHero";
 import CategoryProductsSlider from "./Categories";
 import { BrandSection } from "./BrandSection";
-import AboutUsSection from "./AboutUsSection";
 
 const sortOptions = [
   { name: "Best Rating", sort: "rating", order: "desc" },
@@ -375,29 +373,7 @@ export const ProductList = () => {
           </motion.div>
 
           <Stack mb={"3rem"}>
-            {/* Video Hero Section - Always visible */}
-            <Box
-              sx={{
-                width: "100%",
-                minHeight: { xs: "400px", sm: "500px" },
-                maxHeight: { xs: "100vh", md: "800px" },
-                position: "relative",
-                overflow: "hidden",
-                marginBottom: 0,
-                "@supports (-webkit-touch-callout: none)": {
-                  minHeight: { xs: "-webkit-fill-available", sm: "500px" },
-                },
-              }}
-            >
-              <VideoHero />
-            </Box>
-            
-            {/* About Us Section */}
-            <Box sx={{ backgroundColor: 'background.paper' }}>
-              <AboutUsSection />
-            </Box>
-            
-            {/*categories*/}
+            {/* Categories Section */}
             <CategoryProductsSlider />
             {/* brands section */}
             <BrandSection />

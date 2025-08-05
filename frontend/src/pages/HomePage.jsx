@@ -10,6 +10,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Footer } from "../features/footer/Footer";
 import DentalServices from "../features/products/components/DentalServices";
 import AboutUsSection from "../features/products/components/AboutUsSection";
+import VideoHero from "../features/products/components/VideoHero";
 
 export const HomePage = () => {
   const dispatch = useDispatch();
@@ -25,8 +26,10 @@ export const HomePage = () => {
     <>
       <UserNavbar />
       <Box sx={{ paddingTop: 0 }}>
-        <ProductList />
+        <VideoHero />
+        <AboutUsSection />
         <DentalServices />
+        <ProductList />
         <Footer />
       </Box>
     </>
