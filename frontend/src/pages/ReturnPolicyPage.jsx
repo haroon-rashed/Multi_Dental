@@ -22,6 +22,8 @@ import {
   Support,
   Security,
 } from "@mui/icons-material";
+import { Navbar } from "../features/navigation/components/Navbar";
+import { Footer } from "../features/footer/Footer";
 
 export const ReturnPolicyPage = () => {
   const theme = useTheme();
@@ -86,7 +88,8 @@ export const ReturnPolicyPage = () => {
   ];
 
   return (
-    <Stack spacing={4} sx={{ padding: is600 ? "1rem" : "2rem" }}>
+    <Stack spacing={4} sx={{ padding: is600 ? "0rem" : "0rem" }}>
+      <Navbar />
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -398,6 +401,7 @@ export const ReturnPolicyPage = () => {
           </CardContent>
         </Card>
       </motion.div>
+      <Footer />
     </Stack>
   );
 };

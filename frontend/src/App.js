@@ -5,6 +5,8 @@ import {
   RouterProvider,
   createBrowserRouter,
   createRoutesFromElements,
+  BrowserRouter as Router,
+  Outlet,
 } from "react-router-dom";
 import {
   selectIsAuthChecked,
@@ -47,6 +49,7 @@ import { PrivacyPolicyPage } from "./pages/PrivacyPolicyPage";
 import { ReturnPolicyPage } from "./pages/ReturnPolicyPage";
 import Loader from "./features/navigation/components/Loader";
 import CategoryDetailsPage from "./pages/CategoryDetailsPage";
+import ScrollManager from "./components/ScrollManager";
 import globals from "./globals.css"; // Assuming you have a global CSS file
 
 function App() {
@@ -56,244 +59,72 @@ function App() {
   useAuthCheck();
   useFetchLoggedInUserDetails(loggedInUser);
 
-  const routes = createBrowserRouter(
-    createRoutesFromElements(
-      <>
-        <Route path="/signup" element={<SignupPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/verify-otp" element={<OtpVerificationPage />} />
-        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-        <Route
-          path="/reset-password/:userId/:passwordResetToken"
-          element={<ResetPasswordPage />}
-        />
-        <Route
-          exact
-          path="/logout"
-          element={
-            <Protected>
-              <Logout />
-            </Protected>
-          }
-        />
-        <Route
-          exact
-          path="/product-details/:id"
-          element={
-            <Protected>
-              <ProductDetailsPage />
-            </Protected>
-          }
-        />
-        <Route
-          path="/products"
-          element={
-            <Protected>
-              <ProductsPage />
-            </Protected>
-          }
-        />
-
-        {loggedInUser?.isAdmin ? (
-          <>
-            <Route
-              path="/admin/dashboard"
-              element={
-                <Protected>
-                  <AdminDashboardPage />
-                </Protected>
-              }
-            />
-            <Route
-              path="/admin/product-update/:id"
-              element={
-                <Protected>
-                  <ProductUpdatePage />
-                </Protected>
-              }
-            />
-            <Route
-              path="/admin/add-product"
-              element={
-                <Protected>
-                  <AddProductPage />
-                </Protected>
-              }
-            />
-            <Route
-              path="/admin/product-table"
-              element={
-                <Protected>
-                  <ProductTablePage />
-                </Protected>
-              }
-            />
-            <Route
-              path="/admin/orders"
-              element={
-                <Protected>
-                  <AdminOrdersPage />
-                </Protected>
-              }
-            />
-            <Route
-              path="/admin/add-category"
-              element={
-                <Protected>
-                  <AddCategoryPage />
-                </Protected>
-              }
-            />
-            <Route
-              path="/admin/edit-category/:id"
-              element={
-                <Protected>
-                  <AddCategoryPage />
-                </Protected>
-              }
-            />
-            <Route
-              path="/admin/add-sub-category"
-              element={
-                <Protected>
-                  <AddSubCategoryPage />
-                </Protected>
-              }
-            />
-            <Route
-              path="/admin/view-category"
-              element={
-                <Protected>
-                  <ViewCategoryPage />
-                </Protected>
-              }
-            />
-            <Route
-              path="/admin/view-subcategory"
-              element={
-                <Protected>
-                  <ViewSubCategoryPage />
-                </Protected>
-              }
-            />
-            <Route path="*" element={<Navigate to={"/admin/dashboard"} />} />
-          </>
-        ) : (
-          <>
-            <Route
-              path="/"
-              element={
-                <Protected>
-                  <HomePage />
-                </Protected>
-              }
-            />
-            <Route
-              path="/cart"
-              element={
-                <Protected>
-                  <CartPage />
-                </Protected>
-              }
-            />
-            <Route
-              path="/profile"
-              element={
-                <Protected>
-                  <UserProfilePage />
-                </Protected>
-              }
-            />
-            <Route
-              path="/checkout"
-              element={
-                <Protected>
-                  <CheckoutPage />
-                </Protected>
-              }
-            />
-            <Route
-              path="/order-success/:id"
-              element={
-                <Protected>
-                  <OrderSuccessPage />
-                </Protected>
-              }
-            />
-            <Route
-              path="/orders"
-              element={
-                <Protected>
-                  <UserOrdersPage />
-                </Protected>
-              }
-            />
-            <Route
-              path="/wishlist"
-              element={
-                <Protected>
-                  <WishlistPage />
-                </Protected>
-              }
-            />
-            <Route
-              path="/subcategory/:subcategoryId"
-              element={
-                <Protected>
-                  <SubCategoryPage />
-                </Protected>
-              }
-            />
-            <Route
-              path="/category/:id"
-              element={
-                <Protected>
-                  <CategoryDetailsPage />
-                </Protected>
-              }
-            />
-            <Route
-              path="/about-us"
-              element={
-                <Protected>
-                  <AboutUsPage />
-                </Protected>
-              }
-            />
-            <Route
-              path="/terms-conditions"
-              element={
-                <Protected>
-                  <TermsConditionsPage />
-                </Protected>
-              }
-            />
-            <Route
-              path="/privacy-policy"
-              element={
-                <Protected>
-                  <PrivacyPolicyPage />
-                </Protected>
-              }
-            />
-            <Route
-              path="/return-policy"
-              element={
-                <Protected>
-                  <ReturnPolicyPage />
-                </Protected>
-              }
-            />
-          </>
-        )}
-
-        <Route path="*" element={<NotFoundPage />} />
-      </>
-    )
+  // Create a layout component that includes ScrollManager
+  const Layout = () => (
+    <>
+      <ScrollManager />
+      <Outlet />
+    </>
   );
 
+  // Create routes configuration
+  const routes = [
+    // Public routes
+    { path: "/signup", element: <SignupPage /> },
+    { path: "/login", element: <LoginPage /> },
+    { path: "/verify-otp", element: <OtpVerificationPage /> },
+    { path: "/forgot-password", element: <ForgotPasswordPage /> },
+    { path: "/reset-password/:userId/:passwordResetToken", element: <ResetPasswordPage /> },
+    
+    // Protected routes
+    { path: "/", element: <Protected><HomePage /></Protected> },
+    { path: "/cart", element: <Protected><CartPage /></Protected> },
+    { path: "/profile", element: <Protected><UserProfilePage /></Protected> },
+    { path: "/checkout", element: <Protected><CheckoutPage /></Protected> },
+    { path: "/order-success/:id", element: <Protected><OrderSuccessPage /></Protected> },
+    { path: "/orders", element: <Protected><UserOrdersPage /></Protected> },
+    { path: "/wishlist", element: <Protected><WishlistPage /></Protected> },
+    { path: "/subcategory/:subcategoryId", element: <Protected><SubCategoryPage /></Protected> },
+    { path: "/category/:id", element: <Protected><CategoryDetailsPage /></Protected> },
+    { path: "/product-details/:id", element: <Protected><ProductDetailsPage /></Protected> },
+    { path: "/products", element: <Protected><ProductsPage /></Protected> },
+    { path: "/about-us", element: <Protected><AboutUsPage /></Protected> },
+    { path: "/terms-conditions", element: <Protected><TermsConditionsPage /></Protected> },
+    { path: "/privacy-policy", element: <Protected><PrivacyPolicyPage /></Protected> },
+    { path: "/return-policy", element: <Protected><ReturnPolicyPage /></Protected> },
+    { path: "/logout", element: <Protected><Logout /></Protected> },
+
+    // Admin routes (only if user is admin)
+    ...(loggedInUser?.isAdmin ? [
+      { path: "/admin/dashboard", element: <Protected><AdminDashboardPage /></Protected> },
+      { path: "/admin/product-update/:id", element: <Protected><ProductUpdatePage /></Protected> },
+      { path: "/admin/add-product", element: <Protected><AddProductPage /></Protected> },
+      { path: "/admin/product-table", element: <Protected><ProductTablePage /></Protected> },
+      { path: "/admin/orders", element: <Protected><AdminOrdersPage /></Protected> },
+      { path: "/admin/add-category", element: <Protected><AddCategoryPage /></Protected> },
+      { path: "/admin/edit-category/:id", element: <Protected><AddCategoryPage /></Protected> },
+      { path: "/admin/add-sub-category", element: <Protected><AddSubCategoryPage /></Protected> },
+      { path: "/admin/view-category", element: <Protected><ViewCategoryPage /></Protected> },
+      { path: "/admin/view-subcategory", element: <Protected><ViewSubCategoryPage /></Protected> },
+    ] : []),
+
+    // 404 route - must be last
+    { path: "*", element: <Navigate to={loggedInUser?.isAdmin ? "/admin/dashboard" : "/"} replace /> },
+  ];
+
+  // Create the router
+  const router = createBrowserRouter([
+    {
+      element: <Layout />,
+      children: routes.map(route => ({
+        path: route.path,
+        element: route.element
+      }))
+    }
+  ]);
+
   // 🟡 Show loader until auth check is complete
-  return isAuthChecked ? <RouterProvider router={routes} /> : <Loader />;
+  return isAuthChecked ? <RouterProvider router={router} /> : <Loader />;
 }
 
 export default App;
