@@ -69,11 +69,11 @@ const AboutUsSection = () => {
             <Box
               component="img"
               src="https://html.awaikenthemes.com/primecare/demo-2/images/about-us-image.jpg"
-              alt="Dental Clinic"
+              alt="Dental Store"
               sx={{ width: "100%", height: "auto", borderRadius: 4 }}
             />
 
-            {/* Happy Patients Box */}
+            {/* Happy Customers Box */}
             <Paper
               elevation={4}
               sx={{
@@ -93,9 +93,9 @@ const AboutUsSection = () => {
             >
               <EmojiEmotionsIcon sx={{ fontSize: 28 }} />
               <Typography variant="h6" fontWeight="bold">
-                875+
+                10,000+
               </Typography>
-              <Typography variant="body2">Happy Patients</Typography>
+              <Typography variant="body2">Happy Customers</Typography>
             </Paper>
           </Box>
         </Grid>
@@ -117,25 +117,26 @@ const AboutUsSection = () => {
             gutterBottom
             sx={{ color: "#0a2540" }}
           >
-            The evolution of our company <br />
-            and the people who made it possible
+            Empowering Dental Professionals <br />
+            Through Quality Products
           </Typography>
           <Typography
             variant="body1"
             color="text.secondary"
             sx={{ mb: 3, maxWidth: 600 }}
           >
-            The goal of our clinic is to provide friendly, caring dentistry and
-            the highest level of general, cosmetic and specialist dental
-            treatments with dental practice throughout the world.
+            Our dental store is committed to delivering top-tier dental supplies
+            to clinics, professionals, and individuals across Pakistan. From
+            premium instruments to daily care items, we bring you everything you
+            need for a healthy, confident smile.
           </Typography>
 
           <Stack spacing={2}>
             {[
-              "Experienced Team",
-              "Emergency Dental Services",
-              "State-of-the-Art Technology",
-              "Comprehensive Services",
+              "Wide Range of Dental Products",
+              "Expert Support & Product Guidance",
+              "Certified & Trusted Brands",
+              "Fast & Safe Nationwide Delivery",
             ].map((item, index) => (
               <Stack
                 direction="row"
@@ -163,7 +164,7 @@ const AboutUsSection = () => {
                 "&:hover": { bgcolor: "#005fa3" },
               }}
             >
-              Read More →
+              Shop Now →
             </Button>
 
             <Box
@@ -178,9 +179,11 @@ const AboutUsSection = () => {
             >
               <PeopleAltIcon sx={{ fontSize: 28 }} />
               <Typography variant="h5" fontWeight="bold">
-                25+
+                5+ Years
               </Typography>
-              <Typography variant="body2">Years Of Experience</Typography>
+              <Typography variant="body2">
+                Serving the Dental Industry
+              </Typography>
             </Box>
           </Stack>
         </Grid>

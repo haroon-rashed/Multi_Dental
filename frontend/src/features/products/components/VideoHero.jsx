@@ -161,7 +161,7 @@ export const VideoHero = () => {
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
-          alignItems: "center"
+          alignItems: "center",
         }}
       >
         <Fade in={isLoaded} timeout={1000}>
@@ -199,7 +199,7 @@ export const VideoHero = () => {
                 transition: "all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
               }}
             >
-              Exceptional Dental Care for Every Stage of Your Journey
+              Your Trusted Source for Quality Dental Supplies
             </Typography>
 
             {/* Subtitle with Larger Mobile Font */}
@@ -231,9 +231,9 @@ export const VideoHero = () => {
                   "all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.3s",
               }}
             >
-              We are committed to providing top-notch dental care in a
-              comfortable and friendly environment that makes every visit a
-              pleasant experience.
+              We provide reliable, dentist-approved products that make it easy
+              to care for your smile—delivered straight to your door with
+              comfort, convenience, and care.
             </Typography>
 
             {/* Call to Action Buttons (Optional) */}

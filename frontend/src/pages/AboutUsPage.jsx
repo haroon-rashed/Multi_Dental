@@ -34,9 +34,9 @@ export const AboutUsPage = () => {
           sx={{ fontSize: 40, color: theme.palette.primary.main }}
         />
       ),
-      title: "Premium Dental Equipment",
+      title: "Wide Product Range",
       description:
-        "We provide the highest quality dental instruments and equipment from leading manufacturers worldwide.",
+        "Explore a complete collection of dental tools, hygiene products, and accessories for every need.",
     },
     {
       icon: (
@@ -44,39 +44,39 @@ export const AboutUsPage = () => {
           sx={{ fontSize: 40, color: theme.palette.primary.main }}
         />
       ),
-      title: "Expert Consultation",
+      title: "Expert Product Guidance",
       description:
-        "Our team of dental professionals offers expert guidance on product selection and usage.",
+        "Get help choosing the right dental products with expert tips tailored to your specific requirements.",
     },
     {
       icon: (
         <Security sx={{ fontSize: 40, color: theme.palette.primary.main }} />
       ),
-      title: "Quality Assurance",
+      title: "Secure Shopping",
       description:
-        "All our products meet international standards and come with quality guarantees.",
+        "Shop confidently with our safe and encrypted checkout process designed for your protection.",
     },
     {
       icon: (
         <Support sx={{ fontSize: 40, color: theme.palette.primary.main }} />
       ),
-      title: "24/7 Support",
+      title: "Dedicated Support",
       description:
-        "Round-the-clock customer support to assist you with any queries or concerns.",
+        "Our support team is always available to assist with your orders, returns, or product questions.",
     },
     {
       icon: (
         <Verified sx={{ fontSize: 40, color: theme.palette.primary.main }} />
       ),
-      title: "Certified Products",
+      title: "Genuine & Certified",
       description:
-        "All dental instruments are certified and approved by relevant health authorities.",
+        "We only sell original dental products that are certified and approved by trusted authorities.",
     },
     {
       icon: <Speed sx={{ fontSize: 40, color: theme.palette.primary.main }} />,
-      title: "Fast Delivery",
+      title: "Nationwide Delivery",
       description:
-        "Quick and reliable delivery services across Pakistan with secure packaging.",
+        "Fast and reliable delivery across Pakistan, ensuring your products arrive quickly and safely.",
     },
   ];
 
