@@ -1144,7 +1144,30 @@ const UserNavbar = () => {
         MenuListProps={{
           onMouseEnter: () => handleDropdownMouseEnter("categories"),
           onMouseLeave: () => handleDropdownMouseLeave("categories"),
-          sx: { padding: 1, maxHeight: "400px", overflowY: "auto" },
+          sx: { 
+            padding: 1, 
+            maxHeight: "70vh",
+            overflowY: "auto",
+            '&::-webkit-scrollbar': {
+              width: '6px',
+            },
+            '&::-webkit-scrollbar-track': {
+              background: '#f1f1f1',
+              borderRadius: '3px',
+            },
+            '&::-webkit-scrollbar-thumb': {
+              background: '#888',
+              borderRadius: '3px',
+              '&:hover': {
+                background: '#555',
+              },
+            },
+            '&:hover': {
+              '&::-webkit-scrollbar-thumb': {
+                background: '#888',
+              },
+            },
+          },
           onClick: (event) => event.stopPropagation(),
         }}
         PaperProps={{
@@ -1155,8 +1178,8 @@ const UserNavbar = () => {
             backgroundColor: "white",
             color: dentalTheme.text,
             minWidth: "280px",
-            overflow: "visible",
-            maxHeight: "400px",
+            overflow: "hidden",
+            maxHeight: "70vh",
             border: `1px solid ${dentalTheme.border}`,
             borderRadius: "12px",
             boxShadow: "0 8px 32px rgba(0, 0, 0, 0.12)",

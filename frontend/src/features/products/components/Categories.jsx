@@ -60,15 +60,13 @@ const CategoryProductsSlider = () => {
   const categoriesData = useSelector(selectCategories);
   const navigate = useNavigate();
 
-  // Ensure categories is always an array
-  const categories = Array.isArray(categoriesData) ? categoriesData : [];
+  // Filter out deleted categories and ensure categories is always an array
+  const categories = (
+    Array.isArray(categoriesData) ? categoriesData : []
+  ).filter((category) => !category.isDeleted);
 
   // Check if categories are still loading (empty array or undefined)
   const isLoading = !categoriesData || categories.length === 0;
-
-  // Debug log to check data structure
-  console.log("Categories data:", categoriesData);
-  console.log("Is array:", Array.isArray(categoriesData));
 
   return (
     <>
@@ -94,7 +92,7 @@ const CategoryProductsSlider = () => {
           },
         }}
       >
-        Featured Categories
+        Categories
       </Typography>
 
       <Box

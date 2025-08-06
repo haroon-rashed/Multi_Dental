@@ -19,6 +19,8 @@ const AddCategory = () => {
   const [imagePreview, setImagePreview] = useState(null);
   const [loading, setLoading] = useState(false);
   const [parentId, setParentId] = useState('');
+  const [isFeatured, setIsFeatured] = useState(false);
+  const [isPopular, setIsPopular] = useState(false);
 
   // Get only main categories (parent_id is null) for the dropdown
   const mainCategories = categories.filter(cat => !cat.parent_id);
@@ -34,8 +36,9 @@ const AddCategory = () => {
       if (existing) {
         setCategoryName(existing.name || '');
         setImagePreview(existing.categoryImage || '');
-        // Use parent_id instead of parentId (backend field name)
         setParentId(existing.parent_id || '');
+        setIsFeatured(!!existing.isFeatured);
+        setIsPopular(!!existing.isPopular);
       }
     }
   }, [id, categories]);
@@ -92,6 +95,8 @@ const AddCategory = () => {
       name: trimmedName,
       categoryImage: imageUrl,
       parent_id: parentId || null, // Use parent_id to match backend field
+      isFeatured: Boolean(isFeatured),
+      isPopular: Boolean(isPopular)
     };
 
     try {
@@ -184,6 +189,28 @@ const AddCategory = () => {
               <PlaceholderText>Image preview will appear here</PlaceholderText>
             )}
           </ImagePreview>
+        </FormGroup>
+
+        <FormGroup>
+          <Label>Category Options</Label>
+          <CheckboxContainer>
+            <CheckboxLabel>
+              <CheckboxInput
+                type="checkbox"
+                checked={isFeatured}
+                onChange={(e) => setIsFeatured(e.target.checked)}
+              />
+              <CheckboxText>Featured Category</CheckboxText>
+            </CheckboxLabel>
+            <CheckboxLabel>
+              <CheckboxInput
+                type="checkbox"
+                checked={isPopular}
+                onChange={(e) => setIsPopular(e.target.checked)}
+              />
+              <CheckboxText>Popular Category</CheckboxText>
+            </CheckboxLabel>
+          </CheckboxContainer>
         </FormGroup>
 
         <SubmitButton type="submit" disabled={loading}>
@@ -292,14 +319,44 @@ const ImagePreview = styled.div`
   }
 `;
 
-const PlaceholderText = styled.p`
-  color: #aaa;
-  text-align: center;
+const PlaceholderText = styled.span`
+  color: #666;
   font-style: italic;
-  padding: 2rem;
-  border: 2px dashed #ddd;
-  border-radius: 8px;
-  margin: 0;
+`;
+
+const CheckboxContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+`;
+
+const CheckboxLabel = styled.label`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+  padding: 4px 0;
+  transition: all 0.2s;
+  border-radius: 4px;
+  padding: 8px;
+  
+  &:hover {
+    background-color: #f5f5f5;
+  }
+`;
+
+const CheckboxInput = styled.input`
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: #00A8CC;
+`;
+
+const CheckboxText = styled.span`
+  font-size: 15px;
+  color: #333;
 `;
 
 const SubmitButton = styled.button`

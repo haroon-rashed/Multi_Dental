@@ -4,9 +4,10 @@ import { axiosi } from "../../config/axios";
 // Fetch all categories
 export const fetchAllCategories = async () => {
   try {
-    const res = await axiosi.get("/categories");
+    const res = await axiosi.get("/categories/");  // Changed to match backend route
     return res.data;
   } catch (error) {
+    console.error("Error fetching categories:", error);
     throw error.response?.data || error.message;
   }
 };

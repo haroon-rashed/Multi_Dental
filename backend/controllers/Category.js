@@ -33,7 +33,7 @@ exports.getSubCategories = async (req, res) => {
 };
 
 exports.addCategory = async (req, res) => {
-  const { name, categoryImage, parent_id } = req.body;
+  const { name, categoryImage, parent_id, isFeatured, isPopular } = req.body;
 
   if (!name) {
     return res.status(400).json({ message: "Category name is required" });
@@ -51,7 +51,9 @@ exports.addCategory = async (req, res) => {
     const newCategory = await Category.create({
       name,
       categoryImage,
-      parent_id: (parent_id && parent_id !== "null" && parent_id !== "" && parent_id !== "undefined") ? parent_id : null
+      parent_id: (parent_id && parent_id !== "null" && parent_id !== "" && parent_id !== "undefined") ? parent_id : null,
+      isFeatured: isFeatured === 'true' || isFeatured === true,
+      isPopular: isPopular === 'true' || isPopular === true
     });
 
     res.status(201).json(newCategory);
@@ -63,7 +65,7 @@ exports.addCategory = async (req, res) => {
 
 exports.updateCategory = async (req, res) => {
   const { id } = req.params;
-  const { name, categoryImage, parent_id } = req.body;
+  const { name, categoryImage, parent_id, isFeatured, isPopular } = req.body;
 
   try {
     // Prevent category from being its own parent
@@ -79,13 +81,17 @@ exports.updateCategory = async (req, res) => {
       }
     }
 
+    const updateData = {
+      name,
+      categoryImage,
+      parent_id: (parent_id && parent_id !== "null" && parent_id !== "" && parent_id !== "undefined") ? parent_id : null,
+      isFeatured: isFeatured === 'true' || isFeatured === true,
+      isPopular: isPopular === 'true' || isPopular === true
+    };
+
     const updatedCategory = await Category.findByIdAndUpdate(
       id,
-      { 
-        name, 
-        categoryImage, 
-        parent_id: (parent_id && parent_id !== "null" && parent_id !== "" && parent_id !== "undefined") ? parent_id : null 
-      },
+      updateData,
       { new: true }
     );
 

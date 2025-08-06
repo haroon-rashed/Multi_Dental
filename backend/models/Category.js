@@ -14,6 +14,14 @@ const categorySchema = new Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Category",
     default: null
+  },
+  isFeatured: {
+    type: Boolean,
+    default: false
+  },
+  isPopular: {
+    type: Boolean,
+    default: false
   }
 });
 

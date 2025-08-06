@@ -56,19 +56,20 @@ const CategorySkeleton = () => (
   </Card>
 );
 
-const PopularCategoryProductsSlider = () => {
+const FeaturedCategoryProductsSlider = () => {
   const categoriesData = useSelector(selectCategories);
   const navigate = useNavigate();
 
-  // Filter for popular categories and ensure it's always an array
-  const popularCategories = (Array.isArray(categoriesData) ? categoriesData : [])
-    .filter(category => category.isPopular && !category.isDeleted);
+  // Filter for featured categories and ensure it's always an array
+  const featuredCategories = (
+    Array.isArray(categoriesData) ? categoriesData : []
+  ).filter((category) => category.isFeatured && !category.isDeleted);
 
-  // Check if categories are still loading or if there are no popular categories
+  // Check if categories are still loading or if there are no featured categories
   const isLoading = !categoriesData || categoriesData.length === 0;
-  
-  // Don't render if there are no popular categories
-  if (!isLoading && popularCategories.length === 0) return null;
+
+  // Don't render if there are no featured categories
+  if (!isLoading && featuredCategories.length === 0) return null;
 
   return (
     <>
@@ -94,7 +95,7 @@ const PopularCategoryProductsSlider = () => {
           },
         }}
       >
-        Popular Categories
+        Featured Categories
       </Typography>
 
       <Box
@@ -149,7 +150,7 @@ const PopularCategoryProductsSlider = () => {
                 <CategorySkeleton key={index} />
               ))
             : // Show actual categories
-              popularCategories.map((category, index) => (
+              featuredCategories.map((category, index) => (
                 <Card
                   key={category._id || category.id || index}
                   sx={{
@@ -382,4 +383,4 @@ const PopularCategoryProductsSlider = () => {
   );
 };
 
-export default PopularCategoryProductsSlider;
+export default FeaturedCategoryProductsSlider;

@@ -70,6 +70,7 @@ import Lottie from "lottie-react";
 import CategoryProductsSlider from "./Categories";
 import { BrandSection } from "./BrandSection";
 import PopularCategoryProductsSlider from "./PopularCategories";
+import FeaturedCategoryProductsSlider from "./FeaturedCategories";
 
 const sortOptions = [
   { name: "Best Rating", sort: "rating", order: "desc" },
@@ -616,6 +617,7 @@ export const ProductList = () => {
             <Box sx={{ mb: 4 }}>
               {/* Hero Sections */}
               <CategoryProductsSlider />
+              <FeaturedCategoryProductsSlider />
               <PopularCategoryProductsSlider />
               <BrandSection />
 
