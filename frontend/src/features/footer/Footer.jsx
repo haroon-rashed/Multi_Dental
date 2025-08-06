@@ -56,7 +56,7 @@ export const Footer = () => {
   const socialMediaData = [
     {
       icon: FacebookIcon,
-      platform: "facebook",
+      platform: "https://web.facebook.com/multidentals",
       color: "#1877F2",
       hoverColor: "#166fe5",
     },
@@ -88,12 +88,12 @@ export const Footer = () => {
     },
     {
       icon: PhoneIcon,
-      text: "+92614506162, +92614506052",
+      text: "+923006377821, +923057591775",
       color: "#81C784",
     },
     {
       icon: EmailIcon,
-      text: "info@alumardental.com",
+      text: "multidental@yaho.com",
       color: "#FFB74D",
     },
     {

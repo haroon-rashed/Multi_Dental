@@ -2,5 +2,6 @@
 @tailwind utilities; */
 
 body {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
+  background-color: #eff4ff;
 }

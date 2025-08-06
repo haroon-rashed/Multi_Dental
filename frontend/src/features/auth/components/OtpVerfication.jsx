@@ -122,7 +122,7 @@ export const OtpVerfication = () => {
 
   useEffect(() => {
     if (otpVerificationStatus === "fullfilled") {
-      toast.success("Email verified! Welcome to MERN Shop!");
+      toast.success("Email verified! Welcome to MULTI DENTAL SUPPLY!");
       dispatch(resetResendOtpStatus());
     }
     return () => {

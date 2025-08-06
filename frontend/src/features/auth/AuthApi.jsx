@@ -9,11 +9,28 @@ export const signup = async (cred) => {
   }
 };
 export const login = async (cred) => {
+  console.log('Making login API call with credentials:', cred);
   try {
     const res = await axiosi.post("auth/login", cred);
+    console.log('Login API response:', res.data);
     return res.data;
   } catch (error) {
-    throw error.response.data;
+    console.error('Login API error:', {
+      message: error.message,
+      response: error.response?.data,
+      status: error.response?.status,
+      headers: error.response?.headers
+    });
+    
+    // Return a more detailed error object
+    const errorInfo = {
+      message: error.response?.data?.message || 'Login failed',
+      status: error.response?.status,
+      data: error.response?.data,
+      originalError: error
+    };
+    
+    throw errorInfo;
   }
 };
 export const verifyOtp = async (cred) => {

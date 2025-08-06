@@ -23,7 +23,7 @@ exports.sendMail = async (to, subject, html) => {
 
     const mailOptions = {
       from: {
-        name: "MERN Shop",
+        name: "MULTI DENTAL SUPPLY",
         address: process.env.EMAIL_USER,
       },
       to: to,

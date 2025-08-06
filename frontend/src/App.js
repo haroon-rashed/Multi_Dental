@@ -76,37 +76,37 @@ function App() {
     { path: "/forgot-password", element: <ForgotPasswordPage /> },
     { path: "/reset-password/:userId/:passwordResetToken", element: <ResetPasswordPage /> },
     
-    // Protected routes
-    { path: "/", element: <Protected><HomePage /></Protected> },
-    { path: "/cart", element: <Protected><CartPage /></Protected> },
+    // Public routes that don't require authentication
+    { path: "/", element: <HomePage /> },
+    { path: "/cart", element: <CartPage /> },
+    { path: "/checkout", element: <CheckoutPage /> },
+    { path: "/order-success/:id", element: <OrderSuccessPage /> },
+    { path: "/subcategory/:subcategoryId", element: <SubCategoryPage /> },
+    { path: "/category/:id", element: <CategoryDetailsPage /> },
+    { path: "/product-details/:id", element: <ProductDetailsPage /> },
+    { path: "/products", element: <ProductsPage /> },
+    { path: "/about-us", element: <AboutUsPage /> },
+    { path: "/terms-conditions", element: <TermsConditionsPage /> },
+    { path: "/privacy-policy", element: <PrivacyPolicyPage /> },
+    { path: "/return-policy", element: <ReturnPolicyPage /> },
+    
+    // Protected routes that require authentication (but not admin)
     { path: "/profile", element: <Protected><UserProfilePage /></Protected> },
-    { path: "/checkout", element: <Protected><CheckoutPage /></Protected> },
-    { path: "/order-success/:id", element: <Protected><OrderSuccessPage /></Protected> },
     { path: "/orders", element: <Protected><UserOrdersPage /></Protected> },
     { path: "/wishlist", element: <Protected><WishlistPage /></Protected> },
-    { path: "/subcategory/:subcategoryId", element: <Protected><SubCategoryPage /></Protected> },
-    { path: "/category/:id", element: <Protected><CategoryDetailsPage /></Protected> },
-    { path: "/product-details/:id", element: <Protected><ProductDetailsPage /></Protected> },
-    { path: "/products", element: <Protected><ProductsPage /></Protected> },
-    { path: "/about-us", element: <Protected><AboutUsPage /></Protected> },
-    { path: "/terms-conditions", element: <Protected><TermsConditionsPage /></Protected> },
-    { path: "/privacy-policy", element: <Protected><PrivacyPolicyPage /></Protected> },
-    { path: "/return-policy", element: <Protected><ReturnPolicyPage /></Protected> },
     { path: "/logout", element: <Protected><Logout /></Protected> },
 
-    // Admin routes (only if user is admin)
-    ...(loggedInUser?.isAdmin ? [
-      { path: "/admin/dashboard", element: <Protected><AdminDashboardPage /></Protected> },
-      { path: "/admin/product-update/:id", element: <Protected><ProductUpdatePage /></Protected> },
-      { path: "/admin/add-product", element: <Protected><AddProductPage /></Protected> },
-      { path: "/admin/product-table", element: <Protected><ProductTablePage /></Protected> },
-      { path: "/admin/orders", element: <Protected><AdminOrdersPage /></Protected> },
-      { path: "/admin/add-category", element: <Protected><AddCategoryPage /></Protected> },
-      { path: "/admin/edit-category/:id", element: <Protected><AddCategoryPage /></Protected> },
-      { path: "/admin/add-sub-category", element: <Protected><AddSubCategoryPage /></Protected> },
-      { path: "/admin/view-category", element: <Protected><ViewCategoryPage /></Protected> },
-      { path: "/admin/view-subcategory", element: <Protected><ViewSubCategoryPage /></Protected> },
-    ] : []),
+    // Admin routes (protected and only accessible by admin users)
+    { path: "/admin/dashboard", element: <Protected adminOnly={true}><AdminDashboardPage /></Protected> },
+    { path: "/admin/product-update/:id", element: <Protected adminOnly={true}><ProductUpdatePage /></Protected> },
+    { path: "/admin/add-product", element: <Protected adminOnly={true}><AddProductPage /></Protected> },
+    { path: "/admin/product-table", element: <Protected adminOnly={true}><ProductTablePage /></Protected> },
+    { path: "/admin/orders", element: <Protected adminOnly={true}><AdminOrdersPage /></Protected> },
+    { path: "/admin/add-category", element: <Protected adminOnly={true}><AddCategoryPage /></Protected> },
+    { path: "/admin/edit-category/:id", element: <Protected adminOnly={true}><AddCategoryPage /></Protected> },
+    { path: "/admin/add-sub-category", element: <Protected adminOnly={true}><AddSubCategoryPage /></Protected> },
+    { path: "/admin/view-category", element: <Protected adminOnly={true}><ViewCategoryPage /></Protected> },
+    { path: "/admin/view-subcategory", element: <Protected adminOnly={true}><ViewSubCategoryPage /></Protected> },
 
     // 404 route - must be last
     { path: "*", element: <Navigate to={loggedInUser?.isAdmin ? "/admin/dashboard" : "/"} replace /> },

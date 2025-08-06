@@ -1008,7 +1008,7 @@ const UserNavbar = () => {
             ) : (
               <>
                 {/* Desktop User Menu */}
-                {!isSmall && userInfo && (
+                {!isSmall && (userInfo ? (
                   <Typography
                     variant="body1"
                     sx={{
@@ -1017,15 +1017,29 @@ const UserNavbar = () => {
                       fontWeight: 500,
                     }}
                   >
-                    Hi,{" "}
-                    {typeof userInfo?.name === "string"
+                    Hi, {
+                    typeof userInfo?.name === "string"
                       ? userInfo.name
                       : typeof userInfo?.firstName === "string"
                       ? userInfo.firstName
-                      : "User"}
-                    !
+                      : "User"
+                    }!
                   </Typography>
-                )}
+                ) : (
+                  <Button 
+                    variant="contained"
+                    color="primary"
+                    onClick={() => navigate('/login')}
+                    sx={{ 
+                      textTransform: 'none',
+                      fontWeight: 500,
+                      px: 2,
+                      mr: 2
+                    }}
+                  >
+                    Login
+                  </Button>
+                ))}
                 <Tooltip title="User Menu" arrow>
                   <IconButton
                     onClick={(e) => setUserMenuAnchor(e.currentTarget)}

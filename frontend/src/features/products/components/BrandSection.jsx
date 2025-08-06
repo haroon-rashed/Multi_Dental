@@ -46,11 +46,25 @@ export const BrandSection = () => {
         <Stack spacing={1}>
           <Typography
             variant="h4"
-            component="h2"
+            fontWeight={700}
+            textAlign="left"
             sx={{
-              fontWeight: "bold",
-              textAlign: "center",
-              color: theme.palette.primary.main,
+              mb: 1,
+              mt: 2,
+              color: "#1A2E4D",
+              letterSpacing: "1px",
+              pl: { xs: 1, md: 2 },
+              position: "relative",
+              "&::after": {
+                content: '""',
+                position: "absolute",
+                bottom: -8,
+                left: { xs: 8, md: 16 },
+                width: 60,
+                height: 4,
+                background: "linear-gradient(90deg, #1A2E4D 0%, #3B82F6 100%)",
+                borderRadius: 2,
+              },
             }}
           >
             Popular Brands

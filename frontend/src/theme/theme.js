@@ -3,10 +3,16 @@ import { createTheme } from "@mui/material/styles";
 export const theme = createTheme({
   palette: {
     primary: {
-      main:"#000000",
-      light:"#ffffff",
-      dark:'#DB4444',
-      customBlack:"#191919"
+      main: "#00A8CC",
+      light: "#5FD1F7",
+      dark: "#0088AA",
+      contrastText: "#ffffff"
+    },
+    secondary: {
+      main: "#000000",
+      light: "#ffffff",
+      dark: "#DB4444",
+      contrastText: "#ffffff"
     },
     secondary:{
       main:"#background.paper"
@@ -23,6 +29,29 @@ export const theme = createTheme({
       lg: 1200,
       xl: 1536,
     },
+  },
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          textTransform: 'none',
+          borderRadius: '4px',
+          fontWeight: 500,
+          padding: '8px 20px',
+          '&.MuiButton-contained': {
+            boxShadow: 'none',
+            '&:hover': {
+              boxShadow: '0 2px 10px rgba(0, 168, 204, 0.4)'
+            }
+          }
+        },
+        containedPrimary: {
+          '&:hover': {
+            backgroundColor: '#0088AA'
+          }
+        }
+      }
+    }
   },
   typography: {
     fontFamily:"Poppins, sans-serif",

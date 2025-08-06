@@ -4,6 +4,8 @@ import orderSuccessAnimation from './animations/orderSuccess.json'
 import noOrdersAnimation from './animations/noOrders.json'
 import emptyWishlistAnimation from './animations/emptyWishlist.json'
 import notFoundPageAnimation from './animations/notFoundPage.json'
+import dentalToolsAnimation from './animations/dentalTools.json'
+import dentalAnimation from './animations/dentalAnimation.json'
 import banner1 from './images/banner1.jpg'
 import googlePlayPng from './images/googlePlay.png'
 import appStorePng from './images/appStore.png'
@@ -24,6 +26,8 @@ export {
     noOrdersAnimation,
     emptyWishlistAnimation,
     notFoundPageAnimation,
+    dentalToolsAnimation,
+    dentalAnimation,
     banner1,
     googlePlayPng,
     appStorePng,

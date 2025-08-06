@@ -43,7 +43,7 @@ exports.signup = async (req, res) => {
       `OTP Verification for Your MERN-AUTH-REDUX-TOOLKIT Account`,
       `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
-                <h2 style="color: #333;">Welcome to MERN Shop!</h2>
+                <h2 style="color: #333;">Welcome to MULTI DENTAL SUPPLY!</h2>
                 <p>Thank you for signing up. To complete your registration, please verify your email address.</p>
                 <p>Your One-Time Password (OTP) for account verification is:</p>
                 <div style="background-color: #f4f4f4; padding: 15px; text-align: center; margin: 20px 0;">
