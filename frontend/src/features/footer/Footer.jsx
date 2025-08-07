@@ -550,7 +550,7 @@ export const Footer = () => {
                   textAlign: isMobile ? "center" : "left",
                 }}
               >
-                © 2024 Multi Dental Supply. All rights reserved. | Crafted with
+                © 2025 Multi Dental Supply. All rights reserved. | Crafted with
                 💙 for better smiles
               </Typography>
 

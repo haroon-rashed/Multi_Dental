@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Link, useNavigate} from 'react-router-dom'
 import { addProductAsync, resetProductAddStatus, selectProductAddStatus,updateProductByIdAsync } from '../../products/ProductSlice'
@@ -7,10 +7,15 @@ import { useForm } from "react-hook-form"
 import { selectBrands } from '../../brands/BrandSlice'
 import { selectCategories } from '../../categories/CategoriesSlice'
 import { toast } from 'react-toastify'
+import { axiosi } from '../../../config/axios';
+
+const API_BASE_URL = 'http://localhost:5000/api'; // Replace with your base URL
 
 export const AddProduct = () => {
 
-    const {register,handleSubmit,reset,formState: { errors }} = useForm()
+    const {register, handleSubmit, reset, watch, formState: { errors }} = useForm()
+    const [subcategories, setSubcategories] = useState([]);
+    const [isLoadingSubcategories, setIsLoadingSubcategories] = useState(false);
 
     const dispatch=useDispatch()
     const brands=useSelector(selectBrands)
@@ -21,8 +26,41 @@ export const AddProduct = () => {
     const is1100=useMediaQuery(theme.breakpoints.down(1100))
     const is480=useMediaQuery(theme.breakpoints.down(480))
 
+    // Watch category changes to load subcategories
+    const selectedCategoryId = watch("category");
+
+    // Effect to load subcategories when category changes
+    useEffect(() => {
+        const fetchSubcategories = async () => {
+            if (!selectedCategoryId) {
+                setSubcategories([]);
+                return;
+            }
+            
+            try {
+                setIsLoadingSubcategories(true);
+                const response = await axiosi.get(`/categories/${selectedCategoryId}/subcategories`);
+                setSubcategories(response.data);
+            } catch (error) {
+                console.error("Error fetching subcategories:", error);
+                console.error("Error details:", {
+                    message: error.message,
+                    response: error.response?.data,
+                    status: error.response?.status,
+                    url: error.config?.url
+                });
+                toast.error("Failed to load subcategories. Please try again.");
+                setSubcategories([]);
+            } finally {
+                setIsLoadingSubcategories(false);
+            }
+        };
+
+        fetchSubcategories();
+    }, [selectedCategoryId]);
+
     useEffect(()=>{
-        if(productAddStatus==='fullfilled'){
+        if(productAddStatus==='fulfilled'){
             reset()
             toast.success("New product added")
             navigate("/admin/dashboard")
@@ -39,11 +77,17 @@ export const AddProduct = () => {
     },[])
 
     const handleAddProduct=(data)=>{
-        const newProduct={...data,images:[data.image0,data.image1,data.image2,data.image3]}
+        const newProduct={
+            ...data,
+            images:[data.image0, data.image1, data.image2, data.image3],
+            // Only include subcategory if one is selected
+            ...(data.subcategory && { subcategory: data.subcategory })
+        }
         delete newProduct.image0
         delete newProduct.image1
         delete newProduct.image2
         delete newProduct.image3
+        delete newProduct.subcategory // Remove the subcategory from the root level
 
         dispatch(addProductAsync(newProduct))
     }
@@ -70,7 +114,7 @@ export const AddProduct = () => {
                             
                             {
                                 brands.map((brand)=>(
-                                    <MenuItem value={brand._id}>{brand.name}</MenuItem>
+                                    <MenuItem key={brand._id} value={brand._id}>{brand.name}</MenuItem>
                                 ))
                             }
 
@@ -80,19 +124,44 @@ export const AddProduct = () => {
 
                     <FormControl fullWidth>
                         <InputLabel id="category-selection">Category</InputLabel>
-                        <Select {...register("category",{required:"category is required"})} labelId="category-selection" label="Category">
-                            
-                            {
-                                categories.map((category)=>(
-                                    <MenuItem value={category._id}>{category.name}</MenuItem>
-                                ))
-                            }
-
+                        <Select 
+                            {...register("category",{required:"Category is required"})} 
+                            labelId="category-selection" 
+                            label="Category"
+                            defaultValue=""
+                        >
+                            <MenuItem value="" disabled>Select a category</MenuItem>
+                            {categories.map((category)=>(
+                                <MenuItem key={category._id} value={category._id}>
+                                    {category.name}
+                                </MenuItem>
+                            ))}
                         </Select>
                     </FormControl>
 
                 </Stack>
 
+                {/* Subcategory Select - Only show if there are subcategories */}
+                {subcategories.length > 0 && (
+                    <FormControl fullWidth>
+                        <InputLabel id="subcategory-selection">Subcategory (Optional)</InputLabel>
+                        <Select
+                            {...register("subcategory")}
+                            labelId="subcategory-selection"
+                            label="Subcategory (Optional)"
+                            disabled={isLoadingSubcategories}
+                        >
+                            <MenuItem value="">
+                                <em>None</em>
+                            </MenuItem>
+                            {subcategories.map((subcategory) => (
+                                <MenuItem key={subcategory._id} value={subcategory._id}>
+                                    {subcategory.name}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
+                )}
 
                 <Stack>
                     <Typography variant='h6' fontWeight={400}  gutterBottom>Description</Typography>

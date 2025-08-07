@@ -45,6 +45,7 @@ import {
   selectProductIsFilterOpen,
   toggleFilters,
 } from "../../products/ProductSlice";
+import { FaSignInAlt, FaUserCog } from "react-icons/fa";
 
 export const Navbar = ({ isProductList = false }) => {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
@@ -122,18 +123,28 @@ export const Navbar = ({ isProductList = false }) => {
     { name: "Logout", to: "/logout" },
   ];
 
+  // Handle login redirection
+  const handleLoginClick = () => {
+    // Redirect to login page with current path as return URL
+    const redirectTo = loggedInUser?.isAdmin ? '/admin/dashboard' : window.location.pathname;
+    navigate(`/login?redirectTo=${encodeURIComponent(redirectTo)}`);
+    toggleDrawer(false)();
+  };
+
   // Mobile drawer content
   const drawer = (
     <Box
       sx={{
         width: 280,
         height: "100%",
+        display: "flex",
+        flexDirection: "column",
         backgroundColor: "background.paper",
-        overflowY: "auto",
       }}
       role="presentation"
       onKeyDown={toggleDrawer(false)}
     >
+      {/* Drawer Header */}
       <Box
         sx={{
           p: 2,
@@ -141,7 +152,11 @@ export const Navbar = ({ isProductList = false }) => {
           justifyContent: "space-between",
           alignItems: "center",
           backgroundColor: "#1A2E4D",
-          color: "white"
+          color: "white",
+          position: 'sticky',
+          top: 0,
+          zIndex: 1,
+          flexShrink: 0
         }}
       >
         <Typography variant="h6" component="div">
@@ -152,162 +167,221 @@ export const Navbar = ({ isProductList = false }) => {
         </IconButton>
       </Box>
 
-      {/* Home Link */}
-      <ListItem 
-        button 
-        component={Link} 
-        to="/" 
-        onClick={toggleDrawer(false)}
-        sx={{
-          '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.04)' },
-          borderBottom: '1px solid #f0f0f0'
-        }}
-      >
-        <ListItemText primary="Home" primaryTypographyProps={{ fontWeight: 'medium' }} />
-      </ListItem>
-
-      {/* Shop Link */}
-      <ListItem 
-        button 
-        component={Link} 
-        to="/products" 
-        onClick={toggleDrawer(false)}
-        sx={{
-          '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.04)' },
-          borderBottom: '1px solid #f0f0f0'
-        }}
-      >
-        <ListItemText primary="Shop" primaryTypographyProps={{ fontWeight: 'medium' }} />
-      </ListItem>
-
-      {/* Categories Section */}
-      <Box>
+      {/* Main Content */}
+      <Box sx={{ flexGrow: 1, overflowY: 'auto', pb: 2 }}>
+        {/* Home Link */}
         <ListItem 
           button 
-          onClick={toggleCategories}
+          component={Link} 
+          to="/" 
+          onClick={toggleDrawer(false)}
           sx={{
             '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.04)' },
             borderBottom: '1px solid #f0f0f0'
           }}
         >
-          <ListItemIcon>
-            <CategoryIcon />
-          </ListItemIcon>
-          <ListItemText primary="Categories" primaryTypographyProps={{ fontWeight: 'medium' }} />
-          {mobileCategoriesOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+          <ListItemText primary="Home" primaryTypographyProps={{ fontWeight: 'medium' }} />
         </ListItem>
-        <Collapse in={mobileCategoriesOpen} timeout="auto" unmountOnExit>
-          <List component="div" disablePadding>
-            {categories.map((category) => (
-              <ListItem
-                button
-                key={category._id}
-                sx={{ 
-                  pl: 4,
-                  '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.04)' },
-                  borderBottom: '1px solid #f0f0f0'
-                }}
-                onClick={() => {
-                  handleCategoryClick(category);
-                  toggleDrawer(false)();
-                }}
-              >
-                <ListItemText primary={category.name} />
-              </ListItem>
-            ))}
-          </List>
-        </Collapse>
+
+        {/* Shop Link */}
+        <ListItem 
+          button 
+          component={Link} 
+          to="/products" 
+          onClick={toggleDrawer(false)}
+          sx={{
+            '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.04)' },
+            borderBottom: '1px solid #f0f0f0'
+          }}
+        >
+          <ListItemText primary="Shop" primaryTypographyProps={{ fontWeight: 'medium' }} />
+        </ListItem>
+
+        {/* Categories Section */}
+        <Box>
+          <ListItem 
+            button 
+            onClick={toggleCategories}
+            sx={{
+              '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.04)' },
+              borderBottom: '1px solid #f0f0f0'
+            }}
+          >
+            <ListItemIcon>
+              <CategoryIcon />
+            </ListItemIcon>
+            <ListItemText primary="Categories" primaryTypographyProps={{ fontWeight: 'medium' }} />
+            {mobileCategoriesOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+          </ListItem>
+          <Collapse in={mobileCategoriesOpen} timeout="auto" unmountOnExit>
+            <List component="div" disablePadding>
+              {categories.map((category) => (
+                <ListItem
+                  button
+                  key={category._id}
+                  sx={{ 
+                    pl: 4,
+                    '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.04)' },
+                    borderBottom: '1px solid #f0f0f0'
+                  }}
+                  onClick={() => {
+                    handleCategoryClick(category);
+                    toggleDrawer(false)();
+                  }}
+                >
+                  <ListItemText primary={category.name} />
+                </ListItem>
+              ))}
+            </List>
+          </Collapse>
+        </Box>
+
+        {/* Brands Section */}
+        <Box>
+          <ListItem 
+            button 
+            onClick={toggleBrands}
+            sx={{
+              '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.04)' },
+              borderBottom: '1px solid #f0f0f0'
+            }}
+          >
+            <ListItemIcon>
+              <StoreIcon />
+            </ListItemIcon>
+            <ListItemText primary="Brands" primaryTypographyProps={{ fontWeight: 'medium' }} />
+            {mobileBrandsOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+          </ListItem>
+          <Collapse in={mobileBrandsOpen} timeout="auto" unmountOnExit>
+            <List component="div" disablePadding>
+              {brands.map((brand) => (
+                <ListItem
+                  button
+                  key={brand._id}
+                  sx={{ 
+                    pl: 4,
+                    '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.04)' },
+                    borderBottom: '1px solid #f0f0f0'
+                  }}
+                  onClick={() => {
+                    handleBrandClick(brand);
+                    toggleDrawer(false)();
+                  }}
+                >
+                  <ListItemText primary={brand.name} />
+                </ListItem>
+              ))}
+            </List>
+          </Collapse>
+        </Box>
+
+        {/* Pages Section */}
+        <Box>
+          <ListItem 
+            button 
+            component={Link}
+            to="/about"
+            onClick={toggleDrawer(false)}
+            sx={{
+              '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.04)' },
+              borderBottom: '1px solid #f0f0f0'
+            }}
+          >
+            <ListItemText primary="About Us" primaryTypographyProps={{ fontWeight: 'medium' }} />
+          </ListItem>
+          <ListItem 
+            button 
+            component={Link}
+            to="/contact"
+            onClick={toggleDrawer(false)}
+            sx={{
+              '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.04)' },
+              borderBottom: '1px solid #f0f0f0'
+            }}
+          >
+            <ListItemText primary="Contact Us" primaryTypographyProps={{ fontWeight: 'medium' }} />
+          </ListItem>
+          <ListItem 
+            button 
+            component={Link}
+            to="/terms-conditions"
+            onClick={toggleDrawer(false)}
+            sx={{
+              '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.04)' },
+              borderBottom: '1px solid #f0f0f0'
+            }}
+          >
+            <ListItemText primary="Terms & Conditions" primaryTypographyProps={{ fontWeight: 'medium' }} />
+          </ListItem>
+          <ListItem 
+            button 
+            component={Link}
+            to="/privacy-policy"
+            onClick={toggleDrawer(false)}
+            sx={{
+              '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.04)' },
+              borderBottom: '1px solid #f0f0f0'
+            }}
+          >
+            <ListItemText primary="Privacy Policy" primaryTypographyProps={{ fontWeight: 'medium' }} />
+          </ListItem>
+        </Box>
       </Box>
 
-      {/* Brands Section */}
-      <Box>
-        <ListItem 
-          button 
-          onClick={toggleBrands}
-          sx={{
-            '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.04)' },
-            borderBottom: '1px solid #f0f0f0'
-          }}
-        >
-          <ListItemIcon>
-            <StoreIcon />
-          </ListItemIcon>
-          <ListItemText primary="Brands" primaryTypographyProps={{ fontWeight: 'medium' }} />
-          {mobileBrandsOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-        </ListItem>
-        <Collapse in={mobileBrandsOpen} timeout="auto" unmountOnExit>
-          <List component="div" disablePadding>
-            {brands.map((brand) => (
-              <ListItem
-                button
-                key={brand._id}
-                sx={{ 
-                  pl: 4,
-                  '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.04)' },
-                  borderBottom: '1px solid #f0f0f0'
-                }}
+      {/* Bottom Section - Always visible */}
+      <Box sx={{ mt: 'auto', borderTop: '1px solid #f0f0f0', flexShrink: 0 }}>
+        {!loggedInUser ? (
+          // Login Button for Unauthenticated Users
+          <ListItem 
+            button 
+            onClick={handleLoginClick}
+            sx={{
+              backgroundColor: theme => theme.palette.primary.main,
+              color: 'white',
+              '&:hover': {
+                backgroundColor: theme => theme.palette.primary.dark,
+              }
+            }}
+          >
+            <ListItemIcon sx={{ color: 'white' }}>
+              <FaSignInAlt />
+            </ListItemIcon>
+            <ListItemText 
+              primary="Login / Register" 
+              primaryTypographyProps={{ 
+                fontWeight: 'bold',
+                color: 'white'
+              }} 
+            />
+          </ListItem>
+        ) : (
+          // User Info for Logged-in Users
+          <Box sx={{ p: 2 }}>
+            <Typography variant="subtitle2" color="textSecondary">
+              Welcome back,
+            </Typography>
+            <Typography variant="subtitle1" fontWeight="bold">
+              {userInfo?.name || 'User'}
+            </Typography>
+            
+            {/* Admin Dashboard Link */}
+            {loggedInUser?.isAdmin && (
+              <Button
+                fullWidth
+                variant="contained"
+                color="primary"
+                startIcon={<FaUserCog />}
                 onClick={() => {
-                  handleBrandClick(brand);
+                  navigate('/admin/dashboard');
                   toggleDrawer(false)();
                 }}
+                sx={{ mt: 1 }}
               >
-                <ListItemText primary={brand.name} />
-              </ListItem>
-            ))}
-          </List>
-        </Collapse>
-      </Box>
-
-      {/* Pages Section */}
-      <Box>
-        <ListItem 
-          button 
-          component={Link}
-          to="/about"
-          onClick={toggleDrawer(false)}
-          sx={{
-            '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.04)' },
-            borderBottom: '1px solid #f0f0f0'
-          }}
-        >
-          <ListItemText primary="About Us" primaryTypographyProps={{ fontWeight: 'medium' }} />
-        </ListItem>
-        <ListItem 
-          button 
-          component={Link}
-          to="/contact"
-          onClick={toggleDrawer(false)}
-          sx={{
-            '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.04)' },
-            borderBottom: '1px solid #f0f0f0'
-          }}
-        >
-          <ListItemText primary="Contact Us" primaryTypographyProps={{ fontWeight: 'medium' }} />
-        </ListItem>
-        <ListItem 
-          button 
-          component={Link}
-          to="/terms-conditions"
-          onClick={toggleDrawer(false)}
-          sx={{
-            '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.04)' },
-            borderBottom: '1px solid #f0f0f0'
-          }}
-        >
-          <ListItemText primary="Terms & Conditions" primaryTypographyProps={{ fontWeight: 'medium' }} />
-        </ListItem>
-        <ListItem 
-          button 
-          component={Link}
-          to="/privacy-policy"
-          onClick={toggleDrawer(false)}
-          sx={{
-            '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.04)' },
-            borderBottom: '1px solid #f0f0f0'
-          }}
-        >
-          <ListItemText primary="Privacy Policy" primaryTypographyProps={{ fontWeight: 'medium' }} />
-        </ListItem>
+                Admin Dashboard
+              </Button>
+            )}
+          </Box>
+        )}
       </Box>
     </Box>
   );
@@ -462,7 +536,7 @@ export const Navbar = ({ isProductList = false }) => {
             <Button 
               variant="contained" 
               color="primary"
-              onClick={() => navigate('/login')}
+              onClick={handleLoginClick}
               sx={{ 
                 textTransform: 'none',
                 fontWeight: 500,

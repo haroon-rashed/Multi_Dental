@@ -1,4 +1,5 @@
 const Category = require("../models/Category");
+const mongoose = require('mongoose'); // mongoose is required for ObjectId validation
 
 exports.getAll = async (req, res) => {
   try {
@@ -28,6 +29,23 @@ exports.getSubCategories = async (req, res) => {
     res.status(200).json(subcategories);
   } catch (error) {
     console.log(error);
+    res.status(500).json({ message: "Error fetching subcategories" });
+  }
+};
+
+// Get subcategories by parent category ID
+exports.getSubcategoriesByParentId = async (req, res) => {
+  try {
+    const { parentId } = req.params;
+    
+    if (!mongoose.Types.ObjectId.isValid(parentId)) {
+      return res.status(400).json({ message: "Invalid category ID" });
+    }
+
+    const subcategories = await Category.find({ parent_id: parentId }).select('name _id');
+    res.status(200).json(subcategories);
+  } catch (error) {
+    console.error("Error fetching subcategories:", error);
     res.status(500).json({ message: "Error fetching subcategories" });
   }
 };
