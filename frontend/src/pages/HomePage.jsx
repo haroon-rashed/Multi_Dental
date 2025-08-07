@@ -11,6 +11,7 @@ import { Footer } from "../features/footer/Footer";
 import DentalServices from "../features/products/components/DentalServices";
 import AboutUsSection from "../features/products/components/AboutUsSection";
 import VideoHero from "../features/products/components/VideoHero";
+import MissionVisionSection from "../components/MissionVisionSection";
 
 export const HomePage = () => {
   const dispatch = useDispatch();
@@ -30,6 +31,7 @@ export const HomePage = () => {
         <AboutUsSection />
         <DentalServices />
         <ProductList />
+        <MissionVisionSection />
         <Footer />
       </Box>
     </>
