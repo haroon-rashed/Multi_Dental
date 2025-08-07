@@ -69,15 +69,6 @@ export const BrandSection = () => {
           >
             Popular Brands
           </Typography>
-          <Typography
-            variant="body1"
-            sx={{
-              textAlign: "center",
-              color: "text.secondary",
-              maxWidth: "600px",
-              margin: "0 auto",
-            }}
-          ></Typography>
         </Stack>
       </motion.div>
 
@@ -105,7 +96,6 @@ export const BrandSection = () => {
                 backgroundColor: "rgba(0,0,0,0.5)",
               },
             },
-            // Hide scrollbar for Firefox
             scrollbarWidth: "thin",
             scrollbarColor: "rgba(0,0,0,0.3) rgba(0,0,0,0.1)",
           }}
@@ -144,27 +134,16 @@ export const BrandSection = () => {
                     maxWidth: is500 ? "200px" : "250px",
                     height: "180px",
                     cursor: "pointer",
-                    background:
-                      "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-                    color: "white",
+                    background: "#ffffff",
+                    color: "text.primary",
                     position: "relative",
                     overflow: "hidden",
+                    boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
                     "&:hover": {
                       boxShadow: "0 8px 25px rgba(0,0,0,0.15)",
                       transform: "translateY(-2px)",
                     },
                     transition: "all 0.3s ease",
-                    "&::before": {
-                      content: '""',
-                      position: "absolute",
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
-                      background:
-                        "linear-gradient(45deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 100%)",
-                      zIndex: 1,
-                    },
                   }}
                 >
                   <CardContent
@@ -180,24 +159,34 @@ export const BrandSection = () => {
                       padding: "1.5rem",
                     }}
                   >
-                    {/* Brand Logo/Icon */}
+                    {/* Brand Image */}
                     <Box
                       sx={{
-                        width: "60px",
-                        height: "60px",
-                        borderRadius: "50%",
-                        backgroundColor: "rgba(255,255,255,0.2)",
+                        width: "200px",
+                        height: "200px",
+                        borderRadius: "4px",
+                        marginBottom: "1rem",
+                        overflow: "hidden",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
-                        marginBottom: "1rem",
-                        fontSize: "2rem",
-                        fontWeight: "bold",
-                        color: "white",
-                        backdropFilter: "blur(10px)",
+                        backgroundColor: "#f5f5f5",
                       }}
                     >
-                      {brand.name?.charAt(0)?.toUpperCase() || "B"}
+                      <img
+                        src={brand.image}
+                        alt={brand.name}
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "contain",
+                        }}
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = "fallback-image-url";
+                          e.target.alt = "Brand logo not available";
+                        }}
+                      />
                     </Box>
 
                     {/* Brand Name */}
@@ -207,35 +196,10 @@ export const BrandSection = () => {
                         fontWeight: "bold",
                         marginBottom: "0.5rem",
                         fontSize: is500 ? "1rem" : "1.1rem",
+                        color: theme.palette.primary.main,
                       }}
                     >
                       {brand.name || "Brand Name"}
-                    </Typography>
-
-                    {/* Brand Description */}
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        opacity: 0.9,
-                        fontSize: "0.875rem",
-                        lineHeight: 1.4,
-                      }}
-                    >
-                      {brand.description || "Premium quality products"}
-                    </Typography>
-
-                    {/* Click Indicator */}
-                    <Typography
-                      variant="caption"
-                      sx={{
-                        position: "absolute",
-                        bottom: "0.5rem",
-                        right: "0.5rem",
-                        opacity: 0.7,
-                        fontSize: "0.75rem",
-                      }}
-                    >
-                      Click to explore
                     </Typography>
                   </CardContent>
                 </Card>

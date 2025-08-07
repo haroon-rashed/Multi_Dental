@@ -3,6 +3,7 @@ import { Navbar } from '../features/navigation/components/Navbar'
 import { Box } from "@mui/material";
 import AdminSidebar from '../features/admin/components/AdminSidebar';
 import ViewSubCategories from '../features/admin/components/ViewSubCategories';
+import UserNavbar from '../features/navigation/components/UserNavbar';
 
 export const ViewSubCategoryPage = () => {
   const sidebarWidth = 240;
@@ -11,7 +12,8 @@ export const ViewSubCategoryPage = () => {
      <Box sx={{ display: "flex", flexDirection: "column", height: "100vh" }}>
          {/* Top Navbar */}
          <Box sx={{ zIndex: 1201, width: "100%", position: "fixed", top: 0 }}>
-           <Navbar isProductList={true} />
+           {/* <Navbar isProductList={true} /> */}
+           <UserNavbar/>
          </Box>
    
          {/* Sidebar and Content */}

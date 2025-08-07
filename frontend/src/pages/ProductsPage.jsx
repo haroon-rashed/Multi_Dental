@@ -3,11 +3,13 @@ import { Navbar } from '../features/navigation/components/Navbar';
 import { ProductList } from '../features/products/components/ProductList';
 import { Footer } from '../features/footer/Footer';
 import { Container, Typography, Box } from '@mui/material';
+import UserNavbar from '../features/navigation/components/UserNavbar';
 
 export const ProductsPage = () => {
   return (
     <>
-      <Navbar isProductList={true} />
+      {/* <Navbar isProductList={true} /> */}
+      <UserNavbar/>
       <Container maxWidth="xl" sx={{ py: 2 }}>
         <Box sx={{ mb: 3 }}>
           <Typography 

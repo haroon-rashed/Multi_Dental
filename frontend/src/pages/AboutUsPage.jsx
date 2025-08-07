@@ -18,9 +18,8 @@ import {
   Verified,
   Speed,
 } from "@mui/icons-material";
-import { Navbar } from "../features/navigation/components/Navbar";
-import SecondNav from "../features/navigation/components/SecondNav";
 import { Footer } from "../features/footer/Footer";
+import UserNavbar from "../features/navigation/components/UserNavbar";
 
 export const AboutUsPage = () => {
   const theme = useTheme();
@@ -82,7 +81,7 @@ export const AboutUsPage = () => {
 
   return (
     <>
-      <Navbar />
+      <UserNavbar/>
       <Stack spacing={4} sx={{ padding: is600 ? "1rem" : "2rem" }}>
         {/* Hero Section */}
         <motion.div

@@ -1,12 +1,12 @@
 import React from 'react'
-import { Navbar } from '../features/navigation/components/Navbar'
 import { ProductDetails } from '../features/products/components/ProductDetails'
 import { Footer } from '../features/footer/Footer'
+import UserNavbar from '../features/navigation/components/UserNavbar'
 
 export const ProductDetailsPage = () => {
   return (
     <>
-    <Navbar/>
+    <UserNavbar/>
     <ProductDetails/>
     <Footer/>
     </>

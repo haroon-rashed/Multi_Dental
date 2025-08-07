@@ -14,9 +14,9 @@ import {
 } from "@mui/material";
 import { motion } from "framer-motion";
 import { Security, Lock, Visibility, Shield } from "@mui/icons-material";
-import { Navbar } from "../features/navigation/components/Navbar";
 import SecondNav from "../features/navigation/components/SecondNav";
 import { Footer } from "../features/footer/Footer";
+import UserNavbar from "../features/navigation/components/UserNavbar";
 
 export const PrivacyPolicyPage = () => {
   const theme = useTheme();
@@ -88,7 +88,7 @@ export const PrivacyPolicyPage = () => {
 
   return (
     <>
-      <Navbar />
+      <UserNavbar/>
       <Stack spacing={4} sx={{ padding: is600 ? "1rem" : "2rem" }}>
         {/* Header */}
         <motion.div

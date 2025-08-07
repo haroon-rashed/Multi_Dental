@@ -3,6 +3,7 @@ import { Navbar } from '../features/navigation/components/Navbar'
 import AdminSidebar from '../features/admin/components/AdminSidebar'
 import { Box, Grid } from "@mui/material";
 import AdminDashboard from '../features/admin/components/AdminDashboard';
+import UserNavbar from '../features/navigation/components/UserNavbar';
 export const AdminDashboardPage = () => {
   const sidebarWidth = 240;
   return (
@@ -10,7 +11,8 @@ export const AdminDashboardPage = () => {
        <Box sx={{ display: "flex", flexDirection: "column", height: "100vh" }}>
       {/* Top Navbar */}
       <Box sx={{ zIndex: 1201, width: "100%", position: "fixed", top: 0 }}>
-        <Navbar isProductList={true} />
+        {/* <Navbar isProductList={true} /> */}
+        <UserNavbar/>
       </Box>
 
       {/* Sidebar and Content */}

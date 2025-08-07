@@ -1,11 +1,11 @@
 import React from 'react'
 import { ProductUpdate } from '../features/admin/components/ProductUpdate'
-import {Navbar} from '../features/navigation/components/Navbar'
+import UserNavbar from '../features/navigation/components/UserNavbar'
 
 export const ProductUpdatePage = () => {
   return (
     <>
-    <Navbar/>
+    <UserNavbar/>
     <ProductUpdate/>
     </>
   )

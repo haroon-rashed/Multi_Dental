@@ -51,6 +51,8 @@ import Loader from "./features/navigation/components/Loader";
 import CategoryDetailsPage from "./pages/CategoryDetailsPage";
 import ScrollManager from "./components/ScrollManager";
 import globals from "./globals.css"; // Assuming you have a global CSS file
+import { ViewBrandsPage } from "./pages/ViewBrandsPage";
+import { AddBrandPage } from "./pages/AddBrandPage";
 
 function App() {
   const isAuthChecked = useSelector(selectIsAuthChecked);
@@ -74,8 +76,11 @@ function App() {
     { path: "/login", element: <LoginPage /> },
     { path: "/verify-otp", element: <OtpVerificationPage /> },
     { path: "/forgot-password", element: <ForgotPasswordPage /> },
-    { path: "/reset-password/:userId/:passwordResetToken", element: <ResetPasswordPage /> },
-    
+    {
+      path: "/reset-password/:userId/:passwordResetToken",
+      element: <ResetPasswordPage />,
+    },
+
     // Public routes that don't require authentication
     { path: "/", element: <HomePage /> },
     { path: "/cart", element: <CartPage /> },
@@ -89,38 +94,160 @@ function App() {
     { path: "/terms-conditions", element: <TermsConditionsPage /> },
     { path: "/privacy-policy", element: <PrivacyPolicyPage /> },
     { path: "/return-policy", element: <ReturnPolicyPage /> },
-    
+
     // Protected routes that require authentication (but not admin)
-    { path: "/profile", element: <Protected><UserProfilePage /></Protected> },
-    { path: "/orders", element: <Protected><UserOrdersPage /></Protected> },
-    { path: "/wishlist", element: <Protected><WishlistPage /></Protected> },
-    { path: "/logout", element: <Protected><Logout /></Protected> },
+    {
+      path: "/profile",
+      element: (
+        <Protected>
+          <UserProfilePage />
+        </Protected>
+      ),
+    },
+    {
+      path: "/orders",
+      element: (
+        <Protected>
+          <UserOrdersPage />
+        </Protected>
+      ),
+    },
+    {
+      path: "/wishlist",
+      element: (
+        <Protected>
+          <WishlistPage />
+        </Protected>
+      ),
+    },
+    {
+      path: "/logout",
+      element: (
+        <Protected>
+          <Logout />
+        </Protected>
+      ),
+    },
 
     // Admin routes (protected and only accessible by admin users)
-    { path: "/admin/dashboard", element: <Protected adminOnly={true}><AdminDashboardPage /></Protected> },
-    { path: "/admin/product-update/:id", element: <Protected adminOnly={true}><ProductUpdatePage /></Protected> },
-    { path: "/admin/add-product", element: <Protected adminOnly={true}><AddProductPage /></Protected> },
-    { path: "/admin/product-table", element: <Protected adminOnly={true}><ProductTablePage /></Protected> },
-    { path: "/admin/orders", element: <Protected adminOnly={true}><AdminOrdersPage /></Protected> },
-    { path: "/admin/add-category", element: <Protected adminOnly={true}><AddCategoryPage /></Protected> },
-    { path: "/admin/edit-category/:id", element: <Protected adminOnly={true}><AddCategoryPage /></Protected> },
-    { path: "/admin/add-sub-category", element: <Protected adminOnly={true}><AddSubCategoryPage /></Protected> },
-    { path: "/admin/view-category", element: <Protected adminOnly={true}><ViewCategoryPage /></Protected> },
-    { path: "/admin/view-subcategory", element: <Protected adminOnly={true}><ViewSubCategoryPage /></Protected> },
+    {
+      path: "/admin/dashboard",
+      element: (
+        <Protected adminOnly={true}>
+          <AdminDashboardPage />
+        </Protected>
+      ),
+    },
+    {
+      path: "/admin/product-update/:id",
+      element: (
+        <Protected adminOnly={true}>
+          <ProductUpdatePage />
+        </Protected>
+      ),
+    },
+    {
+      path: "/admin/add-product",
+      element: (
+        <Protected adminOnly={true}>
+          <AddProductPage />
+        </Protected>
+      ),
+    },
+    {
+      path: "/admin/product-table",
+      element: (
+        <Protected adminOnly={true}>
+          <ProductTablePage />
+        </Protected>
+      ),
+    },
+    {
+      path: "/admin/orders",
+      element: (
+        <Protected adminOnly={true}>
+          <AdminOrdersPage />
+        </Protected>
+      ),
+    },
+    {
+      path: "/admin/add-category",
+      element: (
+        <Protected adminOnly={true}>
+          <AddCategoryPage />
+        </Protected>
+      ),
+    },
+    {
+      path: "/admin/add-brand",
+      element: (
+        <Protected adminOnly={true}>
+          <AddBrandPage />
+        </Protected>
+      ),
+    },
+    {
+      path: "/admin/edit-category/:id",
+      element: (
+        <Protected adminOnly={true}>
+          <AddCategoryPage />
+        </Protected>
+      ),
+    },
+    {
+      path: "/admin/add-sub-category",
+      element: (
+        <Protected adminOnly={true}>
+          <AddSubCategoryPage />
+        </Protected>
+      ),
+    },
+    {
+      path: "/admin/view-category",
+      element: (
+        <Protected adminOnly={true}>
+          <ViewCategoryPage />
+        </Protected>
+      ),
+    },
+    {
+      path: "/admin/view-brands",
+      element: (
+        <Protected adminOnly={true}>
+          <ViewBrandsPage />
+        </Protected>
+      ),
+    },
+    {
+      path: "/admin/view-subcategory",
+      element: (
+        <Protected adminOnly={true}>
+          <ViewSubCategoryPage />
+        </Protected>
+      ),
+    },
 
     // 404 route - must be last
-    { path: "*", element: <Navigate to={loggedInUser?.isAdmin ? "/admin/dashboard" : "/"} replace /> },
+    {
+      path: "*",
+      element: (
+        <Navigate
+          to={loggedInUser?.isAdmin ? "/admin/dashboard" : "/"}
+          replace
+        />
+      ),
+    },
   ];
 
   // Create the router
   const router = createBrowserRouter([
     {
       element: <Layout />,
-      children: routes.map(route => ({
+      children: routes.map((route) => ({
         path: route.path,
-        element: route.element
-      }))
-    }
+        element: route.element,
+      })),
+    },
   ]);
 
   // 🟡 Show loader until auth check is complete

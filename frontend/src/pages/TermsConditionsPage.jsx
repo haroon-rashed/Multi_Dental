@@ -16,6 +16,7 @@ import { CheckCircle } from "@mui/icons-material";
 import { Navbar } from "../features/navigation/components/Navbar";
 import SecondNav from "../features/navigation/components/SecondNav";
 import { Footer } from "../features/footer/Footer";
+import UserNavbar from "../features/navigation/components/UserNavbar";
 
 export const TermsConditionsPage = () => {
   const theme = useTheme();
@@ -87,7 +88,7 @@ export const TermsConditionsPage = () => {
 
   return (
     <>
-      <Navbar />
+      <UserNavbar/>
       <Stack spacing={4} sx={{ padding: is600 ? "1rem" : "2rem" }}>
         {/* Header */}
         <motion.div

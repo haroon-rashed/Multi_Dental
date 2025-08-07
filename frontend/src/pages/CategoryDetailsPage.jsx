@@ -4,7 +4,6 @@ import { useSelector, useDispatch } from "react-redux";
 import { Box, Typography, Stack, Grid, Divider, Button } from "@mui/material";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { Navbar } from "../features/navigation/components/Navbar";
 import { Footer } from "../features/footer/Footer";
 import {
   selectCategories,
@@ -22,6 +21,7 @@ import {
   ProductListSkeleton,
   ListSkeleton,
 } from "../components/skeletons/SkeletonLoaders";
+import UserNavbar from "../features/navigation/components/UserNavbar";
 
 const CategoryDetailsPage = () => {
   const { id } = useParams();
@@ -129,7 +129,7 @@ const CategoryDetailsPage = () => {
     <>
       {/* Sticky Navbar */}
       <Box sx={{ position: "sticky", top: 0, zIndex: 1201 }}>
-        <Navbar />
+        <UserNavbar/>
       </Box>
       <Box sx={{ minHeight: "80vh", background: "#f8fafc" }}>
         <Box sx={{ maxWidth: 1200, mx: "auto", pt: 4, px: { xs: 2, md: 4 } }}>

@@ -30,6 +30,7 @@ import {
   FaClipboardList,
   FaUser,
   FaSignOutAlt,
+  FaTags,
 } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -42,7 +43,7 @@ const AdminSidebar = () => {
     sales: false,
     subcategories: false,
   });
-  
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const loggedInUser = useSelector(selectLoggedInUser);
@@ -89,7 +90,12 @@ const AdminSidebar = () => {
 
         <List>
           {/* Dashboard */}
-          <ListItem button component={Link} to="/admin/dashboard" sx={{ color: "#92400e" }}>
+          <ListItem
+            button
+            component={Link}
+            to="/admin/dashboard"
+            sx={{ color: "#92400e" }}
+          >
             <ListItemIcon sx={{ color: "#92400e" }}>
               <FaHome />
             </ListItemIcon>
@@ -104,75 +110,177 @@ const AdminSidebar = () => {
             <ListItemText primary="Customers" />
           </ListItem>
 
-
-
           {/* Products Dropdown */}
-          <ListItem button onClick={() => handleToggle("products")} sx={{ color: "#92400e" }}>
+          <ListItem
+            button
+            onClick={() => handleToggle("products")}
+            sx={{ color: "#92400e" }}
+          >
             <ListItemIcon sx={{ color: "#92400e" }}>
               <FaShoppingCart />
             </ListItemIcon>
             <ListItemText primary="Products" />
-            {openSubmenus.products ? <FaChevronUp size={14} /> : <FaChevronDown size={14} />}
+            {openSubmenus.products ? (
+              <FaChevronUp size={14} />
+            ) : (
+              <FaChevronDown size={14} />
+            )}
           </ListItem>
 
           <Collapse in={openSubmenus.products} timeout="auto" unmountOnExit>
             <List component="div" disablePadding sx={{ pl: 4 }}>
-              <ListItem button component={Link} to="/admin/add-product" sx={{ color: "#b45309" }}>
+              <ListItem
+                button
+                component={Link}
+                to="/admin/add-product"
+                sx={{ color: "#b45309" }}
+              >
                 <ListItemText primary="Add Product" />
               </ListItem>
-              <ListItem button component={Link} to="/admin/product-table" sx={{ color: "#b45309" }}>
+              <ListItem
+                button
+                component={Link}
+                to="/admin/product-table"
+                sx={{ color: "#b45309" }}
+              >
                 <ListItemText primary="View Products" />
               </ListItem>
             </List>
           </Collapse>
 
           {/* Category Dropdown */}
-          <ListItem button onClick={() => handleToggle("category")} sx={{ color: "#92400e" }}>
+          <ListItem
+            button
+            onClick={() => handleToggle("category")}
+            sx={{ color: "#92400e" }}
+          >
             <ListItemIcon sx={{ color: "#92400e" }}>
               <FaListAlt />
             </ListItemIcon>
             <ListItemText primary="Category" />
-            {openSubmenus.category ? <FaChevronUp size={14} /> : <FaChevronDown size={14} />}
+            {openSubmenus.category ? (
+              <FaChevronUp size={14} />
+            ) : (
+              <FaChevronDown size={14} />
+            )}
           </ListItem>
 
           <Collapse in={openSubmenus.category} timeout="auto" unmountOnExit>
             <List component="div" disablePadding sx={{ pl: 4 }}>
-              <ListItem button component={Link} to="/admin/add-category" sx={{ color: "#b45309" }}>
+              <ListItem
+                button
+                component={Link}
+                to="/admin/add-category"
+                sx={{ color: "#b45309" }}
+              >
                 <ListItemText primary="Add Category" />
               </ListItem>
-              <ListItem button component={Link} to="/admin/view-category" sx={{ color: "#b45309" }}>
+              <ListItem
+                button
+                component={Link}
+                to="/admin/view-category"
+                sx={{ color: "#b45309" }}
+              >
                 <ListItemText primary="View Categories" />
               </ListItem>
             </List>
           </Collapse>
 
-          {/* Subcategories Dropdown */}
-          <ListItem button onClick={() => handleToggle("subcategories")} sx={{ color: "#92400e" }}>
+          {/* Brands Dropdown */}
+          <ListItem
+            button
+            onClick={() => handleToggle("brands")}
+            sx={{ color: "#92400e" }}
+          >
             <ListItemIcon sx={{ color: "#92400e" }}>
-              <FaSitemap />
+              <FaTags /> {/* You can use FaTags or another suitable icon */}
             </ListItemIcon>
-            <ListItemText primary="Subcategories" />
-            {openSubmenus.subcategories ? <FaChevronUp size={14} /> : <FaChevronDown size={14} />}
+            <ListItemText primary="Brands" />
+            {openSubmenus.brands ? (
+              <FaChevronUp size={14} />
+            ) : (
+              <FaChevronDown size={14} />
+            )}
           </ListItem>
 
-          <Collapse in={openSubmenus.subcategories} timeout="auto" unmountOnExit>
+          <Collapse in={openSubmenus.brands} timeout="auto" unmountOnExit>
             <List component="div" disablePadding sx={{ pl: 4 }}>
-              <ListItem button component={Link} to="/admin/add-sub-category" sx={{ color: "#b45309" }}>
-                <ListItemText primary="Add Subcategory" />
+              <ListItem
+                button
+                component={Link}
+                to="/admin/add-brand"
+                sx={{ color: "#b45309" }}
+              >
+                <ListItemText primary="Add Brand" />
               </ListItem>
-              <ListItem button component={Link} to="/admin/view-subcategory" sx={{ color: "#b45309" }}>
-                <ListItemText primary="View Subcategories" />
+              <ListItem
+                button
+                component={Link}
+                to="/admin/view-brands"
+                sx={{ color: "#b45309" }}
+              >
+                <ListItemText primary="View Brands" />
               </ListItem>
             </List>
           </Collapse>
 
+          {/* Subcategories Dropdown */}
+          {/* <ListItem
+            button
+            onClick={() => handleToggle("subcategories")}
+            sx={{ color: "#92400e" }}
+          >
+            <ListItemIcon sx={{ color: "#92400e" }}>
+              <FaSitemap />
+            </ListItemIcon>
+            <ListItemText primary="Subcategories" />
+            {openSubmenus.subcategories ? (
+              <FaChevronUp size={14} />
+            ) : (
+              <FaChevronDown size={14} />
+            )}
+          </ListItem>
+
+          <Collapse
+            in={openSubmenus.subcategories}
+            timeout="auto"
+            unmountOnExit
+          >
+            <List component="div" disablePadding sx={{ pl: 4 }}>
+              <ListItem
+                button
+                component={Link}
+                to="/admin/add-sub-category"
+                sx={{ color: "#b45309" }}
+              >
+                <ListItemText primary="Add Subcategory" />
+              </ListItem>
+              <ListItem
+                button
+                component={Link}
+                to="/admin/view-subcategory"
+                sx={{ color: "#b45309" }}
+              >
+                <ListItemText primary="View Subcategories" />
+              </ListItem>
+            </List>
+          </Collapse> */}
+
           {/* Sales Dropdown */}
-          <ListItem button onClick={() => handleToggle("sales")} sx={{ color: "#92400e" }}>
+          <ListItem
+            button
+            onClick={() => handleToggle("sales")}
+            sx={{ color: "#92400e" }}
+          >
             <ListItemIcon sx={{ color: "#92400e" }}>
               <FaChartBar />
             </ListItemIcon>
             <ListItemText primary="Sales" />
-            {openSubmenus.sales ? <FaChevronUp size={14} /> : <FaChevronDown size={14} />}
+            {openSubmenus.sales ? (
+              <FaChevronUp size={14} />
+            ) : (
+              <FaChevronDown size={14} />
+            )}
           </ListItem>
 
           <Collapse in={openSubmenus.sales} timeout="auto" unmountOnExit>
@@ -183,7 +291,12 @@ const AdminSidebar = () => {
               <ListItem button sx={{ color: "#b45309" }}>
                 <ListItemText primary="Breakdown" />
               </ListItem>
-              <ListItem button component={Link} to="/admin/orders" sx={{ color: "#b45309" }}>
+              <ListItem
+                button
+                component={Link}
+                to="/admin/orders"
+                sx={{ color: "#b45309" }}
+              >
                 <ListItemText primary="Orders" />
               </ListItem>
             </List>
@@ -226,12 +339,18 @@ const AdminSidebar = () => {
             mb: 2,
           }}
         >
-          <Avatar 
-            src={loggedInUser?.profilePicture || "https://randomuser.me/api/portraits/women/44.jpg"} 
+          <Avatar
+            src={
+              loggedInUser?.profilePicture ||
+              "https://randomuser.me/api/portraits/women/44.jpg"
+            }
             sx={{ width: 40, height: 40, mr: 2 }}
           />
           <Box>
-            <Typography variant="body2" sx={{ fontWeight: 600, color: "#92400e" }}>
+            <Typography
+              variant="body2"
+              sx={{ fontWeight: 600, color: "#92400e" }}
+            >
               {loggedInUser?.name || "Admin User"}
             </Typography>
             <Typography variant="caption" sx={{ color: "#b45309" }}>

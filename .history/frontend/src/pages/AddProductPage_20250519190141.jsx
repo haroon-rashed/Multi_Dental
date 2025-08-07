@@ -1,12 +1,12 @@
-import React from 'react'
-import { Navbar } from '../features/navigation/components/Navbar'
-import { AddProduct } from '../features/admin/components/AddProduct'
+import React from "react";
+import { AddProduct } from "../features/admin/components/AddProduct";
+import UserNavbar from "../../../../frontend/src/features/navigation/components/UserNavbar";
 
 export const AddProductPage = () => {
   return (
     <>
-    <Navbar/>
-    <AddProduct/>
+      <UserNavbar />
+      <AddProduct />
     </>
-  )
-}
+  );
+};
