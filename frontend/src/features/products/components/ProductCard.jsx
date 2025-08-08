@@ -61,6 +61,7 @@ export const ProductCard = ({
   thumbnail,
   brand,
   stockQuantity,
+  discountPercentage,
   handleAddRemoveFromWishlist,
   isWishlistCard,
   isAdminCard,
@@ -103,7 +104,32 @@ export const ProductCard = ({
     [title]
   );
   const safeBrand = useMemo(() => getSafeString(brand, "Brand"), [brand]);
-  const safePrice = useMemo(() => formatPrice(price), [price]);
+
+  // Calculate pricing with discount
+  const priceCalculations = useMemo(() => {
+    const originalPrice = parseFloat(price) || 0;
+    const discountAmount = parseFloat(discountPercentage) || 0;
+
+    // Calculate selling price (original price - discount amount)
+    const sellingPrice = originalPrice - discountAmount;
+
+    // Calculate discount percentage
+    const discountPercent =
+      originalPrice > 0
+        ? Math.round((discountAmount / originalPrice) * 100)
+        : 0;
+
+    return {
+      originalPrice: formatPrice(originalPrice),
+      sellingPrice: formatPrice(
+        sellingPrice > 0 ? sellingPrice : originalPrice
+      ),
+      discountAmount: formatPrice(discountAmount),
+      discountPercent,
+      hasDiscount: discountAmount > 0 && originalPrice > discountAmount,
+    };
+  }, [price, discountPercentage]);
+
   const safeThumbnail = useMemo(() => {
     if (!thumbnail) return "";
     if (typeof thumbnail === "string") return thumbnail;
@@ -348,7 +374,7 @@ export const ProductCard = ({
                 </Typography>
               </Box>
 
-              {/* Price Section with Stock Warning */}
+              {/* Price Section with Dynamic Discount */}
               <Box>
                 <Box
                   sx={{
@@ -359,6 +385,7 @@ export const ProductCard = ({
                     mb: 1,
                   }}
                 >
+                  {/* Selling Price */}
                   <Typography
                     variant="h6"
                     component="span"
@@ -368,30 +395,39 @@ export const ProductCard = ({
                       fontSize: "1.1rem",
                     }}
                   >
-                    ${safePrice}
+                    Rs: {priceCalculations.sellingPrice}
                   </Typography>
-                  <Typography
-                    variant="body2"
-                    component="span"
-                    sx={{
-                      color: "#6B7280",
-                      textDecoration: "line-through",
-                      fontSize: "0.75rem",
-                    }}
-                  >
-                    ${(parseFloat(safePrice) * 1.2).toFixed(2)}
-                  </Typography>
-                  <Chip
-                    label="20% OFF"
-                    size="small"
-                    sx={{
-                      backgroundColor: "#5A7FBF",
-                      color: "white",
-                      fontWeight: 600,
-                      fontSize: "0.6rem",
-                      height: "18px",
-                    }}
-                  />
+
+                  {/* Original Price with strikethrough (only show if there's a discount) */}
+                  {priceCalculations.hasDiscount && (
+                    <Typography
+                      variant="body2"
+                      component="span"
+                      sx={{
+                        color: "#6B7280",
+                        textDecoration: "line-through",
+                        fontSize: "0.75rem",
+                      }}
+                    >
+                      Rs: {priceCalculations.originalPrice}
+                    </Typography>
+                  )}
+
+                  {/* Dynamic Discount Percentage (only show if there's a discount) */}
+                  {priceCalculations.hasDiscount &&
+                    priceCalculations.discountPercent > 0 && (
+                      <Chip
+                        label={`${priceCalculations.discountPercent}% OFF`}
+                        size="small"
+                        sx={{
+                          backgroundColor: "#5A7FBF",
+                          color: "white",
+                          fontWeight: 600,
+                          fontSize: "0.6rem",
+                          height: "18px",
+                        }}
+                      />
+                    )}
                 </Box>
 
                 {/* Stock Warning - Inline */}

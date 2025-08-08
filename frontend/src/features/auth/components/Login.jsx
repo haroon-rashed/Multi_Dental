@@ -62,14 +62,19 @@ export const Login = () => {
   // handles login status and dispatches reset actions to relevant states in cleanup
   useEffect(() => {
     if (status === "fullfilled" && loggedInUser?.isVerified === true) {
-      toast.success(`Login successful`);
       reset();
+      // Redirect admin users to admin dashboard, others to home page
+      if (loggedInUser?.isAdmin) {
+        navigate('/admin/dashboard');
+      } else {
+        navigate('/');
+      }
     }
     return () => {
       dispatch(clearLoginError());
       dispatch(resetLoginStatus());
     };
-  }, [status]);
+  }, [status, loggedInUser, navigate, reset, dispatch]);
 
   const handleLogin = async (data) => {
     try {

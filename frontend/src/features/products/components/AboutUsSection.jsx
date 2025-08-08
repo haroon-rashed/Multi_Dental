@@ -12,6 +12,7 @@ import {
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
+import { Link } from "react-router-dom";
 
 const AboutUsSection = () => {
   const theme = useTheme();
@@ -33,7 +34,7 @@ const AboutUsSection = () => {
         textAlign="center"
         mb={3}
         sx={{
-          color: "#0a2540",
+          color: "#0088aa",
         }}
       >
         About Us
@@ -107,7 +108,7 @@ const AboutUsSection = () => {
             color="primary"
             fontWeight="600"
             mb={1}
-            sx={{ color: "#0072ce" }}
+            sx={{ color: "#0088aa" }}
           >
             About Us
           </Typography>
@@ -115,7 +116,7 @@ const AboutUsSection = () => {
             variant="h4"
             fontWeight="bold"
             gutterBottom
-            sx={{ color: "#0a2540" }}
+            sx={{ color: "#0088aa" }}
           >
             Empowering Dental Professionals <br />
             Through Quality Products
@@ -144,32 +145,44 @@ const AboutUsSection = () => {
                 spacing={1}
                 key={index}
               >
-                <CheckCircleIcon sx={{ color: "#0072ce" }} />
-                <Typography fontWeight="600">{item}</Typography>
+                <CheckCircleIcon sx={{ color: "#0088aa" }} />
+                <Typography sx={{ color: "#0088aa" }} fontWeight="600">
+                  {item}
+                </Typography>
               </Stack>
             ))}
           </Stack>
 
           <Stack direction="row" spacing={4} mt={0} alignItems="center">
-            <Button
-              variant="contained"
-              sx={{
-                borderRadius: "50px",
-                px: 4,
-                py: 1.5,
+            <Link
+              to="/products"
+              style={{
+                display: "inline-block",
+                padding: "12px 24px",
+                backgroundColor: "#00a8cc",
+                color: "white",
                 fontWeight: "bold",
+                borderRadius: "50px",
+                textDecoration: "none",
                 fontSize: "1rem",
                 textTransform: "none",
-                bgcolor: "#0072ce",
-                "&:hover": { bgcolor: "#005fa3" },
+                transition: "all 0.3s ease",
+                textAlign: "center",
+                border: "none",
+                cursor: "pointer",
+                boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)",
+                ":hover": {
+                  backgroundColor: "#0088aa",
+                  transform: "translateY(-1px)",
+                  boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.2)",
+                },
               }}
             >
               Shop Now →
-            </Button>
-
+            </Link>
             <Box
               sx={{
-                bgcolor: "#04375a",
+                bgcolor: "#0088aa",
                 color: "white",
                 px: 4,
                 py: 3,

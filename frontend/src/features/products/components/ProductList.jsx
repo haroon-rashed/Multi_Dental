@@ -819,6 +819,7 @@ export const ProductList = () => {
                             brand={product?.brand?.name || "Unknown Brand"}
                             price={product?.price || 0}
                             stockQuantity={product?.stockQuantity || 0}
+                            discountPercentage={product.discountPercentage}
                             handleAddRemoveFromWishlist={
                               handleAddRemoveFromWishlist
                             }

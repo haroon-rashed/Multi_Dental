@@ -45,7 +45,7 @@ import { selectUserInfo } from "../../user/UserSlice";
 import { selectLoggedInUser } from "../../auth/AuthSlice";
 import { selectCartItems } from "../../cart/CartSlice";
 import { selectWishlistItems } from "../../wishlist/WishlistSlice";
-import logo from '../../../assets/images/logo.png';
+import logo from "../../../assets/images/logo.png";
 const UserNavbar = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
@@ -274,7 +274,7 @@ const UserNavbar = () => {
     primary: isScrolled ? "#ffffff" : "#f8fffe", // Clean white/off-white
     secondary: "#00a8cc", // Medical blue
     accent: "#28a745", // Fresh green
-    text: "#2c3e50", // Dark blue-gray
+    text: "#0088aa", // Dark blue-gray
     textSecondary: "#5a6c7d", // Medium gray
     hover: "rgba(0, 168, 204, 0.1)", // Light blue hover
     shadow: isScrolled
