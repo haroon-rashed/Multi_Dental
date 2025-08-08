@@ -26,6 +26,7 @@ import {
   Menu as MenuIcon,
   ExpandMore as ExpandMoreIcon,
   ExpandLess as ExpandLessIcon,
+  ChevronRight as ChevronRightIcon,
   Home as HomeIcon,
   Category as CategoryIcon,
   Store as StoreIcon,
@@ -44,7 +45,7 @@ import { selectUserInfo } from "../../user/UserSlice";
 import { selectLoggedInUser } from "../../auth/AuthSlice";
 import { selectCartItems } from "../../cart/CartSlice";
 import { selectWishlistItems } from "../../wishlist/WishlistSlice";
-
+import logo from '../../../assets/images/logo.png';
 const UserNavbar = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
@@ -179,7 +180,7 @@ const UserNavbar = () => {
     return !parentId || parentId === null || parentId === undefined;
   });
 
-  // Enhanced hover handlers for better UX
+  // Enhanced hover handlers for immediate response
   const handleMenuMouseEnter = (menuType, event) => {
     clearHoverTimeout(menuType);
 
@@ -437,7 +438,7 @@ const UserNavbar = () => {
   const MobileDrawerContent = () => (
     <Box sx={{ width: 280, pt: 2 }}>
       {/* User Info in Mobile */}
-      {userInfo && (
+      {userInfo ? (
         <Box
           sx={{ px: 2, pb: 2, borderBottom: `1px solid ${dentalTheme.border}` }}
         >
@@ -468,6 +469,33 @@ const UserNavbar = () => {
               </Typography>
             </Box>
           </Stack>
+        </Box>
+      ) : (
+        <Box
+          sx={{ px: 2, pb: 2, borderBottom: `1px solid ${dentalTheme.border}` }}
+        >
+          <Button
+            variant="contained"
+            fullWidth
+            onClick={() => {
+              navigate("/login");
+              setMobileDrawerOpen(false);
+            }}
+            sx={{
+              bgcolor: dentalTheme.secondary,
+              color: "white",
+              textTransform: "none",
+              fontWeight: 600,
+              py: 1.5,
+              borderRadius: "8px",
+              "&:hover": {
+                bgcolor: dentalTheme.secondary,
+                opacity: 0.9,
+              },
+            }}
+          >
+            Login
+          </Button>
         </Box>
       )}
 
@@ -844,36 +872,39 @@ const UserNavbar = () => {
           />
         </ListItem>
 
-        <Divider sx={{ my: 2, backgroundColor: dentalTheme.border }} />
-
-        {/* User Menu Items in Mobile */}
-        {userMenuSettings.map((setting) => (
-          <ListItem
-            key={setting.name}
-            button
-            sx={{
-              borderRadius: "8px",
-              mb: 0.5,
-              "&:hover": {
-                backgroundColor: dentalTheme.hover,
-              },
-            }}
-            onClick={() => {
-              navigate(setting.path);
-              setMobileDrawerOpen(false);
-            }}
-          >
-            <ListItemText
-              primary={setting.name}
-              sx={{
-                "& .MuiListItemText-primary": {
-                  color: dentalTheme.text,
-                  fontWeight: 500,
-                },
-              }}
-            />
-          </ListItem>
-        ))}
+        {/* Show user menu items only if logged in */}
+        {userInfo && (
+          <>
+            <Divider sx={{ my: 2, backgroundColor: dentalTheme.border }} />
+            {userMenuSettings.map((setting) => (
+              <ListItem
+                key={setting.name}
+                button
+                sx={{
+                  borderRadius: "8px",
+                  mb: 0.5,
+                  "&:hover": {
+                    backgroundColor: dentalTheme.hover,
+                  },
+                }}
+                onClick={() => {
+                  navigate(setting.path);
+                  setMobileDrawerOpen(false);
+                }}
+              >
+                <ListItemText
+                  primary={setting.name}
+                  sx={{
+                    "& .MuiListItemText-primary": {
+                      color: dentalTheme.text,
+                      fontWeight: 500,
+                    },
+                  }}
+                />
+              </ListItem>
+            ))}
+          </>
+        )}
       </List>
     </Box>
   );
@@ -899,25 +930,22 @@ const UserNavbar = () => {
           }}
         >
           {/* Left: MDS Brand */}
-          <Typography
-            variant="h4"
-            component="div"
+          <Box
+            component="img"
+            src={logo}
+            alt="Multi Dental Supply Logo"
+            onClick={handleHomeClick}
             sx={{
-              fontWeight: "700",
-              color: dentalTheme.secondary,
-              letterSpacing: 2,
-              fontSize: { xs: "24px", md: "28px" },
-              textShadow: "0 2px 4px rgba(0, 168, 204, 0.1)",
+              height: { xs: "40px", md: "50px" },
+              width: "auto",
+              objectFit: "contain",
               cursor: "pointer",
               "&:hover": {
                 transform: "scale(1.05)",
                 transition: "transform 0.2s ease-in-out",
               },
             }}
-            onClick={handleHomeClick}
-          >
-            MDS
-          </Typography>
+          />
 
           {/* Center: Navigation Links (Desktop) */}
           {!isMobile && (
@@ -1008,38 +1036,39 @@ const UserNavbar = () => {
             ) : (
               <>
                 {/* Desktop User Menu */}
-                {!isSmall && (userInfo ? (
-                  <Typography
-                    variant="body1"
-                    sx={{
-                      color: dentalTheme.text,
-                      mr: 2,
-                      fontWeight: 500,
-                    }}
-                  >
-                    Hi, {
-                    typeof userInfo?.name === "string"
-                      ? userInfo.name
-                      : typeof userInfo?.firstName === "string"
-                      ? userInfo.firstName
-                      : "User"
-                    }!
-                  </Typography>
-                ) : (
-                  <Button 
-                    variant="contained"
-                    color="primary"
-                    onClick={() => navigate('/login')}
-                    sx={{ 
-                      textTransform: 'none',
-                      fontWeight: 500,
-                      px: 2,
-                      mr: 2
-                    }}
-                  >
-                    Login
-                  </Button>
-                ))}
+                {!isSmall &&
+                  (userInfo ? (
+                    <Typography
+                      variant="body1"
+                      sx={{
+                        color: dentalTheme.text,
+                        mr: 2,
+                        fontWeight: 500,
+                      }}
+                    >
+                      Hi,{" "}
+                      {typeof userInfo?.name === "string"
+                        ? userInfo.name
+                        : typeof userInfo?.firstName === "string"
+                        ? userInfo.firstName
+                        : "User"}
+                      !
+                    </Typography>
+                  ) : (
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={() => navigate("/login")}
+                      sx={{
+                        textTransform: "none",
+                        fontWeight: 500,
+                        px: 2,
+                        mr: 2,
+                      }}
+                    >
+                      Login
+                    </Button>
+                  ))}
                 <Tooltip title="User Menu" arrow>
                   <IconButton
                     onClick={(e) => setUserMenuAnchor(e.currentTarget)}
@@ -1144,27 +1173,27 @@ const UserNavbar = () => {
         MenuListProps={{
           onMouseEnter: () => handleDropdownMouseEnter("categories"),
           onMouseLeave: () => handleDropdownMouseLeave("categories"),
-          sx: { 
-            padding: 1, 
+          sx: {
+            padding: 1,
             maxHeight: "70vh",
             overflowY: "auto",
-            '&::-webkit-scrollbar': {
-              width: '6px',
+            "&::-webkit-scrollbar": {
+              width: "6px",
             },
-            '&::-webkit-scrollbar-track': {
-              background: '#f1f1f1',
-              borderRadius: '3px',
+            "&::-webkit-scrollbar-track": {
+              background: "#f1f1f1",
+              borderRadius: "3px",
             },
-            '&::-webkit-scrollbar-thumb': {
-              background: '#888',
-              borderRadius: '3px',
-              '&:hover': {
-                background: '#555',
+            "&::-webkit-scrollbar-thumb": {
+              background: "#888",
+              borderRadius: "3px",
+              "&:hover": {
+                background: "#555",
               },
             },
-            '&:hover': {
-              '&::-webkit-scrollbar-thumb': {
-                background: '#888',
+            "&:hover": {
+              "&::-webkit-scrollbar-thumb": {
+                background: "#888",
               },
             },
           },
@@ -1241,7 +1270,7 @@ const UserNavbar = () => {
                   : category.name?.name || "Category"}
               </span>
               {hasSubcategories && (
-                <ExpandMoreIcon
+                <ChevronRightIcon
                   sx={{
                     fontSize: "20px",
                     marginLeft: "8px",
@@ -1350,7 +1379,7 @@ const UserNavbar = () => {
             boxShadow: "0 8px 32px rgba(0, 0, 0, 0.12)",
             position: "fixed",
             top: "65px",
-            left: "370px", // 265 + 105 = 370px (adjusted for pages position)
+            left: "450px", // Moved 20px left from 410px
             transform: "none",
           },
         }}
@@ -1477,7 +1506,7 @@ const UserNavbar = () => {
             boxShadow: "0 8px 32px rgba(0, 0, 0, 0.12)",
             position: "fixed",
             top: "65px",
-            left: "530px", // 265 + 265 = 530px (adjusted for brands position)
+            left: "650px", // Moved 50px left from 530px
             transform: "none",
           },
         }}
