@@ -1,10 +1,7 @@
 import React from 'react'
-import { Navbar } from '../features/navigation/components/Navbar'
 import { Box, Grid } from "@mui/material";
 import AdminSidebar from '../features/admin/components/AdminSidebar';
 import AddCategory from '../features/admin/components/AddCategoryContainer';
-import UserNavbar from '../features/navigation/components/UserNavbar';
-
 export const AddCategoryPage = () => {
   const sidebarWidth = 240;
   return (
@@ -12,8 +9,6 @@ export const AddCategoryPage = () => {
      <Box sx={{ display: "flex", flexDirection: "column", height: "100vh" }}>
          {/* Top Navbar */}
          <Box sx={{ zIndex: 1201, width: "100%", position: "fixed", top: 0 }}>
-           {/* <Navbar isProductList={true} /> */}
-           <UserNavbar/>
          </Box>
    
          {/* Sidebar and Content */}

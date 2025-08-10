@@ -1,10 +1,7 @@
 import React from "react";
-import { Navbar } from "../features/navigation/components/Navbar";
 import { Box } from "@mui/material";
 import AdminSidebar from "../features/admin/components/AdminSidebar";
 import AddBrand from "../features/admin/components/AddBrand";
-import UserNavbar from "../features/navigation/components/UserNavbar";
-
 export const AddBrandPage = () => {
   const sidebarWidth = 240;
   return (
@@ -12,8 +9,6 @@ export const AddBrandPage = () => {
       <Box sx={{ display: "flex", flexDirection: "column", height: "100vh" }}>
         {/* Top Navbar */}
         <Box sx={{ zIndex: 1201, width: "100%", position: "fixed", top: 0 }}>
-          {/* <Navbar isProductList={true} /> */}
-          <UserNavbar/>
         </Box>
 
         {/* Sidebar and Content */}

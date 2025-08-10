@@ -3,10 +3,43 @@ import { Box, Typography, Container, Stack, Fade } from "@mui/material";
 
 export const VideoHero = () => {
   const [isLoaded, setIsLoaded] = useState(false);
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  const slides = [
+    {
+      image: "/hero1.jpg", // Replace with your actual image name in public folder
+      title: "Your Trusted Source for Quality Dental Supplies",
+      subtitle:
+        "We provide reliable, dentist-approved products that make it easy to care for your smile—delivered straight to your door with comfort, convenience, and care.",
+    },
+    {
+      image: "/hero2.jpg", // Replace with your actual image name in public folder
+      title: "Discover Premium Dental Care Essentials",
+      subtitle:
+        "Explore our curated selection of high-quality dental products designed for professional results and everyday use.",
+    },
+    {
+      image: "/hero3.jpg", // Replace with your actual image name in public folder
+      title: "Achieve a Brighter, Healthier Smile Today",
+      subtitle:
+        "Shop top-rated dental supplies with fast shipping, exclusive deals, and expert support for all your oral care needs.",
+    },
+  ];
 
   useEffect(() => {
+    // Initial load timer as fallback
     const timer = setTimeout(() => setIsLoaded(true), 500);
     return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIsLoaded(false);
+      setTimeout(() => {
+        setCurrentSlide((prev) => (prev + 1) % slides.length);
+      }, 500); // Time for fade out before changing slide
+    }, 5000); // Change slide every 5 seconds
+    return () => clearInterval(interval);
   }, []);
 
   return (
@@ -23,20 +56,12 @@ export const VideoHero = () => {
         fontFamily: "'Poppins', sans-serif",
       }}
     >
-      {/* Background Video */}
+      {/* Background Image */}
       <Box
-        component="video"
-        autoPlay
-        muted
-        loop
-        playsInline
-        disablePictureInPicture
-        webkit-playsinline="true"
-        x5-playsinline="true"
-        x5-video-player-type="h5"
-        x5-video-player-fullscreen="true"
-        x5-video-orientation="portrait"
-        preload="metadata"
+        component="img"
+        src={slides[currentSlide].image}
+        alt={`Dental care slide ${currentSlide + 1}`}
+        onLoad={() => setIsLoaded(true)}
         sx={{
           position: "absolute",
           top: 0,
@@ -47,6 +72,8 @@ export const VideoHero = () => {
           objectFit: "cover",
           objectPosition: "center",
           zIndex: -2,
+          opacity: isLoaded ? 1 : 0,
+          transition: "opacity 0.5s ease-in-out",
           // Mobile optimizations
           "@media (max-width: 768px)": {
             objectPosition: "center center",
@@ -54,58 +81,14 @@ export const VideoHero = () => {
             transform: "translate3d(0, 0, 0)",
             backfaceVisibility: "hidden",
             WebkitBackfaceVisibility: "hidden",
-            // Ensure video stays visible
+            // Ensure image stays visible
             display: "block",
             visibility: "visible",
-            opacity: 1,
-            // Hide video controls
-            "&::-webkit-media-controls": {
-              display: "none !important",
-            },
-            "&::-webkit-media-controls-start-playback-button": {
-              display: "none !important",
-              WebkitAppearance: "none",
-            },
-            "&::-webkit-media-controls-play-button": {
-              display: "none !important",
-              WebkitAppearance: "none",
-            },
-            "&::-webkit-media-controls-panel": {
-              display: "none !important",
-            },
-          },
-          // Additional browser compatibility
-          "&::-moz-media-controls": {
-            display: "none !important",
-          },
-          "&::-ms-media-controls": {
-            display: "none !important",
           },
         }}
-        onLoadedData={() => setIsLoaded(true)}
-      >
-        <source
-          src="https://demo.awaikenthemes.com/assets/videos/primecare-video-2.mp4"
-          type="video/mp4"
-        />
-        {/* Enhanced fallback */}
-        <Box
-          component="img"
-          src="/path-to-fallback-image.jpg"
-          alt="Dental care background"
-          sx={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-            zIndex: -1,
-          }}
-        />
-      </Box>
+      />
 
-      {/* Lighter Overlay for Better Video Visibility */}
+      {/* Lighter Overlay for Better Image Visibility */}
       <Box
         sx={{
           position: "absolute",
@@ -172,14 +155,14 @@ export const VideoHero = () => {
               component="h1"
               sx={{
                 fontSize: {
-                  xs: "1.8rem", // Reduced for better mobile display
-                  sm: "2.2rem", // Small tablets
-                  md: "3.2rem", // Medium screens
-                  lg: "3.8rem", // Large screens
-                  xl: "4.3rem", // Extra large
+                  xs: "1.8rem",
+                  sm: "2.2rem",
+                  md: "3.2rem",
+                  lg: "3.8rem",
+                  xl: "4.3rem",
                 },
                 fontWeight: { xs: 700, sm: 600, md: 600 },
-                lineHeight: { xs: 1.1, sm: 1.2, md: 1.3 }, // Tighter line height for mobile
+                lineHeight: { xs: 1.1, sm: 1.2, md: 1.3 },
                 textShadow: `
                   0 2px 4px rgba(0,0,0,0.9),
                   0 4px 8px rgba(0,0,0,0.7),
@@ -187,19 +170,19 @@ export const VideoHero = () => {
                 `,
                 maxWidth: { xs: "95%", sm: "90%", md: "900px" },
                 mx: "auto",
-                mb: { xs: 2, sm: 3, md: 4 }, // Adjusted mobile margin
-                px: { xs: 2, sm: 0 }, // Add horizontal padding on mobile
+                mb: { xs: 2, sm: 3, md: 4 },
+                px: { xs: 2, sm: 0 },
                 fontFamily: "'Poppins', sans-serif",
                 position: "relative",
-                zIndex: 2, // Ensure text stays above overlay
-                color: "#ffffff", // Pure white text
+                zIndex: 2,
+                color: "#ffffff",
                 // Animation for text reveal
                 transform: isLoaded ? "translateY(0px)" : "translateY(30px)",
                 opacity: isLoaded ? 1 : 0,
                 transition: "all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
               }}
             >
-              Your Trusted Source for Quality Dental Supplies
+              {slides[currentSlide].title}
             </Typography>
 
             {/* Subtitle with Larger Mobile Font */}
@@ -208,13 +191,13 @@ export const VideoHero = () => {
               component="p"
               sx={{
                 fontSize: {
-                  xs: "1.1rem", // Mobile: Increased from 0.9rem to 1.1rem
-                  sm: "1.25rem", // Small tablets: Increased
-                  md: "1.4rem", // Medium screens: Increased
-                  lg: "1.5rem", // Large screens
+                  xs: "1.1rem",
+                  sm: "1.25rem",
+                  md: "1.4rem",
+                  lg: "1.5rem",
                 },
                 fontWeight: { xs: 400, sm: 300, md: 300 },
-                lineHeight: { xs: 1.4, sm: 1.5, md: 1.6 }, // Better line height for readability
+                lineHeight: { xs: 1.4, sm: 1.5, md: 1.6 },
                 textShadow: `
                   0 1px 2px rgba(0,0,0,0.9),
                   0 2px 4px rgba(0,0,0,0.7)
@@ -222,7 +205,7 @@ export const VideoHero = () => {
                 maxWidth: { xs: "90%", sm: "85%", md: "700px" },
                 mx: "auto",
                 fontFamily: "'Poppins', sans-serif",
-                color: "#ffffff", // Pure white text
+                color: "#ffffff",
                 letterSpacing: { xs: "0.3px", sm: "0.5px", md: "1px" },
                 // Animation delay for subtitle
                 transform: isLoaded ? "translateY(0px)" : "translateY(30px)",
@@ -231,9 +214,7 @@ export const VideoHero = () => {
                   "all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.3s",
               }}
             >
-              We provide reliable, dentist-approved products that make it easy
-              to care for your smile—delivered straight to your door with
-              comfort, convenience, and care.
+              {slides[currentSlide].subtitle}
             </Typography>
 
             {/* Call to Action Buttons (Optional) */}
