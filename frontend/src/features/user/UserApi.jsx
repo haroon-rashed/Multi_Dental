@@ -1,5 +1,15 @@
 import { axiosi } from "../../config/axios";
 
+export const fetchAllUsers = async () => {
+  try {
+    const res = await axiosi.get('/users');
+    return res.data;
+  } catch (error) {
+    console.error('Error fetching all users:', error);
+    throw error.response?.data || error.message;
+  }
+};
+
 export const fetchLoggedInUserById = async (id) => {
   try {
     const res = await axiosi.get(`/users/${id}`);
@@ -8,6 +18,7 @@ export const fetchLoggedInUserById = async (id) => {
     throw error.response.data;
   }
 };
+
 export const updateUserById = async (update) => {
   try {
     const res = await axiosi.patch(`/users/${update._id}`, update);

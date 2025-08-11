@@ -35,6 +35,7 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { selectLoggedInUser, logoutAsync } from "../../auth/AuthSlice";
+import { selectUserInfo } from "../../user/UserSlice";
 
 const AdminSidebar = () => {
   const [openSubmenus, setOpenSubmenus] = useState({
@@ -43,9 +44,12 @@ const AdminSidebar = () => {
     sales: false,
     subcategories: false,
   });
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const userInfo = useSelector(selectUserInfo);
   const loggedInUser = useSelector(selectLoggedInUser);
 
   const handleToggle = (key) => {
@@ -55,6 +59,24 @@ const AdminSidebar = () => {
   const handleSignOut = () => {
     dispatch(logoutAsync());
     navigate("/");
+  };
+
+  const handleProfileMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleProfileMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleProfileClick = () => {
+    handleProfileMenuClose();
+    navigate("/admin/profile");
+  };
+
+  const handleOrdersClick = () => {
+    handleProfileMenuClose();
+    navigate("/admin/orders");
   };
 
   return (
@@ -224,48 +246,6 @@ const AdminSidebar = () => {
             </List>
           </Collapse>
 
-          {/* Subcategories Dropdown */}
-          {/* <ListItem
-            button
-            onClick={() => handleToggle("subcategories")}
-            sx={{ color: "#92400e" }}
-          >
-            <ListItemIcon sx={{ color: "#92400e" }}>
-              <FaSitemap />
-            </ListItemIcon>
-            <ListItemText primary="Subcategories" />
-            {openSubmenus.subcategories ? (
-              <FaChevronUp size={14} />
-            ) : (
-              <FaChevronDown size={14} />
-            )}
-          </ListItem>
-
-          <Collapse
-            in={openSubmenus.subcategories}
-            timeout="auto"
-            unmountOnExit
-          >
-            <List component="div" disablePadding sx={{ pl: 4 }}>
-              <ListItem
-                button
-                component={Link}
-                to="/admin/add-sub-category"
-                sx={{ color: "#b45309" }}
-              >
-                <ListItemText primary="Add Subcategory" />
-              </ListItem>
-              <ListItem
-                button
-                component={Link}
-                to="/admin/view-subcategory"
-                sx={{ color: "#b45309" }}
-              >
-                <ListItemText primary="View Subcategories" />
-              </ListItem>
-            </List>
-          </Collapse> */}
-
           {/* Sales Dropdown */}
           <ListItem
             button
@@ -337,7 +317,14 @@ const AdminSidebar = () => {
             alignItems: "center",
             px: 1,
             mb: 2,
+            cursor: "pointer",
+            '&:hover': {
+              backgroundColor: 'rgba(0, 0, 0, 0.04)',
+              borderRadius: 1,
+            },
+            p: 1,
           }}
+          onClick={handleProfileMenuOpen}
         >
           <Avatar
             src={
@@ -351,7 +338,7 @@ const AdminSidebar = () => {
               variant="body2"
               sx={{ fontWeight: 600, color: "#92400e" }}
             >
-              {loggedInUser?.name || "Admin User"}
+              {userInfo?.name || "Admin User"}
             </Typography>
             <Typography variant="caption" sx={{ color: "#b45309" }}>
               Administrator
@@ -359,6 +346,62 @@ const AdminSidebar = () => {
           </Box>
         </Box>
       </Box>
+
+      {/* Profile Menu */}
+      <Menu
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleProfileMenuClose}
+        onClick={handleProfileMenuClose}
+        PaperProps={{
+          elevation: 0,
+          sx: {
+            overflow: 'visible',
+            filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.1))',
+            mt: 1.5,
+            '& .MuiAvatar-root': {
+              width: 32,
+              height: 32,
+              ml: -0.5,
+              mr: 1,
+            },
+            '&:before': {
+              content: '""',
+              display: 'block',
+              position: 'absolute',
+              top: 0,
+              right: 14,
+              width: 10,
+              height: 10,
+              bgcolor: 'background.paper',
+              transform: 'translateY(-50%) rotate(45deg)',
+              zIndex: 0,
+            },
+          },
+        }}
+        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+      >
+        <MenuItem onClick={handleProfileClick}>
+          <ListItemIcon>
+            <FaUser fontSize="small" />
+          </ListItemIcon>
+          Profile
+        </MenuItem>
+        <MenuItem onClick={handleOrdersClick}>
+          <ListItemIcon>
+            <FaClipboardList fontSize="small" />
+          </ListItemIcon>
+          Orders
+        </MenuItem>
+        <Divider />
+        <MenuItem onClick={handleSignOut}>
+          <ListItemIcon>
+            <FaSignOutAlt fontSize="small" />
+          </ListItemIcon>
+          Logout
+        </MenuItem>
+      </Menu>
     </Drawer>
   );
 };

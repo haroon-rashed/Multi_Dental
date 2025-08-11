@@ -120,6 +120,7 @@ export const ProductList = () => {
 
   const dispatch = useDispatch();
 
+ 
   const handleBrandFilters = (e) => {
     const filterSet = new Set(filters.brand);
 

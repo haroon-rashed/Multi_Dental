@@ -1,13 +1,12 @@
-const express=require('express')
-const orderController=require("../controllers/Order")
-const router=express.Router()
-
+const express = require("express");
+const orderController = require("../controllers/Order");
+const router = express.Router();
 
 router
-    .post("/",orderController.create)
-    .get("/",orderController.getAll)
-    .get("/user/:id",orderController.getByUserId)
-    .patch("/:id",orderController.updateById)
+  .post("/", orderController.create)
+  .get("/", orderController.getAll)
+  .get("/user/:id", orderController.getByUserId)
+  .patch("/:id", orderController.updateById)
+  .post("/guest-with-user", orderController.createGuestOrderWithUser);
 
-
-module.exports=router
+module.exports = router;

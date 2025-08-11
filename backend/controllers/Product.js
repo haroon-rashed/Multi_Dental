@@ -149,3 +149,23 @@ exports.deleteById = async (req, res) => {
       .json({ message: "Error deleting product, please try again later" });
   }
 };
+
+exports.getAllWithoutPagination = async (req, res) => {
+  try {
+    const filter = { isDeleted: { $ne: true } };
+
+    const products = await Product.find(filter)
+      .populate("brand")
+      .populate("category")
+      .lean()
+      .exec();
+
+    res.status(200).json(products);
+  } catch (error) {
+    console.error("Error in getAllWithoutPagination:", error);
+    res.status(500).json({
+      message: "Error fetching all products without pagination",
+      error: error.message,
+    });
+  }
+};

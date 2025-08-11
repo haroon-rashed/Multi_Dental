@@ -401,3 +401,17 @@ exports.checkAuth = async (req, res) => {
     res.sendStatus(500);
   }
 };
+
+exports.getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find();
+
+    // Sanitize each user to remove sensitive info
+    const sanitizedUsers = users.map(user => sanitizeUser(user));
+
+    res.status(200).json(sanitizedUsers);
+  } catch (error) {
+    console.log("Get All Users error:", error);
+    res.status(500).json({ message: "Error occurred while fetching users" });
+  }
+};
