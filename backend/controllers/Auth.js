@@ -40,7 +40,7 @@ exports.signup = async (req, res) => {
     // Send OTP email
     await sendMail(
       createdUser.email,
-      `OTP Verification for Your MERN-AUTH-REDUX-TOOLKIT Account`,
+      `OTP Verification for Your MDS-AUTH-REDUX-TOOLKIT Account`,
       `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
                 <h2 style="color: #333;">Welcome to MULTI DENTAL SUPPLY!</h2>
@@ -81,11 +81,9 @@ exports.signup = async (req, res) => {
     });
   } catch (error) {
     console.log("Signup error:", error);
-    res
-      .status(500)
-      .json({
-        message: "Error occurred during signup, please try again later",
-      });
+    res.status(500).json({
+      message: "Error occurred during signup, please try again later",
+    });
   }
 };
 
@@ -131,11 +129,9 @@ exports.login = async (req, res) => {
     return res.status(401).json({ message: "Invalid Credentials" });
   } catch (error) {
     console.log("Login error:", error);
-    res
-      .status(500)
-      .json({
-        message: "Some error occurred while logging in, please try again later",
-      });
+    res.status(500).json({
+      message: "Some error occurred while logging in, please try again later",
+    });
   }
 };
 
@@ -146,11 +142,9 @@ exports.verifyOtp = async (req, res) => {
 
     // if user id does not exists then returns a 404 response
     if (!isValidUserId) {
-      return res
-        .status(404)
-        .json({
-          message: "User not Found, for which the otp has been generated",
-        });
+      return res.status(404).json({
+        message: "User not Found, for which the otp has been generated",
+      });
     }
 
     // checks if otp exists by that user id
@@ -250,12 +244,10 @@ exports.resendOtp = async (req, res) => {
 
     res.status(200).json({ message: "OTP sent successfully to your email" });
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        message:
-          "Some error occurred while resending OTP, please try again later",
-      });
+    res.status(500).json({
+      message:
+        "Some error occurred while resending OTP, please try again later",
+    });
     console.log("Resend OTP error:", error);
   }
 };
@@ -365,12 +357,10 @@ exports.resetPassword = async (req, res) => {
     return res.status(404).json({ message: "Reset Link has been expired" });
   } catch (error) {
     console.log(error);
-    res
-      .status(500)
-      .json({
-        message:
-          "Error occurred while resetting the password, please try again later",
-      });
+    res.status(500).json({
+      message:
+        "Error occurred while resetting the password, please try again later",
+    });
   }
 };
 
@@ -407,11 +397,45 @@ exports.getAllUsers = async (req, res) => {
     const users = await User.find();
 
     // Sanitize each user to remove sensitive info
-    const sanitizedUsers = users.map(user => sanitizeUser(user));
+    const sanitizedUsers = users.map((user) => sanitizeUser(user));
 
     res.status(200).json(sanitizedUsers);
   } catch (error) {
     console.log("Get All Users error:", error);
     res.status(500).json({ message: "Error occurred while fetching users" });
+  }
+};
+
+exports.getUserById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Validate user ID format
+    if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+      return res.status(400).json({ message: "Invalid user ID format" });
+    }
+
+    // Find user by ID
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Log raw user data for debugging
+    console.log("Raw user data:", user);
+
+    // Select specific fields to return
+    const userData = {
+      _id: user._id,
+      name: user.name || null, // Include name, fallback to null if undefined
+      email: user.email,
+      isVerified: user.isVerified,
+      isAdmin: user.isAdmin || false, // Include isAdmin to match observed output
+    };
+
+    res.status(200).json(userData);
+  } catch (error) {
+    console.log("Get User by ID error:", error);
+    res.status(500).json({ message: "Error occurred while fetching user" });
   }
 };

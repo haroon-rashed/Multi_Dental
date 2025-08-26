@@ -12,6 +12,7 @@ import DentalServices from "../features/products/components/DentalServices";
 import AboutUsSection from "../features/products/components/AboutUsSection";
 import VideoHero from "../features/products/components/VideoHero";
 import MissionVisionSection from "../components/MissionVisionSection";
+import OurTeam from "../features/auth/components/OurTeam";
 
 export const HomePage = () => {
   const dispatch = useDispatch();
@@ -32,6 +33,7 @@ export const HomePage = () => {
         <DentalServices />
         <ProductList />
         <MissionVisionSection />
+        <OurTeam/>
         <Footer />
       </Box>
     </>

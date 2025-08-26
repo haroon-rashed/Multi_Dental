@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import {
   addProductAsync,
   resetProductAddStatus,
   selectProductAddStatus,
-  updateProductByIdAsync,
 } from "../../products/ProductSlice";
 import {
   Button,
@@ -33,8 +32,27 @@ export const AddProduct = () => {
     handleSubmit,
     reset,
     watch,
+    setValue,
+    getValues,
     formState: { errors },
-  } = useForm();
+  } = useForm({
+    defaultValues: {
+      category: "",
+      subcategory: "",
+      title: "",
+      description: "",
+      price: "",
+      discountPercentage: "",
+      stockQuantity: "",
+      brand: "",
+      thumbnail: "",
+      image0: "",
+      image1: "",
+      image2: "",
+      image3: "",
+    },
+  });
+
   const [subcategories, setSubcategories] = useState([]);
   const [isLoadingSubcategories, setIsLoadingSubcategories] = useState(false);
   const [imagePreviews, setImagePreviews] = useState({
@@ -45,12 +63,18 @@ export const AddProduct = () => {
     image3: null,
   });
   const [uploading, setUploading] = useState(false);
+  const fileInputRefs = {
+    thumbnail: useRef(null),
+    image0: useRef(null),
+    image1: useRef(null),
+    image2: useRef(null),
+    image3: useRef(null),
+  };
 
   const dispatch = useDispatch();
   const brands = useSelector(selectBrands);
   const categories = useSelector(selectCategories);
   const productAddStatus = useSelector(selectProductAddStatus);
-  const navigate = useNavigate();
   const theme = useTheme();
   const is1100 = useMediaQuery(theme.breakpoints.down(1100));
   const is480 = useMediaQuery(theme.breakpoints.down(480));
@@ -58,13 +82,14 @@ export const AddProduct = () => {
   const selectedCategoryId = watch("category");
 
   const uploadImageToCloudinary = async (file) => {
+    if (!file) return null;
     try {
       const data = new FormData();
       data.append("file", file);
-      data.append("upload_preset", "ls8frk5v"); // Replace with your upload preset
+      data.append("upload_preset", "ls8frk5v");
 
       const res = await fetch(
-        "https://api.cloudinary.com/v1_1/dwtsjgcyf/image/upload", // Replace with your cloud name
+        "https://api.cloudinary.com/v1_1/dwtsjgcyf/image/upload",
         {
           method: "POST",
           body: data,
@@ -72,6 +97,9 @@ export const AddProduct = () => {
       );
 
       const imageData = await res.json();
+      if (!imageData.url) {
+        throw new Error("Image upload failed");
+      }
       return imageData.url;
     } catch (err) {
       console.error("Image upload error:", err);
@@ -80,11 +108,10 @@ export const AddProduct = () => {
     }
   };
 
-  const handleImageChange = async (e, fieldName) => {
+  const handleImageChange = (e, fieldName) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    // Create preview
     const reader = new FileReader();
     reader.onloadend = () => {
       setImagePreviews((prev) => ({
@@ -93,6 +120,36 @@ export const AddProduct = () => {
       }));
     };
     reader.readAsDataURL(file);
+  };
+
+  const resetForm = () => {
+    reset({
+      category: "",
+      subcategory: "",
+      title: "",
+      description: "",
+      price: "",
+      discountPercentage: "",
+      stockQuantity: "",
+      brand: "",
+      thumbnail: "",
+      image0: "",
+      image1: "",
+      image2: "",
+      image3: "",
+    });
+    setImagePreviews({
+      thumbnail: null,
+      image0: null,
+      image1: null,
+      image2: null,
+      image3: null,
+    });
+    Object.values(fileInputRefs).forEach((ref) => {
+      if (ref.current) {
+        ref.current.value = "";
+      }
+    });
   };
 
   useEffect(() => {
@@ -121,26 +178,20 @@ export const AddProduct = () => {
   }, [selectedCategoryId]);
 
   useEffect(() => {
-    if (productAddStatus === "fulfilled") {
-      reset();
-      toast.success("New product added");
-      navigate("/admin/dashboard");
-    } else if (productAddStatus === "rejected") {
-      toast.error("Error adding product, please try again later");
-    }
-  }, [productAddStatus]);
+    setValue("subcategory", "");
+  }, [selectedCategoryId, setValue]);
 
   useEffect(() => {
     return () => {
       dispatch(resetProductAddStatus());
     };
-  }, []);
+  }, [dispatch]);
 
   const handleAddProduct = async (data) => {
     setUploading(true);
 
     try {
-      // Upload thumbnail
+      // Upload thumbnail (required)
       const thumbnailFile = data.thumbnail[0];
       const thumbnailUrl = await uploadImageToCloudinary(thumbnailFile);
       if (!thumbnailUrl) {
@@ -148,39 +199,74 @@ export const AddProduct = () => {
         return;
       }
 
-      // Upload product images
+      // Upload product images (image0 required, others optional)
       const imageUploads = [
         uploadImageToCloudinary(data.image0[0]),
-        uploadImageToCloudinary(data.image1[0]),
-        uploadImageToCloudinary(data.image2[0]),
-        uploadImageToCloudinary(data.image3[0]),
+        data.image1[0]
+          ? uploadImageToCloudinary(data.image1[0])
+          : Promise.resolve(null),
+        data.image2[0]
+          ? uploadImageToCloudinary(data.image2[0])
+          : Promise.resolve(null),
+        data.image3[0]
+          ? uploadImageToCloudinary(data.image3[0])
+          : Promise.resolve(null),
       ];
 
       const imageUrls = await Promise.all(imageUploads);
 
-      // Filter out any failed uploads
-      const filteredImageUrls = imageUrls.filter((url) => url !== null);
-      if (filteredImageUrls.length < 4) {
-        toast.warning("Some images failed to upload");
+      // Check for failed uploads (only for provided images)
+      const providedImages = [
+        data.image0[0],
+        data.image1[0],
+        data.image2[0],
+        data.image3[0],
+      ];
+      const failedUploads = imageUrls
+        .map((url, index) =>
+          providedImages[index] && url === null ? index : null
+        )
+        .filter((index) => index !== null);
+
+      if (!imageUrls[0]) {
+        toast.error("Image 0 upload failed");
+        return;
       }
+      if (failedUploads.length > 0) {
+        toast.warning(
+          `Image${failedUploads.length > 1 ? "s" : ""} ${failedUploads.join(
+            ", "
+          )} failed to upload`
+        );
+      }
+
+      // Filter out null URLs
+      const filteredImageUrls = imageUrls.filter((url) => url !== null);
+
+      // Use subcategory ID if selected, otherwise category ID
+      const categoryId = data.subcategory || data.category;
 
       const newProduct = {
         title: data.title,
         brand: data.brand,
-        category: data.category,
+        category: categoryId,
         description: data.description,
-        price: data.price,
-        discountPercentage: data.discountPercentage,
-        stockQuantity: data.stockQuantity,
-        thumbnail: thumbnailUrl, // Make sure this is included
+        price: parseFloat(data.price),
+        discountPercentage: parseFloat(data.discountPercentage),
+        stockQuantity: parseInt(data.stockQuantity, 10),
+        thumbnail: thumbnailUrl,
         images: filteredImageUrls,
-        ...(data.subcategory && { subcategory: data.subcategory }),
       };
 
-      dispatch(addProductAsync(newProduct));
+      // Dispatch product addition and wait for result
+      await dispatch(addProductAsync(newProduct)).unwrap();
+
+      // Reset form and show success toast
+      resetForm();
+      toast.success("New product added");
     } catch (error) {
-      console.error("Error uploading images:", error);
-      toast.error("Failed to upload images. Please try again.");
+      console.error("Error adding product:", error);
+      toast.error("Error adding product, please try again later");
     } finally {
       setUploading(false);
     }
@@ -202,7 +288,6 @@ export const AddProduct = () => {
         noValidate
         onSubmit={handleSubmit(handleAddProduct)}
       >
-        {/* field area */}
         <Stack rowGap={3}>
           <Stack>
             <Typography variant="h6" fontWeight={400} gutterBottom>
@@ -210,16 +295,20 @@ export const AddProduct = () => {
             </Typography>
             <TextField
               {...register("title", { required: "Title is required" })}
+              error={!!errors.title}
+              helperText={errors.title?.message}
             />
           </Stack>
 
-          <Stack flexDirection={"row"}>
+          <Stack flexDirection={"row"} columnGap={2}>
             <FormControl fullWidth>
-              <InputLabel id="brand-selection">Brand</InputLabel>
+              <InputLabel id="brand-selection">Brand </InputLabel>
               <Select
                 {...register("brand", { required: "Brand is required" })}
                 labelId="brand-selection"
-                label="Brand"
+                label="Brand *"
+                error={!!errors.brand}
+                helperText={errors.brand?.message}
               >
                 {brands.map((brand) => (
                   <MenuItem key={brand._id} value={brand._id}>
@@ -230,34 +319,36 @@ export const AddProduct = () => {
             </FormControl>
 
             <FormControl fullWidth>
-              <InputLabel id="category-selection">Category</InputLabel>
+              <InputLabel id="category-label">Category *</InputLabel>
               <Select
+                labelId="category-label"
+                id="category"
+                label="Category *"
                 {...register("category", { required: "Category is required" })}
-                labelId="category-selection"
-                label="Category"
-                defaultValue=""
+                error={!!errors.category}
+                helperText={errors.category?.message}
               >
-                <MenuItem value="" disabled>
-                  Select a category
-                </MenuItem>
-                {categories.map((category) => (
-                  <MenuItem key={category._id} value={category._id}>
-                    {category.name}
-                  </MenuItem>
-                ))}
+                {categories
+                  .filter((category) => !category.parent_id)
+                  .map((category) => (
+                    <MenuItem key={category._id} value={category._id}>
+                      {category.name}
+                    </MenuItem>
+                  ))}
               </Select>
             </FormControl>
           </Stack>
 
-          {subcategories.length > 0 && (
+          {selectedCategoryId && subcategories.length > 0 && (
             <FormControl fullWidth>
-              <InputLabel id="subcategory-selection">
+              <InputLabel id="subcategory-label">
                 Subcategory (Optional)
               </InputLabel>
               <Select
-                {...register("subcategory")}
-                labelId="subcategory-selection"
+                labelId="subcategory-label"
+                id="subcategory"
                 label="Subcategory (Optional)"
+                {...register("subcategory")}
                 disabled={isLoadingSubcategories}
               >
                 <MenuItem value="">
@@ -282,10 +373,12 @@ export const AddProduct = () => {
               {...register("description", {
                 required: "Description is required",
               })}
+              error={!!errors.description}
+              helperText={errors.description?.message}
             />
           </Stack>
 
-          <Stack flexDirection={"row"}>
+          <Stack flexDirection={"row"} columnGap={2}>
             <Stack flex={1}>
               <Typography variant="h6" fontWeight={400} gutterBottom>
                 Price
@@ -293,6 +386,8 @@ export const AddProduct = () => {
               <TextField
                 type="number"
                 {...register("price", { required: "Price is required" })}
+                error={!!errors.price}
+                helperText={errors.price?.message}
               />
             </Stack>
             <Stack flex={1}>
@@ -302,8 +397,10 @@ export const AddProduct = () => {
               <TextField
                 type="number"
                 {...register("discountPercentage", {
-                  required: "discount percentage is required",
+                  required: "Discount percentage is required",
                 })}
+                error={!!errors.discountPercentage}
+                helperText={errors.discountPercentage?.message}
               />
             </Stack>
           </Stack>
@@ -317,10 +414,11 @@ export const AddProduct = () => {
               {...register("stockQuantity", {
                 required: "Stock Quantity is required",
               })}
+              error={!!errors.stockQuantity}
+              helperText={errors.stockQuantity?.message}
             />
           </Stack>
 
-          {/* Thumbnail Upload */}
           <Stack>
             <Typography variant="h6" fontWeight={400} gutterBottom>
               Thumbnail *
@@ -329,7 +427,10 @@ export const AddProduct = () => {
               type="file"
               inputProps={{ accept: "image/*" }}
               {...register("thumbnail", { required: "Thumbnail is required" })}
+              inputRef={fileInputRefs.thumbnail}
               onChange={(e) => handleImageChange(e, "thumbnail")}
+              error={!!errors.thumbnail}
+              helperText={errors.thumbnail?.message}
             />
             {imagePreviews.thumbnail && (
               <img
@@ -344,10 +445,9 @@ export const AddProduct = () => {
             )}
           </Stack>
 
-          {/* Product Images Upload */}
           <Stack>
             <Typography variant="h6" fontWeight={400} gutterBottom>
-              Product Images *
+              Product Images (First image required, others optional)
             </Typography>
             <Stack rowGap={2}>
               {[0, 1, 2, 3].map((index) => (
@@ -356,9 +456,12 @@ export const AddProduct = () => {
                     type="file"
                     inputProps={{ accept: "image/*" }}
                     {...register(`image${index}`, {
-                      required: "Image is required",
+                      required: index === 0 ? "Image 0 is required" : false,
                     })}
+                    inputRef={fileInputRefs[`image${index}`]}
                     onChange={(e) => handleImageChange(e, `image${index}`)}
+                    error={!!errors[`image${index}`]}
+                    helperText={errors[`image${index}`]?.message}
                   />
                   {imagePreviews[`image${index}`] && (
                     <img
@@ -377,7 +480,6 @@ export const AddProduct = () => {
           </Stack>
         </Stack>
 
-        {/* action area */}
         <Stack
           flexDirection={"row"}
           alignSelf={"flex-end"}

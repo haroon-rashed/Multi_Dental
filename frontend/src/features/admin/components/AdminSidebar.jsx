@@ -123,6 +123,12 @@ const AdminSidebar = () => {
             </ListItemIcon>
             <ListItemText primary="Dashboard" />
           </ListItem>
+          <ListItem button component={Link} to="/" sx={{ color: "#92400e" }}>
+            <ListItemIcon sx={{ color: "#92400e" }}>
+              <FaHome />
+            </ListItemIcon>
+            <ListItemText primary="Go To Home" />
+          </ListItem>
 
           {/* Customers */}
           <ListItem button sx={{ color: "#92400e" }}>
@@ -318,8 +324,8 @@ const AdminSidebar = () => {
             px: 1,
             mb: 2,
             cursor: "pointer",
-            '&:hover': {
-              backgroundColor: 'rgba(0, 0, 0, 0.04)',
+            "&:hover": {
+              backgroundColor: "rgba(0, 0, 0, 0.04)",
               borderRadius: 1,
             },
             p: 1,
@@ -356,31 +362,31 @@ const AdminSidebar = () => {
         PaperProps={{
           elevation: 0,
           sx: {
-            overflow: 'visible',
-            filter: 'drop-shadow(0px 2px 8px rgba(0,0,0,0.1))',
+            overflow: "visible",
+            filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.1))",
             mt: 1.5,
-            '& .MuiAvatar-root': {
+            "& .MuiAvatar-root": {
               width: 32,
               height: 32,
               ml: -0.5,
               mr: 1,
             },
-            '&:before': {
+            "&:before": {
               content: '""',
-              display: 'block',
-              position: 'absolute',
+              display: "block",
+              position: "absolute",
               top: 0,
               right: 14,
               width: 10,
               height: 10,
-              bgcolor: 'background.paper',
-              transform: 'translateY(-50%) rotate(45deg)',
+              bgcolor: "background.paper",
+              transform: "translateY(-50%) rotate(45deg)",
               zIndex: 0,
             },
           },
         }}
-        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+        transformOrigin={{ horizontal: "right", vertical: "top" }}
+        anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
       >
         <MenuItem onClick={handleProfileClick}>
           <ListItemIcon>

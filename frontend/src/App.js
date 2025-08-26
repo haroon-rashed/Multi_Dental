@@ -40,8 +40,6 @@ import { NotFoundPage } from "./pages/NotFoundPage";
 import ProductTablePage from "./pages/ProductTablePage";
 import { AddCategoryPage } from "./pages/AddCategoryPage";
 import { ViewCategoryPage } from "./pages/ViewCategoryPage";
-import { AddSubCategoryPage } from "./pages/AddSubCategoryPage";
-import { ViewSubCategoryPage } from "./pages/ViewSubCategoryPage";
 import { SubCategoryPage } from "./pages/SubCategoryPage";
 import { AboutUsPage } from "./pages/AboutUsPage";
 import { TermsConditionsPage } from "./pages/TermsConditionsPage";
@@ -195,14 +193,6 @@ function App() {
       ),
     },
     {
-      path: "/admin/add-sub-category",
-      element: (
-        <Protected adminOnly={true}>
-          <AddSubCategoryPage />
-        </Protected>
-      ),
-    },
-    {
       path: "/admin/view-category",
       element: (
         <Protected adminOnly={true}>
@@ -215,14 +205,6 @@ function App() {
       element: (
         <Protected adminOnly={true}>
           <ViewBrandsPage />
-        </Protected>
-      ),
-    },
-    {
-      path: "/admin/view-subcategory",
-      element: (
-        <Protected adminOnly={true}>
-          <ViewSubCategoryPage />
         </Protected>
       ),
     },

@@ -13,7 +13,6 @@ const userRoutes = require("./routes/User");
 const addressRoutes = require("./routes/Address");
 const reviewRoutes = require("./routes/Review");
 const wishlistRoutes = require("./routes/Wishlist");
-const subCategory = require("./routes/SubCategory");
 const { connectToDB } = require("./database/db");
 
 // server init
@@ -46,7 +45,6 @@ server.use("/categories", categoryRoutes);
 server.use("/address", addressRoutes);
 server.use("/reviews", reviewRoutes);
 server.use("/wishlist", wishlistRoutes);
-server.use("/api/subcategories", subCategory);
 
 server.get("/", (req, res) => {
   res.status(200).json({ message: "running" });

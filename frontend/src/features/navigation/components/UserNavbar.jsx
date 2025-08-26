@@ -26,7 +26,6 @@ import {
   Menu as MenuIcon,
   ExpandMore as ExpandMoreIcon,
   ExpandLess as ExpandLessIcon,
-  ChevronRight as ChevronRightIcon,
   Home as HomeIcon,
   Category as CategoryIcon,
   Store as StoreIcon,
@@ -38,7 +37,7 @@ import {
   Close as CloseIcon,
 } from "@mui/icons-material";
 import { useSelector, useDispatch } from "react-redux";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { selectCategories } from "../../categories/CategoriesSlice";
 import { selectBrands, fetchAllBrandsAsync } from "../../brands/BrandSlice";
 import { selectUserInfo } from "../../user/UserSlice";
@@ -46,11 +45,11 @@ import { selectLoggedInUser } from "../../auth/AuthSlice";
 import { selectCartItems } from "../../cart/CartSlice";
 import { selectWishlistItems } from "../../wishlist/WishlistSlice";
 import logo from "../../../assets/images/logo.png";
+
 const UserNavbar = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const isSmall = useMediaQuery(theme.breakpoints.down("sm"));
-  const isHomePage = window.location.pathname === "/";
 
   const categories = useSelector(selectCategories);
   const brands = useSelector(selectBrands);
@@ -65,22 +64,15 @@ const UserNavbar = () => {
   // State for menus and drawers
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
   const [userMenuAnchor, setUserMenuAnchor] = useState(null);
-  const [categoriesAnchor, setCategoriesAnchor] = useState(null);
-  const [brandsAnchor, setBrandsAnchor] = useState(null);
-  const [pagesAnchor, setPagesAnchor] = useState(null);
-  const [submenuAnchor, setSubmenuAnchor] = useState(null);
-  const [hoveredCategory, setHoveredCategory] = useState(null);
 
   // Mobile drawer states
   const [mobileCategoriesOpen, setMobileCategoriesOpen] = useState(false);
   const [mobileBrandsOpen, setMobileBrandsOpen] = useState(false);
   const [mobilePagesOpen, setMobilePagesOpen] = useState(false);
+  const [expandedMobileSubs, setExpandedMobileSubs] = useState({});
 
   // Scroll state for dynamic background
   const [isScrolled, setIsScrolled] = useState(false);
-
-  // Hover timeouts for better dropdown control
-  const [hoverTimeouts, setHoverTimeouts] = useState({});
 
   // Fetch brands on component mount
   useEffect(() => {
@@ -100,21 +92,6 @@ const UserNavbar = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  // Helper function to clear hover timeouts
-  const clearHoverTimeout = (key) => {
-    if (hoverTimeouts[key]) {
-      clearTimeout(hoverTimeouts[key]);
-      setHoverTimeouts((prev) => ({ ...prev, [key]: null }));
-    }
-  };
-
-  // Helper function to set hover timeout
-  const setHoverTimeout = (key, callback, delay = 300) => {
-    clearHoverTimeout(key);
-    const timeout = setTimeout(callback, delay);
-    setHoverTimeouts((prev) => ({ ...prev, [key]: timeout }));
-  };
 
   // Navigation handlers
   const handleHomeClick = () => {
@@ -150,12 +127,15 @@ const UserNavbar = () => {
     setMobileDrawerOpen(false);
   };
 
+  const handleCategoryClick = (category) => {
+    const categoryId = category._id || category.id;
+    navigate(`/category/${categoryId}`);
+    setMobileDrawerOpen(false);
+  };
+
   const handleSubcategoryClick = (subcategory) => {
     const subcategoryId = subcategory._id || subcategory.id;
     navigate(`/subcategory/${subcategoryId}`);
-    setCategoriesAnchor(null);
-    setSubmenuAnchor(null);
-    setHoveredCategory(null);
     setMobileDrawerOpen(false);
   };
 
@@ -180,259 +160,263 @@ const UserNavbar = () => {
     return !parentId || parentId === null || parentId === undefined;
   });
 
-  // Enhanced hover handlers for immediate response
-  const handleMenuMouseEnter = (menuType, event) => {
-    clearHoverTimeout(menuType);
-
-    switch (menuType) {
-      case "categories":
-        setCategoriesAnchor(event.currentTarget);
-        break;
-      case "brands":
-        setBrandsAnchor(event.currentTarget);
-        break;
-      case "pages":
-        setPagesAnchor(event.currentTarget);
-        break;
-    }
-  };
-
-  const handleMenuMouseLeave = (menuType) => {
-    // Remove automatic closing on mouse leave
-    // setHoverTimeout(menuType, () => {
-    //   switch(menuType) {
-    //     case 'categories':
-    //       setCategoriesAnchor(null);
-    //       setSubmenuAnchor(null);
-    //       setHoveredCategory(null);
-    //       break;
-    //     case 'brands':
-    //       setBrandsAnchor(null);
-    //       break;
-    //     case 'pages':
-    //       setPagesAnchor(null);
-    //       break;
-    //   }
-    // }, 300);
-  };
-
-  const handleDropdownMouseEnter = (menuType) => {
-    clearHoverTimeout(menuType);
-  };
-
-  const handleDropdownMouseLeave = (menuType) => {
-    // Remove automatic closing on mouse leave
-    // setHoverTimeout(menuType, () => {
-    //   switch(menuType) {
-    //     case 'categories':
-    //       setCategoriesAnchor(null);
-    //       setSubmenuAnchor(null);
-    //       setHoveredCategory(null);
-    //       break;
-    //     case 'brands':
-    //       setBrandsAnchor(null);
-    //       break;
-    //     case 'pages':
-    //       setPagesAnchor(null);
-    //       break;
-    //   }
-    // }, 300);
-  };
-
-  const handleSubmenuEnter = (e, category) => {
-    clearHoverTimeout("categories");
-    setSubmenuAnchor(e.currentTarget);
-    setHoveredCategory(category);
-  };
-
-  // Handle clicks outside to close dropdowns
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      // Close all dropdowns when clicking outside
-      setCategoriesAnchor(null);
-      setBrandsAnchor(null);
-      setPagesAnchor(null);
-      setSubmenuAnchor(null);
-      setHoveredCategory(null);
-    };
-
-    document.addEventListener("click", handleClickOutside);
-    return () => {
-      document.removeEventListener("click", handleClickOutside);
-    };
-  }, []);
-
   // User menu settings
-  const userMenuSettings = [
+  let userMenuSettings = [
     { name: "Profile", path: "/profile" },
     { name: "Orders", path: "/orders" },
     { name: "Logout", path: "/logout" },
   ];
+  if (loggedInUser?.isAdmin) {
+    userMenuSettings.unshift({ name: "Go to Dashboard", path: "/admin" });
+  }
 
   // Color scheme for dental theme
   const dentalTheme = {
-    primary: isScrolled ? "#ffffff" : "#f8fffe", // Clean white/off-white
-    secondary: "#00a8cc", // Medical blue
-    accent: "#28a745", // Fresh green
-    text: "#0088aa", // Dark blue-gray
-    textSecondary: "#5a6c7d", // Medium gray
-    hover: "rgba(0, 168, 204, 0.1)", // Light blue hover
+    primary: isScrolled ? "#ffffff" : "#f8fffe",
+    secondary: "#00a8cc",
+    accent: "#28a745",
+    text: "#0088aa",
+    textSecondary: "#5a6c7d",
+    hover: "rgba(0, 168, 204, 0.1)",
     shadow: isScrolled
       ? "0 4px 20px rgba(0, 0, 0, 0.1)"
       : "0 2px 10px rgba(0, 0, 0, 0.05)",
-    border: "#e1f4f8", // Very light blue
+    border: "#e1f4f8",
   };
 
-  // Desktop Navigation Links Component
-  const DesktopNavLinks = () => {
-    return (
-      <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-        {/* Home */}
-        <Button
-          onClick={handleHomeClick}
-          sx={{
-            color: dentalTheme.text,
-            textTransform: "none",
-            fontWeight: 500,
-            fontSize: "16px",
-            "&:hover": {
-              backgroundColor: dentalTheme.hover,
-              color: dentalTheme.secondary,
-            },
-            px: 3,
-            py: 1.5,
-            borderRadius: "8px",
-            transition: "all 0.3s ease-in-out",
-          }}
-        >
-          Home
-        </Button>
+  // Expose functions for HTML onclick
+  useEffect(() => {
+    window.handleHomeClick = handleHomeClick;
+    window.handleShopClick = handleShopClick;
+    window.handleContactClick = handleContactClick;
+    window.navigateTo = (path) => {
+      navigate(path);
+    };
+    window.navigateToCategory = (id) => {
+      navigate(`/category/${id}`);
+    };
+    window.navigateToSubcategory = (id) => {
+      navigate(`/subcategory/${id}`);
+    };
+    return () => {
+      delete window.handleHomeClick;
+      delete window.handleShopClick;
+      delete window.handleContactClick;
+      delete window.navigateTo;
+      delete window.navigateToCategory;
+      delete window.navigateToSubcategory;
+    };
+  }, [navigate]);
 
-        {/* Categories */}
-        <Box
-          onMouseEnter={(e) => handleMenuMouseEnter("categories", e)}
-          onMouseLeave={() => handleMenuMouseLeave("categories")}
-          sx={{ position: "relative" }}
-        >
-          <Button
-            endIcon={<ExpandMoreIcon sx={{ fontSize: "18px" }} />}
-            sx={{
-              color: dentalTheme.text,
-              textTransform: "none",
-              fontWeight: 500,
-              fontSize: "16px",
-              "&:hover": {
-                backgroundColor: dentalTheme.hover,
-                color: dentalTheme.secondary,
-              },
-              px: 3,
-              py: 1.5,
-              borderRadius: "8px",
-              transition: "all 0.3s ease-in-out",
-            }}
-          >
-            Categories
-          </Button>
-        </Box>
+  // Generate HTML for desktop nav links with pure CSS hover - ONLY PARENT CATEGORIES
+  // Update the desktopNavHtml variable with this new version
+  const desktopNavHtml = `
+  <style>
+    .nav-container {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      position: relative;
+    }
+    
+    .nav-item {
+      position: relative;
+      padding: 12px 16px;
+      color: ${dentalTheme.text};
+      font-size: 16px;
+      font-weight: 500;
+      font-family: inherit;
+      text-transform: none;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      background: transparent;
+      border: none;
+      white-space: nowrap;
+    }
+    
+    .nav-item:hover {
+      color: ${dentalTheme.secondary};
+    }
 
-        {/* Pages */}
-        <Box
-          onMouseEnter={(e) => handleMenuMouseEnter("pages", e)}
-          onMouseLeave={() => handleMenuMouseLeave("pages")}
-          sx={{ position: "relative" }}
-        >
-          <Button
-            endIcon={<ExpandMoreIcon sx={{ fontSize: "18px" }} />}
-            sx={{
-              color: dentalTheme.text,
-              textTransform: "none",
-              fontWeight: 500,
-              fontSize: "16px",
-              "&:hover": {
-                backgroundColor: dentalTheme.hover,
-                color: dentalTheme.secondary,
-              },
-              px: 3,
-              py: 1.5,
-              borderRadius: "8px",
-              transition: "all 0.3s ease-in-out",
-            }}
-          >
-            Pages
-          </Button>
-        </Box>
+    .caret-icon {
+      margin-left: 6px;
+      font-size: 12px;
+      transition: transform 0.2s ease;
+    }
 
-        {/* Shop */}
-        <Button
-          onClick={handleShopClick}
-          sx={{
-            color: dentalTheme.text,
-            textTransform: "none",
-            fontWeight: 500,
-            fontSize: "16px",
-            "&:hover": {
-              backgroundColor: dentalTheme.hover,
-              color: dentalTheme.secondary,
-            },
-            px: 3,
-            py: 1.5,
-            borderRadius: "8px",
-            transition: "all 0.3s ease-in-out",
-          }}
-        >
-          Shop
-        </Button>
-
-        {/* Brands */}
-        <Box
-          onMouseEnter={(e) => handleMenuMouseEnter("brands", e)}
-          onMouseLeave={() => handleMenuMouseLeave("brands")}
-          sx={{ position: "relative" }}
-        >
-          <Button
-            endIcon={<ExpandMoreIcon sx={{ fontSize: "18px" }} />}
-            sx={{
-              color: dentalTheme.text,
-              textTransform: "none",
-              fontWeight: 500,
-              fontSize: "16px",
-              "&:hover": {
-                backgroundColor: dentalTheme.hover,
-                color: dentalTheme.secondary,
-              },
-              px: 3,
-              py: 1.5,
-              borderRadius: "8px",
-              transition: "all 0.3s ease-in-out",
-            }}
-          >
-            Brands
-          </Button>
-        </Box>
-
-        {/* Contact */}
-        <Button
-          onClick={handleContactClick}
-          sx={{
-            color: dentalTheme.text,
-            textTransform: "none",
-            fontWeight: 500,
-            fontSize: "16px",
-            "&:hover": {
-              backgroundColor: dentalTheme.hover,
-              color: dentalTheme.secondary,
-            },
-            px: 3,
-            py: 1.5,
-            borderRadius: "8px",
-            transition: "all 0.3s ease-in-out",
-          }}
-        >
-          Contact
-        </Button>
-      </Box>
-    );
-  };
+    .nav-item:hover .caret-icon {
+      transform: rotate(180deg);
+    }
+    
+    .dropdown {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background-color: white;
+      min-width: 220px;
+      border: 1px solid ${dentalTheme.border};
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      z-index: 1200;
+      padding: 8px 0;
+    }
+    
+    .nav-item:hover .dropdown {
+      display: block;
+    }
+    
+    .dropdown-item {
+      padding: 10px 16px;
+      color: ${dentalTheme.text};
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+    }
+    
+    .dropdown-item:hover {
+      color: ${dentalTheme.secondary};
+      background-color: ${dentalTheme.hover};
+    }
+    
+    .sub-dropdown {
+      display: none;
+      position: absolute;
+      top: 0;
+      left: 100%;
+      background-color: white;
+      min-width: 220px;
+      border: 1px solid ${dentalTheme.border};
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      z-index: 1300;
+      padding: 8px 0;
+    }
+    
+    .dropdown-item:hover .sub-dropdown {
+      display: block;
+    }
+  </style>
+  
+  <div class="nav-container">
+    <!-- Home -->
+    <button class="nav-item" onclick="window.handleHomeClick()">
+      Home
+    </button>
+    
+    <!-- Categories -->
+    <div class="nav-item">
+      Categories
+      <span class="caret-icon">▼</span>
+      <div class="dropdown">
+        ${parentCategories
+          .map((category) => {
+            const categoryId = category._id || category.id;
+            const subcategories = getSubcategories(categoryId);
+            const hasSubcategories = subcategories.length > 0;
+            const categoryName =
+              typeof category.name === "string"
+                ? category.name
+                : category.name?.name || "Category";
+            return `
+              <div class="dropdown-item" onclick="window.navigateToCategory('${categoryId}')">
+                <span>${categoryName}</span>
+                ${
+                  hasSubcategories
+                    ? `<span>›</span>
+                       <div class="sub-dropdown">
+                         ${subcategories
+                           .map((subcategory) => {
+                             const subId = subcategory._id || subcategory.id;
+                             const subName =
+                               typeof subcategory.name === "string"
+                                 ? subcategory.name
+                                 : subcategory.name?.name || "Subcategory";
+                             return `
+                               <div class="dropdown-item" onclick="window.navigateToSubcategory('${subId}'); event.stopPropagation();">
+                                 ${subName}
+                               </div>
+                             `;
+                           })
+                           .join("")}
+                       </div>`
+                    : ""
+                }
+              </div>
+            `;
+          })
+          .join("")}
+      </div>
+    </div>
+    
+    <!-- Pages -->
+    <div class="nav-item">
+      Pages
+      <span class="caret-icon">▼</span>
+      <div class="dropdown">
+        <div class="dropdown-item" onclick="window.navigateTo('/about-us')">
+          About Us
+        </div>
+        <div class="dropdown-item" onclick="window.navigateTo('/terms-conditions')">
+          Terms & Conditions
+        </div>
+        <div class="dropdown-item" onclick="window.navigateTo('/privacy-policy')">
+          Privacy Policy
+        </div>
+        <div class="dropdown-item" onclick="window.navigateTo('/return-policy')">
+          Return Policy
+        </div>
+      </div>
+    </div>
+    
+    <!-- Shop -->
+    <button class="nav-item" onclick="window.handleShopClick()">
+      Shop
+    </button>
+    
+    <!-- Brands -->
+    <div class="nav-item">
+      Brands
+      <span class="caret-icon">▼</span>
+      <div class="dropdown">
+        ${brands
+          ?.slice(0, 10)
+          .map((brand) => {
+            const brandId = brand._id || brand.id;
+            const brandName =
+              typeof brand.name === "string"
+                ? brand.name
+                : brand.name?.name || "Brand";
+            return `
+              <div class="dropdown-item" onclick="window.navigateTo('/products?brand=${brandId}')">
+                ${brandName}
+              </div>
+            `;
+          })
+          .join("")}
+        ${
+          brands?.length > 10
+            ? `<div class="dropdown-item" onclick="window.navigateTo('/brands')" style="color: ${dentalTheme.secondary}; font-style: italic;">
+                 View All Brands...
+               </div>`
+            : ""
+        }
+      </div>
+    </div>
+    
+    <!-- Contact -->
+    <button class="nav-item" onclick="window.handleContactClick()">
+      Contact
+    </button>
+  </div>
+`;
 
   // Mobile Drawer Content
   const MobileDrawerContent = () => (
@@ -526,7 +510,7 @@ const UserNavbar = () => {
           />
         </ListItem>
 
-        {/* Categories */}
+        {/* Categories - ONLY PARENT CATEGORIES IN MOBILE TOO */}
         <ListItem
           button
           onClick={() => setMobileCategoriesOpen(!mobileCategoriesOpen)}
@@ -556,37 +540,99 @@ const UserNavbar = () => {
             <ExpandMoreIcon sx={{ color: dentalTheme.secondary }} />
           )}
         </ListItem>
-        <Collapse in={mobileCategoriesOpen}>
+        <Collapse in={mobileCategoriesOpen} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
-            {parentCategories.map((category) => (
-              <ListItem
-                key={category._id || category.id}
-                button
-                sx={{
-                  pl: 4,
-                  borderRadius: "8px",
-                  mx: 1,
-                  "&:hover": {
-                    backgroundColor: dentalTheme.hover,
-                  },
-                }}
-                onClick={() => handleSubcategoryClick(category)}
-              >
-                <ListItemText
-                  primary={
-                    typeof category.name === "string"
-                      ? category.name
-                      : category.name?.name || "Category"
-                  }
-                  sx={{
-                    "& .MuiListItemText-primary": {
-                      color: dentalTheme.textSecondary,
-                      fontSize: "14px",
-                    },
-                  }}
-                />
-              </ListItem>
-            ))}
+            {parentCategories.map((category) => {
+              const catId = category._id || category.id;
+              const subcategories = getSubcategories(catId);
+              const hasSubcategories = subcategories.length > 0;
+              const isOpen = !!expandedMobileSubs[catId];
+              const categoryName =
+                typeof category.name === "string"
+                  ? category.name
+                  : category.name?.name || "Category";
+              return (
+                <React.Fragment key={catId}>
+                  <ListItem
+                    button
+                    sx={{
+                      pl: 4,
+                      borderRadius: "8px",
+                      mx: 1,
+                      "&:hover": {
+                        backgroundColor: dentalTheme.hover,
+                      },
+                    }}
+                    onClick={() => {
+                      if (hasSubcategories) {
+                        setExpandedMobileSubs((prev) => ({
+                          ...prev,
+                          [catId]: !prev[catId],
+                        }));
+                      } else {
+                        handleCategoryClick(category);
+                      }
+                    }}
+                  >
+                    <ListItemText
+                      primary={categoryName}
+                      sx={{
+                        "& .MuiListItemText-primary": {
+                          color: dentalTheme.textSecondary,
+                          fontSize: "14px",
+                        },
+                      }}
+                    />
+                    {hasSubcategories &&
+                      (isOpen ? (
+                        <ExpandLessIcon sx={{ color: dentalTheme.secondary }} />
+                      ) : (
+                        <ExpandMoreIcon sx={{ color: dentalTheme.secondary }} />
+                      ))}
+                  </ListItem>
+                  {hasSubcategories && (
+                    <Collapse in={isOpen} timeout="auto" unmountOnExit>
+                      <List component="div" disablePadding>
+                        {subcategories.map((subcategory) => {
+                          const subId = subcategory._id || subcategory.id;
+                          const subName =
+                            typeof subcategory.name === "string"
+                              ? subcategory.name
+                              : subcategory.name?.name || "Subcategory";
+                          return (
+                            <ListItem
+                              key={subId}
+                              button
+                              sx={{
+                                pl: 6,
+                                borderRadius: "8px",
+                                mx: 1,
+                                "&:hover": {
+                                  backgroundColor: dentalTheme.hover,
+                                },
+                              }}
+                              onClick={() => {
+                                handleSubcategoryClick(subcategory);
+                              }}
+                            >
+                              <ListItemText
+                                primary={subName}
+                                sx={{
+                                  "& .MuiListItemText-primary": {
+                                    color: dentalTheme.textSecondary,
+                                    fontSize: "14px",
+                                  },
+                                }}
+                              />
+                            </ListItem>
+                          );
+                        })}
+                      </List>
+                    </Collapse>
+                  )}
+                </React.Fragment>
+              );
+            })}
           </List>
         </Collapse>
 
@@ -620,7 +666,7 @@ const UserNavbar = () => {
             <ExpandMoreIcon sx={{ color: dentalTheme.secondary }} />
           )}
         </ListItem>
-        <Collapse in={mobilePagesOpen}>
+        <Collapse in={mobilePagesOpen} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
             <ListItem
               button
@@ -781,7 +827,7 @@ const UserNavbar = () => {
             <ExpandMoreIcon sx={{ color: dentalTheme.secondary }} />
           )}
         </ListItem>
-        <Collapse in={mobileBrandsOpen}>
+        <Collapse in={mobileBrandsOpen} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
             {brands?.slice(0, 10).map((brand) => (
               <ListItem
@@ -951,9 +997,8 @@ const UserNavbar = () => {
           {!isMobile && (
             <Box
               sx={{ flexGrow: 1, display: "flex", justifyContent: "center" }}
-            >
-              <DesktopNavLinks />
-            </Box>
+              dangerouslySetInnerHTML={{ __html: desktopNavHtml }}
+            />
           )}
 
           {/* Right: User Actions */}
@@ -1064,6 +1109,11 @@ const UserNavbar = () => {
                         fontWeight: 500,
                         px: 2,
                         mr: 2,
+                        bgcolor: dentalTheme.secondary,
+                        "&:hover": {
+                          bgcolor: dentalTheme.secondary,
+                          opacity: 0.9,
+                        },
                       }}
                     >
                       Login
@@ -1159,416 +1209,6 @@ const UserNavbar = () => {
         </Box>
       </Drawer>
 
-      {/* Desktop Menus */}
-      {/* Categories Menu */}
-      <Menu
-        anchorEl={categoriesAnchor}
-        open={Boolean(categoriesAnchor)}
-        onClose={(event) => {
-          event.stopPropagation();
-          setCategoriesAnchor(null);
-          setSubmenuAnchor(null);
-          setHoveredCategory(null);
-        }}
-        MenuListProps={{
-          onMouseEnter: () => handleDropdownMouseEnter("categories"),
-          onMouseLeave: () => handleDropdownMouseLeave("categories"),
-          sx: {
-            padding: 1,
-            maxHeight: "70vh",
-            overflowY: "auto",
-            "&::-webkit-scrollbar": {
-              width: "6px",
-            },
-            "&::-webkit-scrollbar-track": {
-              background: "#f1f1f1",
-              borderRadius: "3px",
-            },
-            "&::-webkit-scrollbar-thumb": {
-              background: "#888",
-              borderRadius: "3px",
-              "&:hover": {
-                background: "#555",
-              },
-            },
-            "&:hover": {
-              "&::-webkit-scrollbar-thumb": {
-                background: "#888",
-              },
-            },
-          },
-          onClick: (event) => event.stopPropagation(),
-        }}
-        PaperProps={{
-          onMouseEnter: () => handleDropdownMouseEnter("categories"),
-          onMouseLeave: () => handleDropdownMouseLeave("categories"),
-          onClick: (event) => event.stopPropagation(),
-          style: {
-            backgroundColor: "white",
-            color: dentalTheme.text,
-            minWidth: "280px",
-            overflow: "hidden",
-            maxHeight: "70vh",
-            border: `1px solid ${dentalTheme.border}`,
-            borderRadius: "12px",
-            boxShadow: "0 8px 32px rgba(0, 0, 0, 0.12)",
-            position: "fixed",
-            top: "65px",
-            left: "265px",
-            transform: "none",
-          },
-        }}
-        anchorReference="none"
-        disableAutoFocus
-        disableEnforceFocus
-        disableRestoreFocus
-      >
-        {parentCategories.map((category) => {
-          const categoryId = category._id || category.id;
-          const subcategories = getSubcategories(categoryId);
-          const hasSubcategories = subcategories.length > 0;
-
-          return (
-            <MenuItem
-              key={categoryId}
-              onMouseEnter={(e) => {
-                if (hasSubcategories) {
-                  handleSubmenuEnter(e, category);
-                }
-              }}
-              onClick={(event) => {
-                event.stopPropagation();
-                if (!hasSubcategories) {
-                  handleSubcategoryClick(category);
-                } else {
-                  navigate(`/category/${categoryId}`);
-                  setCategoriesAnchor(null);
-                  setSubmenuAnchor(null);
-                  setHoveredCategory(null);
-                }
-              }}
-              sx={{
-                color: dentalTheme.text,
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                padding: "12px 20px",
-                borderRadius: "8px",
-                margin: "2px 4px",
-                "&:hover": {
-                  backgroundColor: dentalTheme.hover,
-                  color: dentalTheme.secondary,
-                },
-                minHeight: "48px",
-                fontWeight: 500,
-                transition: "all 0.2s ease-in-out",
-              }}
-            >
-              <span>
-                {typeof category.name === "string"
-                  ? category.name
-                  : category.name?.name || "Category"}
-              </span>
-              {hasSubcategories && (
-                <ChevronRightIcon
-                  sx={{
-                    fontSize: "20px",
-                    marginLeft: "8px",
-                    color: dentalTheme.secondary,
-                  }}
-                />
-              )}
-            </MenuItem>
-          );
-        })}
-      </Menu>
-
-      {/* Subcategories Submenu */}
-      <Menu
-        anchorEl={submenuAnchor}
-        open={Boolean(submenuAnchor && hoveredCategory)}
-        onClose={(event) => {
-          event.stopPropagation();
-          setSubmenuAnchor(null);
-          setHoveredCategory(null);
-        }}
-        MenuListProps={{
-          onMouseEnter: () => handleDropdownMouseEnter("categories"),
-          onMouseLeave: () => handleDropdownMouseLeave("categories"),
-          sx: { padding: 1, maxHeight: "300px", overflowY: "auto" },
-          onClick: (event) => event.stopPropagation(),
-        }}
-        PaperProps={{
-          onMouseEnter: () => handleDropdownMouseEnter("categories"),
-          onMouseLeave: () => handleDropdownMouseLeave("categories"),
-          onClick: (event) => event.stopPropagation(),
-          style: {
-            backgroundColor: "white",
-            color: dentalTheme.text,
-            minWidth: "220px",
-            border: `1px solid ${dentalTheme.border}`,
-            borderRadius: "12px",
-            boxShadow: "0 8px 32px rgba(0, 0, 0, 0.12)",
-            maxHeight: "300px",
-            position: "fixed",
-            top: "65px",
-            left: "545px", // 265 + 280 = 545px (categories width + offset)
-            transform: "none",
-          },
-        }}
-        anchorReference="none"
-        disableAutoFocus
-        disableEnforceFocus
-        disableRestoreFocus
-      >
-        {hoveredCategory &&
-          getSubcategories(hoveredCategory._id || hoveredCategory.id).map(
-            (subcategory) => (
-              <MenuItem
-                key={subcategory._id || subcategory.id}
-                onClick={(event) => {
-                  event.stopPropagation();
-                  handleSubcategoryClick(subcategory);
-                }}
-                sx={{
-                  color: dentalTheme.text,
-                  "&:hover": {
-                    backgroundColor: dentalTheme.hover,
-                    color: dentalTheme.secondary,
-                    cursor: "pointer",
-                  },
-                  padding: "12px 20px",
-                  borderRadius: "8px",
-                  margin: "2px 4px",
-                  minHeight: "48px",
-                  fontWeight: 500,
-                  transition: "all 0.2s ease-in-out",
-                }}
-              >
-                {typeof subcategory.name === "string"
-                  ? subcategory.name
-                  : subcategory.name?.name || "Subcategory"}
-              </MenuItem>
-            )
-          )}
-      </Menu>
-
-      {/* Pages Menu */}
-      <Menu
-        anchorEl={pagesAnchor}
-        open={Boolean(pagesAnchor)}
-        onClose={(event) => {
-          event.stopPropagation();
-          setPagesAnchor(null);
-        }}
-        MenuListProps={{
-          onMouseEnter: () => handleDropdownMouseEnter("pages"),
-          onMouseLeave: () => handleDropdownMouseLeave("pages"),
-          sx: { padding: 1, minWidth: "220px" },
-          onClick: (event) => event.stopPropagation(),
-        }}
-        PaperProps={{
-          onMouseEnter: () => handleDropdownMouseEnter("pages"),
-          onMouseLeave: () => handleDropdownMouseLeave("pages"),
-          onClick: (event) => event.stopPropagation(),
-          style: {
-            backgroundColor: "white",
-            color: dentalTheme.text,
-            border: `1px solid ${dentalTheme.border}`,
-            borderRadius: "12px",
-            boxShadow: "0 8px 32px rgba(0, 0, 0, 0.12)",
-            position: "fixed",
-            top: "65px",
-            left: "450px", // Moved 20px left from 410px
-            transform: "none",
-          },
-        }}
-        anchorReference="none"
-        disableAutoFocus
-        disableEnforceFocus
-        disableRestoreFocus
-      >
-        <MenuItem
-          onClick={(event) => {
-            event.stopPropagation();
-            navigate("/about-us");
-            setPagesAnchor(null);
-          }}
-          sx={{
-            color: dentalTheme.text,
-            "&:hover": {
-              backgroundColor: dentalTheme.hover,
-              color: dentalTheme.secondary,
-            },
-            padding: "12px 20px",
-            borderRadius: "8px",
-            margin: "2px 4px",
-            minHeight: "48px",
-            fontWeight: 500,
-            transition: "all 0.2s ease-in-out",
-          }}
-        >
-          About Us
-        </MenuItem>
-        <MenuItem
-          onClick={(event) => {
-            event.stopPropagation();
-            navigate("/terms-conditions");
-            setPagesAnchor(null);
-          }}
-          sx={{
-            color: dentalTheme.text,
-            "&:hover": {
-              backgroundColor: dentalTheme.hover,
-              color: dentalTheme.secondary,
-            },
-            padding: "12px 20px",
-            borderRadius: "8px",
-            margin: "2px 4px",
-            minHeight: "48px",
-            fontWeight: 500,
-            transition: "all 0.2s ease-in-out",
-          }}
-        >
-          Terms & Conditions
-        </MenuItem>
-        <MenuItem
-          onClick={(event) => {
-            event.stopPropagation();
-            navigate("/privacy-policy");
-            setPagesAnchor(null);
-          }}
-          sx={{
-            color: dentalTheme.text,
-            "&:hover": {
-              backgroundColor: dentalTheme.hover,
-              color: dentalTheme.secondary,
-            },
-            padding: "12px 20px",
-            borderRadius: "8px",
-            margin: "2px 4px",
-            minHeight: "48px",
-            fontWeight: 500,
-            transition: "all 0.2s ease-in-out",
-          }}
-        >
-          Privacy Policy
-        </MenuItem>
-        <MenuItem
-          onClick={(event) => {
-            event.stopPropagation();
-            navigate("/return-policy");
-            setPagesAnchor(null);
-          }}
-          sx={{
-            color: dentalTheme.text,
-            "&:hover": {
-              backgroundColor: dentalTheme.hover,
-              color: dentalTheme.secondary,
-            },
-            padding: "12px 20px",
-            borderRadius: "8px",
-            margin: "2px 4px",
-            minHeight: "48px",
-            fontWeight: 500,
-            transition: "all 0.2s ease-in-out",
-          }}
-        >
-          Return Policy
-        </MenuItem>
-      </Menu>
-
-      {/* Brands Menu */}
-      <Menu
-        anchorEl={brandsAnchor}
-        open={Boolean(brandsAnchor)}
-        onClose={(event) => {
-          event.stopPropagation();
-          setBrandsAnchor(null);
-        }}
-        MenuListProps={{
-          onMouseEnter: () => handleDropdownMouseEnter("brands"),
-          onMouseLeave: () => handleDropdownMouseLeave("brands"),
-          sx: { padding: 1, maxHeight: "400px", overflowY: "auto" },
-          onClick: (event) => event.stopPropagation(),
-        }}
-        PaperProps={{
-          onMouseEnter: () => handleDropdownMouseEnter("brands"),
-          onMouseLeave: () => handleDropdownMouseLeave("brands"),
-          onClick: (event) => event.stopPropagation(),
-          style: {
-            backgroundColor: "white",
-            color: dentalTheme.text,
-            minWidth: "220px",
-            maxHeight: "400px",
-            border: `1px solid ${dentalTheme.border}`,
-            borderRadius: "12px",
-            boxShadow: "0 8px 32px rgba(0, 0, 0, 0.12)",
-            position: "fixed",
-            top: "65px",
-            left: "650px", // Moved 50px left from 530px
-            transform: "none",
-          },
-        }}
-        anchorReference="none"
-        disableAutoFocus
-        disableEnforceFocus
-        disableRestoreFocus
-      >
-        {brands?.slice(0, 10).map((brand) => (
-          <MenuItem
-            key={brand._id || brand.id}
-            onClick={(event) => {
-              event.stopPropagation();
-              navigate(`/products?brand=${brand._id || brand.id}`);
-              setBrandsAnchor(null);
-            }}
-            sx={{
-              color: dentalTheme.text,
-              "&:hover": {
-                backgroundColor: dentalTheme.hover,
-                color: dentalTheme.secondary,
-              },
-              padding: "12px 20px",
-              borderRadius: "8px",
-              margin: "2px 4px",
-              minHeight: "48px",
-              fontWeight: 500,
-              transition: "all 0.2s ease-in-out",
-            }}
-          >
-            {typeof brand.name === "string"
-              ? brand.name
-              : brand.name?.name || "Brand"}
-          </MenuItem>
-        ))}
-        {brands?.length > 10 && (
-          <MenuItem
-            onClick={(event) => {
-              event.stopPropagation();
-              navigate("/brands");
-              setBrandsAnchor(null);
-            }}
-            sx={{
-              color: dentalTheme.secondary,
-              "&:hover": {
-                backgroundColor: dentalTheme.hover,
-                color: dentalTheme.secondary,
-              },
-              padding: "12px 20px",
-              borderRadius: "8px",
-              margin: "2px 4px",
-              minHeight: "48px",
-              fontStyle: "italic",
-              fontWeight: 500,
-              transition: "all 0.2s ease-in-out",
-            }}
-          >
-            View All Brands...
-          </MenuItem>
-        )}
-      </Menu>
-
       {/* User Menu */}
       <Menu
         anchorEl={userMenuAnchor}
@@ -1594,28 +1234,6 @@ const UserNavbar = () => {
           horizontal: "right",
         }}
       >
-        {loggedInUser?.isAdmin && (
-          <MenuItem
-            onClick={() => {
-              navigate("/admin/add-product");
-              setUserMenuAnchor(null);
-            }}
-            sx={{
-              color: dentalTheme.text,
-              "&:hover": {
-                backgroundColor: dentalTheme.hover,
-                color: dentalTheme.secondary,
-              },
-              padding: "12px 20px",
-              borderRadius: "8px",
-              margin: "2px 4px",
-              fontWeight: 500,
-              transition: "all 0.2s ease-in-out",
-            }}
-          >
-            Add new Product
-          </MenuItem>
-        )}
         {userMenuSettings.map((setting) => (
           <MenuItem
             key={setting.name}

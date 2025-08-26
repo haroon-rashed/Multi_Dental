@@ -7,6 +7,7 @@ router
   .get("/", productController.getAll)
   .get("/get-all-products", productController.getAllWithoutPagination)
   .get("/:id", productController.getById)
+  .get("/getByCategory/:id", productController.getByCategory)
   .patch("/:id", productController.updateById)
   .patch("/undelete/:id", productController.undeleteById)
   .delete("/:id", productController.deleteById);

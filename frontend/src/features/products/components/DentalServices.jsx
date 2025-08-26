@@ -329,21 +329,27 @@ const DentalServices = () => {
               disabled={!canScrollLeft}
               sx={{
                 position: "absolute",
-                left: 0,
+                left: -24, // Move slightly outside to avoid card overlap
                 top: "50%",
                 transform: "translateY(-50%)",
-                zIndex: 10,
+                zIndex: 1000, // Higher z-index to stay above cards
                 width: 48,
                 height: 48,
                 backgroundColor: "background.paper",
                 boxShadow: 3,
                 border: `1px solid ${theme.palette.grey[200]}`,
-                transition: "all 0.3s",
+                transition:
+                  "background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease, opacity 0.2s ease", // Smoother transitions
                 "&:hover": {
                   backgroundColor: theme.palette.primary[50],
                   borderColor: theme.palette.primary[300],
                   boxShadow: 4,
                   color: theme.palette.primary.main,
+                },
+                "&:active": {
+                  backgroundColor: theme.palette.primary[100], // Click feedback
+                  boxShadow: 2,
+                  transform: "translateY(-50%) scale(0.95)", // Slight scale-down on click
                 },
                 ...(!canScrollLeft && {
                   color: theme.palette.grey[300],
@@ -352,21 +358,7 @@ const DentalServices = () => {
                 }),
               }}
             >
-              <ChevronLeft
-                fontSize="medium"
-                sx={{
-                  transition: "transform 0.3s ease",
-                  transform: "none",
-                  "&:hover": {
-                    transform: "translateX(-2px)",
-                  },
-                  ...(!canScrollLeft && {
-                    color: theme.palette.grey[300],
-                    cursor: "not-allowed",
-                    opacity: 0.5,
-                  }),
-                }}
-              />
+              <ChevronLeft fontSize="medium" />
             </IconButton>
 
             {/* Right Arrow */}
@@ -375,21 +367,27 @@ const DentalServices = () => {
               disabled={!canScrollRight}
               sx={{
                 position: "absolute",
-                right: 0,
+                right: -24, // Move slightly outside to avoid card overlap
                 top: "50%",
                 transform: "translateY(-50%)",
-                zIndex: 10,
+                zIndex: 1000, // Higher z-index to stay above cards
                 width: 48,
                 height: 48,
                 backgroundColor: "background.paper",
                 boxShadow: 3,
                 border: `1px solid ${theme.palette.grey[200]}`,
-                transition: "all 0.3s",
+                transition:
+                  "background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, color 0.2s ease, opacity 0.2s ease", // Smoother transitions
                 "&:hover": {
                   backgroundColor: theme.palette.primary[50],
                   borderColor: theme.palette.primary[300],
                   boxShadow: 4,
                   color: theme.palette.primary.main,
+                },
+                "&:active": {
+                  backgroundColor: theme.palette.primary[100], // Click feedback
+                  boxShadow: 2,
+                  transform: "translateY(-50%) scale(0.95)", // Slight scale-down on click
                 },
                 ...(!canScrollRight && {
                   color: theme.palette.grey[300],

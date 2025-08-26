@@ -12,7 +12,7 @@ import {
   Box,
 } from "@mui/material";
 import {
-  fetchProductsAsync,
+  fetchProductsByCategoryAsync, // Updated to use new thunk
   selectProducts,
   selectProductFetchStatus,
   selectProductTotalResults,
@@ -22,7 +22,7 @@ import { selectCategories } from "../features/categories/CategoriesSlice";
 import { ITEMS_PER_PAGE } from "../constants";
 import { motion } from "framer-motion";
 import Lottie from "lottie-react";
-import { ProductListSkeleton } from '../components/skeletons/SkeletonLoaders';
+import { ProductListSkeleton } from "../components/skeletons/SkeletonLoaders";
 import Pagination from "@mui/material/Pagination";
 import { selectLoggedInUser } from "../features/auth/AuthSlice";
 import {
@@ -81,8 +81,9 @@ export const SubCategoryPage = () => {
   // Fetch products for this subcategory
   useEffect(() => {
     const filters = {
-      category: [subcategoryId],
-      pagination: { page: page, limit: ITEMS_PER_PAGE },
+      categoryId: subcategoryId, // Use dynamic subcategoryId
+      page: page,
+      limit: ITEMS_PER_PAGE,
       sort: sort,
     };
 
@@ -90,8 +91,8 @@ export const SubCategoryPage = () => {
       filters.user = true;
     }
 
-    dispatch(fetchProductsAsync(filters));
-  }, [subcategoryId, page, sort, loggedInUser]);
+    dispatch(fetchProductsByCategoryAsync(filters));
+  }, [subcategoryId, page, sort, loggedInUser, dispatch]);
 
   // Handle wishlist operations
   const handleAddRemoveFromWishlist = (e, productId) => {
@@ -143,7 +144,7 @@ export const SubCategoryPage = () => {
 
   if (productFetchStatus === "pending") {
     return (
-      <Stack width={'100%'} sx={{ py: 4 }}>
+      <Stack width={"100%"} sx={{ py: 4 }}>
         <ProductListSkeleton count={8} />
       </Stack>
     );
@@ -176,11 +177,15 @@ export const SubCategoryPage = () => {
             sx={{ cursor: "pointer" }}
             underline="hover"
           >
-            {typeof parentCategory.name === 'string' ? parentCategory.name : (parentCategory.name?.name || 'Category')}
+            {typeof parentCategory.name === "string"
+              ? parentCategory.name
+              : parentCategory.name?.name || "Category"}
           </Link>
         )}
         <Typography color="text.primary">
-          {typeof subcategory?.name === 'string' ? subcategory.name : (subcategory?.name?.name || 'Subcategory')}
+          {typeof subcategory?.name === "string"
+            ? subcategory.name
+            : subcategory?.name?.name || "Subcategory"}
         </Typography>
       </Breadcrumbs>
 
@@ -192,7 +197,9 @@ export const SubCategoryPage = () => {
       >
         <Stack spacing={2}>
           <Typography variant="h3" component="h1" sx={{ fontWeight: "bold" }}>
-            {typeof subcategory?.name === 'string' ? subcategory.name : (subcategory?.name?.name || 'Subcategory Products')}
+            {typeof subcategory?.name === "string"
+              ? subcategory.name
+              : subcategory?.name?.name || "Subcategory Products"}
           </Typography>
           {subcategory?.description && (
             <Typography variant="body1" color="text.secondary">

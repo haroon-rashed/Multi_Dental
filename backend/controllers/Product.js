@@ -100,6 +100,24 @@ exports.getById = async (req, res) => {
     });
   }
 };
+exports.getByCategory = async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const products = await Product.find({ 
+      category: id, 
+      isDeleted: { $ne: true } 
+    })
+    .populate("brand")
+    .populate("category")
+    .lean();
+
+    res.status(200).json(products);
+  } catch (error) {
+    console.error("Error fetching products by category:", error);
+    res.status(500).json({ message: "Error fetching products by category" });
+  }
+};
 
 exports.updateById = async (req, res) => {
   try {
