@@ -37,10 +37,10 @@ export const Footer = () => {
 
   const handleSocialMediaClick = (platform) => {
     const socialLinks = {
-      facebook: "https://www.facebook.com/alumardental",
-      twitter: "https://twitter.com/alumardental",
-      youtube: "https://www.youtube.com/@alumardental",
-      linkedin: "https://www.linkedin.com/company/alumardental",
+      facebook: "https://www.facebook.com/multidentals",
+      twitter: "#",
+      youtube: "#",
+      linkedin: "#",
     };
     window.open(socialLinks[platform], "_blank");
   };
@@ -56,7 +56,7 @@ export const Footer = () => {
   const socialMediaData = [
     {
       icon: FacebookIcon,
-      platform: "https://web.facebook.com/multidentals",
+      platform: "facebook",
       color: "#1877F2",
       hoverColor: "#166fe5",
     },

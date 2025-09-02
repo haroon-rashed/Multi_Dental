@@ -308,9 +308,9 @@ export const PrivacyPolicyPage = () => {
               </Typography>
               <Stack spacing={2} sx={{ textAlign: "center" }}>
                 <Typography variant="body1" sx={{ fontWeight: "bold" }}>
-                  Email: privacy@alumardental.com
+                  Email: multidental@yaho.com
                 </Typography>
-                <Typography variant="body1">Phone: +92614506162</Typography>
+                <Typography variant="body1">Phone: +92 300 6377 821</Typography>
                 <Typography variant="body1">
                   Address: Near Nishtar Institute of Dentistry, District Jail
                   Road, Multan

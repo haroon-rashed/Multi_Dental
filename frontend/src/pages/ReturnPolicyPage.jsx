@@ -372,9 +372,11 @@ export const ReturnPolicyPage = () => {
                   <Typography variant="h6" sx={{ fontWeight: "bold" }}>
                     Contact Customer Service
                   </Typography>
-                  <Typography variant="body1">Phone: +92614506162</Typography>
                   <Typography variant="body1">
-                    Email: returns@alumardental.com
+                    Phone: +92 300 6377 821
+                  </Typography>
+                  <Typography variant="body1">
+                    Email: multidental@yaho.com
                   </Typography>
                   <Typography variant="body1">
                     Hours: Monday-Saturday, 9:00 AM - 6:00 PM

@@ -131,7 +131,12 @@ const AdminSidebar = () => {
           </ListItem>
 
           {/* Customers */}
-          <ListItem button sx={{ color: "#92400e" }}>
+          <ListItem
+            button
+            component={Link}
+            to="/admin/customer"
+            sx={{ color: "#92400e" }}
+          >
             <ListItemIcon sx={{ color: "#92400e" }}>
               <FaUsers />
             </ListItemIcon>
@@ -271,11 +276,13 @@ const AdminSidebar = () => {
 
           <Collapse in={openSubmenus.sales} timeout="auto" unmountOnExit>
             <List component="div" disablePadding sx={{ pl: 4 }}>
-              <ListItem button sx={{ color: "#b45309" }}>
+              <ListItem
+                button
+                component={Link}
+                to="/admin/dashboard"
+                sx={{ color: "#b45309" }}
+              >
                 <ListItemText primary="Overview" />
-              </ListItem>
-              <ListItem button sx={{ color: "#b45309" }}>
-                <ListItemText primary="Breakdown" />
               </ListItem>
               <ListItem
                 button
@@ -287,15 +294,6 @@ const AdminSidebar = () => {
               </ListItem>
             </List>
           </Collapse>
-
-          {/* Transactions */}
-          <ListItem button sx={{ color: "#92400e" }}>
-            <ListItemIcon sx={{ color: "#92400e" }}>
-              <FaFileAlt />
-            </ListItemIcon>
-            <ListItemText primary="Transactions" />
-          </ListItem>
-
           {/* Admin Settings */}
           <ListItem button sx={{ color: "#92400e" }}>
             <ListItemIcon sx={{ color: "#92400e" }}>

@@ -209,7 +209,7 @@ export const TermsConditionsPage = () => {
               </Typography>
               <Stack spacing={2} sx={{ marginTop: 3, textAlign: "center" }}>
                 <Typography variant="body1" sx={{ fontWeight: "bold" }}>
-                  Email: legal@alumardental.com
+                  Email: multidental@yaho.com
                 </Typography>
                 <Typography variant="body1">Phone: +92614506162</Typography>
                 <Typography variant="body1">

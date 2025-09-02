@@ -92,32 +92,21 @@ export const Checkout = () => {
     }
   }, [addressStatus]);
 
-  // FIXED: Simplified and more reliable redirect logic
   useEffect(() => {
     if (currentOrder && currentOrder._id) {
-      console.log("Order received:", currentOrder); // Debug log
-
-      // For Guest Users (not logged in)
+      console.log("Order received:", currentOrder);
       if (!loggedInUser) {
-        // Check if this is a new user with credentials
         if (currentOrder.credentials && currentOrder.user?.isNewUser) {
           console.log("Showing credentials dialog for new guest user");
           setGuestCredentials(currentOrder.credentials);
           setShowCredentialsDialog(true);
-          // Don't navigate immediately - let user see credentials first
         } else {
-          // Existing user guest checkout - navigate directly
           console.log("Navigating directly for existing user guest checkout");
           navigate(`/order-success/${currentOrder._id}`);
         }
-      }
-      // For Logged-in Users
-      else {
+      } else {
         console.log("Processing logged-in user order");
-        // Clear cart for logged-in users
         dispatch(resetCartByUserIdAsync(loggedInUser._id));
-
-        // Show success dialog
         setShowSuccessDialog(true);
       }
     }
@@ -128,7 +117,6 @@ export const Checkout = () => {
     dispatch(addAddressAsync(address));
   };
 
-  // For logged-in users - regular order
   const handleCreateOrder = () => {
     const order = {
       user: loggedInUser._id,
@@ -140,7 +128,6 @@ export const Checkout = () => {
     dispatch(createOrderAsync(order));
   };
 
-  // For guest users - create user + order
   const handleGuestOrderWithUser = (guestData) => {
     const orderData = {
       userInfo: {
@@ -154,8 +141,8 @@ export const Checkout = () => {
           type: guestData.addressType,
           street: guestData.street,
           city: guestData.city,
-          state: guestData.state,
-          country: guestData.country,
+          state: guestData.state || "", // Optional
+          country: guestData.country || "", // Optional
           postalCode: guestData.postalCode,
           phoneNumber: guestData.phoneNumber,
         },
@@ -172,7 +159,6 @@ export const Checkout = () => {
     setTimeout(() => setCopiedPassword(false), 2000);
   };
 
-  // FIXED: Handle credentials dialog close with proper navigation
   const handleCredentialsDialogClose = () => {
     console.log("Closing credentials dialog and navigating");
     setShowCredentialsDialog(false);
@@ -181,7 +167,6 @@ export const Checkout = () => {
     }
   };
 
-  // FIXED: Handle success dialog close with proper navigation
   const handleSuccessDialogClose = () => {
     console.log("Closing success dialog and navigating");
     setShowSuccessDialog(false);
@@ -203,9 +188,7 @@ export const Checkout = () => {
         columnGap={4}
         alignItems={"flex-start"}
       >
-        {/* Left Box - Forms */}
         <Stack rowGap={4}>
-          {/* Heading */}
           <Stack
             flexDirection={"row"}
             columnGap={is480 ? 0.3 : 1}
@@ -221,14 +204,12 @@ export const Checkout = () => {
             </Typography>
           </Stack>
 
-          {/* Show user status */}
           {loggedInUser && (
             <Alert severity="info">
               Welcome back, {loggedInUser.name}! ({loggedInUser.email})
             </Alert>
           )}
 
-          {/* GUEST CHECKOUT FORM */}
           {!loggedInUser && (
             <Stack
               component={"form"}
@@ -236,7 +217,6 @@ export const Checkout = () => {
               rowGap={3}
               onSubmit={handleSubmitGuest(handleGuestOrderWithUser)}
             >
-              {/* Personal Information - Only for Guests */}
               <Typography variant="h6">Personal Information</Typography>
               <Stack flexDirection={is480 ? "column" : "row"} gap={2}>
                 <Stack width={"100%"}>
@@ -283,11 +263,10 @@ export const Checkout = () => {
 
               <Divider />
 
-              {/* Shipping Address - For Guests */}
               <Typography variant="h6">Shipping Address</Typography>
 
               <Stack>
-                <Typography gutterBottom>Address Type</Typography>
+                <Typography gutterBottom>Address Type *</Typography>
                 <TextField
                   placeholder="Eg. Home, Office, Business"
                   {...registerGuest("addressType", {
@@ -320,11 +299,9 @@ export const Checkout = () => {
                   />
                 </Stack>
                 <Stack width={"100%"}>
-                  <Typography gutterBottom>State *</Typography>
+                  <Typography gutterBottom>State</Typography>
                   <TextField
-                    {...registerGuest("state", {
-                      required: "State is required",
-                    })}
+                    {...registerGuest("state")} // No required validation
                     error={!!guestErrors.state}
                     helperText={guestErrors.state?.message}
                   />
@@ -333,11 +310,9 @@ export const Checkout = () => {
 
               <Stack flexDirection={is480 ? "column" : "row"} gap={2}>
                 <Stack width={"100%"}>
-                  <Typography gutterBottom>Country *</Typography>
+                  <Typography gutterBottom>Country</Typography>
                   <TextField
-                    {...registerGuest("country", {
-                      required: "Country is required",
-                    })}
+                    {...registerGuest("country")} // No required validation
                     error={!!guestErrors.country}
                     helperText={guestErrors.country?.message}
                   />
@@ -373,7 +348,6 @@ export const Checkout = () => {
 
               <Divider />
 
-              {/* Payment Methods - For Guests */}
               <Stack rowGap={3}>
                 <Stack>
                   <Typography variant="h6">Payment Method</Typography>
@@ -441,10 +415,8 @@ export const Checkout = () => {
             </Stack>
           )}
 
-          {/* LOGGED-IN USER FORMS */}
           {loggedInUser && (
             <>
-              {/* Add New Address Form */}
               <Stack
                 component={"form"}
                 noValidate
@@ -454,44 +426,70 @@ export const Checkout = () => {
                 <Typography variant="h6">Add New Address</Typography>
 
                 <Stack>
-                  <Typography gutterBottom>Address Type</Typography>
+                  <Typography gutterBottom>Address Type *</Typography>
                   <TextField
                     placeholder="Eg. Home, Office, Business"
-                    {...register("type", { required: true })}
+                    {...register("type", {
+                      required: "Address type is required",
+                    })}
+                    error={!!errors.type}
+                    helperText={errors.type?.message}
                   />
                 </Stack>
 
                 <Stack>
-                  <Typography gutterBottom>Street Address</Typography>
-                  <TextField {...register("street", { required: true })} />
+                  <Typography gutterBottom>Street Address *</Typography>
+                  <TextField
+                    {...register("street", {
+                      required: "Street address is required",
+                    })}
+                    error={!!errors.street}
+                    helperText={errors.street?.message}
+                  />
                 </Stack>
 
                 <Stack>
                   <Typography gutterBottom>Country</Typography>
-                  <TextField {...register("country", { required: true })} />
+                  <TextField {...register("country")} /> {/* No required */}
                 </Stack>
 
                 <Stack>
-                  <Typography gutterBottom>Phone Number</Typography>
+                  <Typography gutterBottom>Phone Number *</Typography>
                   <TextField
                     type="tel"
-                    {...register("phoneNumber", { required: true })}
+                    {...register("phoneNumber", {
+                      required: "Phone number is required",
+                      pattern: {
+                        value: /^[\+]?[0-9\s\-\(\)]{10,15}$/,
+                        message: "Please enter a valid phone number",
+                      },
+                    })}
+                    error={!!errors.phoneNumber}
+                    helperText={errors.phoneNumber?.message}
                   />
                 </Stack>
 
                 <Stack flexDirection={"row"} gap={2}>
                   <Stack width={"100%"}>
-                    <Typography gutterBottom>City</Typography>
-                    <TextField {...register("city", { required: true })} />
+                    <Typography gutterBottom>City *</Typography>
+                    <TextField
+                      {...register("city", { required: "City is required" })}
+                      error={!!errors.city}
+                      helperText={errors.city?.message}
+                    />
                   </Stack>
                   <Stack width={"100%"}>
                     <Typography gutterBottom>State</Typography>
-                    <TextField {...register("state", { required: true })} />
+                    <TextField {...register("state")} /> {/* No required */}
                   </Stack>
                   <Stack width={"100%"}>
-                    <Typography gutterBottom>Postal Code</Typography>
+                    <Typography gutterBottom>Postal Code *</Typography>
                     <TextField
-                      {...register("postalCode", { required: true })}
+                      {...register("postalCode", {
+                        required: "Postal code is required",
+                      })}
+                      error={!!errors.postalCode}
+                      helperText={errors.postalCode?.message}
                     />
                   </Stack>
                 </Stack>
@@ -518,7 +516,6 @@ export const Checkout = () => {
                 </Stack>
               </Stack>
 
-              {/* Select Existing Address */}
               <Stack rowGap={3}>
                 <Stack>
                   <Typography variant="h6">Select Delivery Address</Typography>
@@ -550,7 +547,9 @@ export const Checkout = () => {
                         <Stack>
                           <Typography>{address.street}</Typography>
                           <Typography>
-                            {address.state}, {address.city}, {address.country},{" "}
+                            {address.state ? `${address.state}, ` : ""}
+                            {address.city},{" "}
+                            {address.country ? `${address.country}, ` : ""}
                             {address.postalCode}
                           </Typography>
                           <Typography>{address.phoneNumber}</Typography>
@@ -561,7 +560,6 @@ export const Checkout = () => {
                 </Grid>
               </Stack>
 
-              {/* Payment Methods for Logged-in Users */}
               <Stack rowGap={3}>
                 <Stack>
                   <Typography variant="h6">Payment Method</Typography>
@@ -596,7 +594,6 @@ export const Checkout = () => {
           )}
         </Stack>
 
-        {/* Right Box - Order Summary */}
         <Stack
           width={is900 ? "100%" : "auto"}
           alignItems={is900 ? "flex-start" : ""}
@@ -606,7 +603,6 @@ export const Checkout = () => {
           </Typography>
           <Cart checkout={true} />
 
-          {/* Place Order Button - Only for Logged-in Users */}
           {loggedInUser && (
             <LoadingButton
               fullWidth
@@ -622,7 +618,6 @@ export const Checkout = () => {
         </Stack>
       </Stack>
 
-      {/* Success Dialog for Logged-in Users */}
       <Dialog
         open={showSuccessDialog}
         onClose={handleSuccessDialogClose}
@@ -699,7 +694,6 @@ export const Checkout = () => {
         </DialogActions>
       </Dialog>
 
-      {/* Credentials Dialog - Only for Guest Users */}
       <Dialog
         open={showCredentialsDialog}
         onClose={handleCredentialsDialogClose}

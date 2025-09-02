@@ -17,10 +17,13 @@ import {
 } from "../features/order/OrderSlice";
 import { selectUserInfo } from "../features/user/UserSlice";
 import { selectLoggedInUser } from "../features/auth/AuthSlice";
+import {
+  resetCartByUserIdAsync,
+  clearLocalCart,
+} from "../features/cart/CartSlice";
 import { orderSuccessAnimation } from "../assets";
 import Lottie from "lottie-react";
 import EmailIcon from "@mui/icons-material/Email";
-import VpnKeyIcon from "@mui/icons-material/VpnKey";
 
 export const OrderSuccessPage = () => {
   const navigate = useNavigate();
@@ -33,7 +36,6 @@ export const OrderSuccessPage = () => {
   const theme = useTheme();
   const is480 = useMediaQuery(theme.breakpoints.down(480));
 
-  // Check if this was a guest order with credentials
   const isGuestOrderWithCredentials =
     currentOrder?.credentials && !loggedInUser;
 
@@ -42,6 +44,21 @@ export const OrderSuccessPage = () => {
       navigate("/");
     }
   }, [currentOrder, navigate]);
+
+  const handleContinueShopping = async () => {
+    try {
+      if (loggedInUser) {
+        await dispatch(resetCartByUserIdAsync(loggedInUser._id)).unwrap();
+        console.log("Cart cleared for user:", loggedInUser._id);
+      } else {
+        dispatch(clearLocalCart());
+        console.log("Local cart cleared");
+      }
+      navigate("/");
+    } catch (error) {
+      console.error("Error clearing cart:", error);
+    }
+  };
 
   return (
     <Stack
@@ -81,8 +98,7 @@ export const OrderSuccessPage = () => {
           </Typography>
         </Stack>
 
-        {/* Show login credentials message for guest users */}
-        {isGuestOrderWithCredentials && (
+        {isGuestOrderWithCredentials ? (
           <Alert
             severity="info"
             icon={<EmailIcon />}
@@ -93,18 +109,15 @@ export const OrderSuccessPage = () => {
             }}
           >
             <Typography variant="body2" gutterBottom>
-              <strong>📧 Your Login Credentials Sent to Your Email!</strong>
+              <strong>Your order has been placed!</strong> Check your email for
+              order confirmation and your login credentials.
             </Typography>
             <Typography variant="body2">
               We've created an account for you and sent your login credentials
-              to your email address. Check your email to login to your account
-              and track your order.
+              to your email address. Use them to log in and track your order.
             </Typography>
           </Alert>
-        )}
-
-        {/* Show different message for logged-in users */}
-        {loggedInUser && (
+        ) : (
           <Alert
             severity="success"
             sx={{
@@ -114,22 +127,32 @@ export const OrderSuccessPage = () => {
             }}
           >
             <Typography variant="body2">
-              <strong>Order confirmation sent!</strong> Check your email for
-              order details and tracking information.
+              <strong>Your order has been placed!</strong> Check your email for
+              order confirmation and tracking details.
             </Typography>
           </Alert>
         )}
 
+        {loggedInUser && (
+          <Button
+            component={Link}
+            to="/orders"
+            onClick={() => dispatch(resetCurrentOrder())}
+            size={is480 ? "small" : ""}
+            variant="contained"
+          >
+            Check order status in my orders
+          </Button>
+        )}
+
         <Button
-          component={Link}
-          to={loggedInUser ? "/orders" : "/"}
-          onClick={() => dispatch(resetCurrentOrder())}
-          size={is480 ? "small" : ""}
           variant="contained"
+          color="primary"
+          sx={{ mt: 2 }}
+          onClick={handleContinueShopping}
+          size={is480 ? "small" : ""}
         >
-          {loggedInUser
-            ? "Check order status in my orders"
-            : "Continue Shopping"}
+          Continue Shopping
         </Button>
       </Stack>
     </Stack>

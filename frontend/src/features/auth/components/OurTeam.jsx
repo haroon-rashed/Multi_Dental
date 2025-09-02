@@ -5,114 +5,8 @@ import {
   CardContent,
   Typography,
   Avatar,
-  Divider,
   useTheme,
 } from "@mui/material";
-import { Email as EmailIcon, Phone as PhoneIcon } from "@mui/icons-material";
-
-const teamMembers = [
-  {
-    name: "Muhammad Shehzad",
-    designation: "Chairman",
-    contact: "+92 300 8735652",
-    email: "shehzad@gmail.com",
-    avatarSrc: "/shehzad.jpg", // Place this image directly in the public folder
-  },
-  {
-    name: "Muhammad Shehbaz",
-    designation: "Chairman",
-    contact: "+92 300 6377821",
-    email: "shehbaz@gmail.com",
-    avatarSrc: "/shehbaz.jpg", // Place this image directly in the public folder
-  },
-  {
-    name: "Hafiz Ejaz Ahmad",
-    designation: "Chairman",
-    contact: "+92 305 7890093",
-    email: "ejaz@gmail.com",
-    avatarSrc: "/ejaz.jpg", // Place this image directly in the public folder
-  },
-];
-
-const TeamCard = ({ name, designation, contact, email, avatarSrc }) => {
-  const theme = useTheme();
-
-  return (
-    <Card
-      sx={{
-        maxWidth: 360,
-        borderRadius: 3,
-        boxShadow: theme.shadows[8],
-        transition: "transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out",
-        "&:hover": {
-          transform: "translateY(-10px)",
-          boxShadow: theme.shadows[12],
-          background: `linear-gradient(135deg, ${theme.palette.background.paper} 30%, ${theme.palette.grey[100]} 100%)`,
-        },
-        overflow: "hidden",
-        position: "relative",
-        background: theme.palette.background.paper,
-      }}
-    >
-      <Box
-        sx={{
-          height: 100,
-          background: `linear-gradient(135deg, ${theme.palette.primary.main} 30%, ${theme.palette.grey[300]} 100%)`,
-          clipPath: "polygon(0 0, 100% 0, 100% 70%, 0 100%)",
-        }}
-      />
-      <Box
-        sx={{
-          position: "absolute",
-          top: 40,
-          left: 0,
-          right: 0,
-          display: "flex",
-          justifyContent: "center",
-        }}
-      >
-        <Avatar
-          src={avatarSrc}
-          sx={{
-            width: 100,
-            height: 100,
-            border: `4px solid ${theme.palette.background.paper}`,
-          }}
-        />
-      </Box>
-      <CardContent sx={{ pt: 8, textAlign: "center" }}>
-        <Typography
-          variant="h5"
-          fontWeight="bold"
-          color={theme.palette.text.primary}
-          gutterBottom
-        >
-          {name}
-        </Typography>
-        <Typography
-          variant="subtitle1"
-          color={theme.palette.text.secondary}
-          sx={{ mb: 2 }}
-        >
-          {designation}
-        </Typography>
-        <Divider sx={{ mb: 2, bgcolor: theme.palette.grey[300] }} />
-        <Box display="flex" alignItems="center" justifyContent="center" mb={1}>
-          <PhoneIcon sx={{ mr: 1, color: theme.palette.primary.main }} />
-          <Typography variant="body2" color={theme.palette.text.secondary}>
-            {contact}
-          </Typography>
-        </Box>
-        <Box display="flex" alignItems="center" justifyContent="center">
-          <EmailIcon sx={{ mr: 1, color: theme.palette.primary.main }} />
-          <Typography variant="body2" color={theme.palette.text.secondary}>
-            {email}
-          </Typography>
-        </Box>
-      </CardContent>
-    </Card>
-  );
-};
 
 const OurTeam = () => {
   const theme = useTheme();
@@ -120,62 +14,198 @@ const OurTeam = () => {
   return (
     <Box
       sx={{
-        py: 8,
+        py: 10,
         px: 4,
-        background: `linear-gradient(180deg, ${theme.palette.grey[50]} 0%, ${theme.palette.background.default} 100%)`,
+        background: `linear-gradient(135deg, ${theme.palette.grey[50]} 0%, ${theme.palette.background.default} 50%, ${theme.palette.grey[100]} 100%)`,
         minHeight: "100vh",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
+        justifyContent: "center",
       }}
     >
       <Typography
-        variant="h3"
+        variant="h2"
         fontWeight="bold"
-        color={theme.palette.text.primary}
         sx={{
-          mb: 6,
+          mb: 8,
           textAlign: "center",
           textTransform: "uppercase",
-          letterSpacing: 2,
+          letterSpacing: 3,
           position: "relative",
+          background: `linear-gradient(135deg, #2563eb 0%, #10b981 50%, #8b5cf6 100%)`,
+          backgroundClip: "text",
+          WebkitBackgroundClip: "text",
+          WebkitTextFillColor: "transparent",
+          color: "#1f2937", // Fallback color for browsers that don't support gradient text
+          textShadow: "0 0 30px rgba(37, 99, 235, 0.3)",
           "&:after": {
             content: '""',
             display: "block",
-            width: 80,
-            height: 4,
-            background: theme.palette.primary.main,
+            width: 120,
+            height: 6,
+            background: `linear-gradient(135deg, #2563eb 0%, #10b981 50%, #8b5cf6 100%)`,
             position: "absolute",
-            bottom: -8,
+            bottom: -15,
             left: "50%",
             transform: "translateX(-50%)",
-            borderRadius: 2,
+            borderRadius: 3,
+            boxShadow: `0 6px 20px rgba(37, 99, 235, 0.4)`,
           },
         }}
       >
-        Our Team
+        Our Leader
       </Typography>
-      <Box
+
+      <Card
         sx={{
-          display: "flex",
-          flexWrap: "wrap",
-          justifyContent: "center",
-          gap: 4,
-          maxWidth: 1200,
-          mx: "auto",
+          maxWidth: 480,
+          borderRadius: 5,
+          boxShadow: "0 25px 60px -12px rgba(0, 0, 0, 0.25)",
+          transition: "all 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
+          "&:hover": {
+            transform: "translateY(-20px) scale(1.03)",
+            boxShadow: "0 35px 80px -12px rgba(96, 165, 250, 0.4)",
+          },
+          overflow: "hidden",
+          position: "relative",
+          background: `linear-gradient(145deg, ${theme.palette.background.paper} 0%, rgba(248, 250, 252, 0.8) 100%)`,
+          border: `2px solid rgba(96, 165, 250, 0.1)`,
+          backdropFilter: "blur(20px)",
         }}
       >
-        {teamMembers.map((member, index) => (
-          <TeamCard
-            key={index}
-            name={member.name}
-            designation={member.designation}
-            contact={member.contact}
-            email={member.email}
-            avatarSrc={member.avatarSrc}
-          />
-        ))}
-      </Box>
+        {/* Decorative Background */}
+        <Box
+          sx={{
+            height: 160,
+            background: `linear-gradient(135deg, 
+              #667eea 0%, 
+              #764ba2 25%, 
+              #f093fb 50%, 
+              #f5576c 75%, 
+              #4facfe 100%
+            )`,
+            position: "relative",
+            "&:after": {
+              content: '""',
+              position: "absolute",
+              bottom: 0,
+              left: 0,
+              right: 0,
+              height: 50,
+              background: theme.palette.background.paper,
+              clipPath: "ellipse(100% 100% at 50% 100%)",
+            },
+          }}
+        />
+
+        {/* Avatar */}
+        <Box
+          sx={{
+            position: "absolute",
+            top: 60,
+            left: 0,
+            right: 0,
+            display: "flex",
+            justifyContent: "center",
+          }}
+        >
+          <Box
+            sx={{
+              p: 1.5,
+              borderRadius: "50%",
+              background: `linear-gradient(135deg, 
+                #667eea 0%, 
+                #764ba2 25%, 
+                #f093fb 50%, 
+                #f5576c 75%, 
+                #4facfe 100%
+              )`,
+              boxShadow: `0 15px 40px rgba(102, 126, 234, 0.4)`,
+              animation: "pulse 2s infinite",
+              "@keyframes pulse": {
+                "0%": {
+                  boxShadow: "0 15px 40px rgba(102, 126, 234, 0.4)",
+                },
+                "50%": {
+                  boxShadow: "0 20px 60px rgba(102, 126, 234, 0.6)",
+                },
+                "100%": {
+                  boxShadow: "0 15px 40px rgba(102, 126, 234, 0.4)",
+                },
+              },
+            }}
+          >
+            <Avatar
+              src="/shehbaz.jpg"
+              sx={{
+                width: 140,
+                height: 140,
+                border: `5px solid ${theme.palette.background.paper}`,
+                boxShadow: "0 10px 30px rgba(0, 0, 0, 0.2)",
+              }}
+            />
+          </Box>
+        </Box>
+
+        <CardContent sx={{ pt: 12, pb: 7, textAlign: "center", px: 5 }}>
+          <Typography
+            variant="h4"
+            fontWeight="bold"
+            color={theme.palette.text.primary}
+            sx={{
+              mb: 2,
+              background: `linear-gradient(45deg, ${theme.palette.text.primary}, ${theme.palette.primary.main})`,
+              backgroundClip: "text",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+            }}
+          >
+            Muhammad Shehbaz
+          </Typography>
+
+          <Box
+            sx={{
+              display: "inline-block",
+              px: 3,
+              py: 1.5,
+              borderRadius: 25,
+              background: `linear-gradient(45deg, ${theme.palette.primary.main}20, ${theme.palette.secondary.main}20)`,
+              border: `2px solid ${theme.palette.primary.main}30`,
+              mb: 3,
+            }}
+          >
+            <Typography
+              variant="h6"
+              fontWeight="600"
+              color={theme.palette.primary.main}
+              sx={{ textTransform: "uppercase", letterSpacing: 1 }}
+            >
+              Management Director
+            </Typography>
+          </Box>
+
+          {/* Decorative Element */}
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              mt: 4,
+            }}
+          >
+            <Box
+              sx={{
+                width: 100,
+                height: 5,
+                background: `linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f5576c 75%, #4facfe 100%)`,
+                borderRadius: 3,
+                boxShadow: `0 4px 15px rgba(102, 126, 234, 0.4)`,
+              }}
+            />
+          </Box>
+        </CardContent>
+      </Card>
     </Box>
   );
 };

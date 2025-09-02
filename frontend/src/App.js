@@ -51,6 +51,7 @@ import ScrollManager from "./components/ScrollManager";
 import globals from "./globals.css"; // Assuming you have a global CSS file
 import { ViewBrandsPage } from "./pages/ViewBrandsPage";
 import { AddBrandPage } from "./pages/AddBrandPage";
+import { CustomerPage } from "./pages/CustomerPage";
 
 function App() {
   const isAuthChecked = useSelector(selectIsAuthChecked);
@@ -181,6 +182,14 @@ function App() {
       element: (
         <Protected adminOnly={true}>
           <AddBrandPage />
+        </Protected>
+      ),
+    },
+    {
+      path: "/admin/customer",
+      element: (
+        <Protected adminOnly={true}>
+          <CustomerPage />
         </Protected>
       ),
     },

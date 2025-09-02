@@ -1,2 +1,36 @@
 node_modules
 .env
+# Build output files
+/build/
+
+# Static assets (generated during build)
+/build/static/
+
+# Favicon and icon files (if auto-generated)
+android-chrome-192x192.png
+android-chrome-512x512.png
+apple-touch-icon.png
+favicon-16x16.png
+favicon-32x32.png
+favicon.ico
+
+# Manifest files
+asset-manifest.json
+site.webmanifest
+
+# Images (if these are uploaded/generated content)
+hero1.jpg
+hero2.jpg
+hero3.jpg
+og-image.jpg
+shehbaz.jpg
+
+# CSS and JS build files
+main.*.css
+main.*.css.map
+main.*.js
+main.*.js.map
+*.LICENSE.txt
+
+# Build index
+index.html
