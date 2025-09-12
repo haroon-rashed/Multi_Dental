@@ -57,7 +57,6 @@ import { loadingAnimation } from "../../../assets";
 
 const SIZES = ["XS", "S", "M", "L", "XL"];
 const COLORS = ["#020202", "#F6F6F6", "#B82222", "#BEA9A9", "#E2BB8D"];
-// Removed autoPlay wrapper to fix UNSAFE_componentWillReceiveProps warning
 
 export const ProductDetails = () => {
   const { id } = useParams();
@@ -103,6 +102,7 @@ export const ProductDetails = () => {
   const wishlistItemDeleteStatus = useSelector(selectWishlistItemDeleteStatus);
 
   const navigate = useNavigate();
+
   useEffect(() => {
     window.scrollTo({
       top: 0,
@@ -167,9 +167,21 @@ export const ProductDetails = () => {
   }, []);
 
   const handleAddToCart = () => {
-    const item = { user: loggedInUser._id, product: id, quantity };
+    const item = { user: loggedInUser?._id, product: id, quantity };
     dispatch(addToCartAsync(item));
     setQuantity(1);
+  };
+
+  const handleBuyNow = () => {
+    const item = { user: loggedInUser?._id, product: id, quantity };
+
+    // If product is not in cart, add it first
+    if (!isProductAlreadyInCart) {
+      dispatch(addToCartAsync(item));
+    }
+
+    // Navigate to checkout page
+    navigate("/checkout");
   };
 
   const handleDecreaseQty = () => {
@@ -194,7 +206,9 @@ export const ProductDetails = () => {
       dispatch(createWishlistItemAsync(data));
     } else if (!e.target.checked) {
       const index = wishlistItems.findIndex((item) => item.product._id === id);
-      dispatch(deleteWishlistItemByIdAsync(wishlistItems[index]._id));
+      if (index >= 0 && wishlistItems[index]?._id) {
+        dispatch(deleteWishlistItemByIdAsync(wishlistItems[index]._id));
+      }
     }
   };
 
@@ -271,6 +285,7 @@ export const ProductDetails = () => {
                       {product &&
                         product.images.map((image, index) => (
                           <motion.div
+                            key={index}
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 1 }}
                             style={{ width: "200px", cursor: "pointer" }}
@@ -427,114 +442,48 @@ export const ProductDetails = () => {
                   </Stack>
 
                   {/* color, size and add-to-cart */}
-
-                  {!loggedInUser?.isAdmin && (
-                    <Stack sx={{ rowGap: "1.3rem" }} width={"fit-content"}>
-                      {/* colors */}
-                      {/* <Stack flexDirection={'row'} alignItems={'center'} columnGap={is387?'5px':'1rem'} width={'fit-content'}>
-                                <Typography>Colors: </Typography>
-                                <Stack flexDirection={'row'} columnGap={is387?".5rem":".2rem"} >
-                                    {
-                                        COLORS.map((color,index)=>(
-                                            <div style={{backgroundColor:"white",border:selectedColorIndex===index?`1px solid ${theme.palette.primary.dark}`:"",width:is340?"40px":"50px",height:is340?"40px":"50px",display:"flex",justifyContent:"center",alignItems:"center",borderRadius:"100%",}}>
-                                                <div onClick={()=>setSelectedColorIndex(index)} style={{width:"40px",height:"40px",border:color==='#F6F6F6'?"1px solid grayText":"",backgroundColor:color,borderRadius:"100%"}}></div>
-                                            </div>
-                                        ))
-                                    }
-                                </Stack>
-                            </Stack> */}
-
-                      {/* size */}
-                      {/* <Stack flexDirection={'row'} alignItems={'center'} columnGap={is387?'5px':'1rem'} width={'fit-content'}>
-                                <Typography>Size: </Typography>
-                                <Stack flexDirection={'row'} columnGap={is387?".5rem":"1rem"}>
-                                    {
-                                        SIZES.map((size)=>(
-                                            <motion.div onClick={()=>handleSizeSelect(size)} whileHover={{scale:1.050}} whileTap={{scale:1}} style={{border:selectedSize===size?'':"1px solid grayText",borderRadius:"8px",width:"30px",height:"30px",display:"flex",justifyContent:"center",alignItems:"center",cursor:"pointer",padding:"1.2rem",backgroundColor:selectedSize===size?"#DB4444":"whitesmoke",color:selectedSize===size?"white":""}}>
-                                                <p>{size}</p>
-                                            </motion.div>
-                                        ))
-                                    }
-                                </Stack>
-                            </Stack> */}
-
-                      {/* quantity , add to cart and wishlist */}
+                  <Stack sx={{ rowGap: "1.3rem" }} width={"fit-content"}>
+                    {/* quantity , add to cart, buy now and wishlist */}
+                    <Stack
+                      flexDirection={"row"}
+                      columnGap={is387 ? ".3rem" : "1.5rem"}
+                      width={"100%"}
+                    >
+                      {/* quantity */}
                       <Stack
                         flexDirection={"row"}
-                        columnGap={is387 ? ".3rem" : "1.5rem"}
-                        width={"100%"}
+                        alignItems={"center"}
+                        justifyContent={"space-between"}
                       >
-                        {/* qunatity */}
-                        <Stack
-                          flexDirection={"row"}
-                          alignItems={"center"}
-                          justifyContent={"space-between"}
+                        <MotionConfig
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 1 }}
                         >
-                          <MotionConfig
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 1 }}
-                          >
-                            <motion.button
-                              onClick={handleDecreaseQty}
-                              style={{
-                                padding: "10px 15px",
-                                fontSize: "1.050rem",
-                                backgroundColor: "",
-                                color: "black",
-                                outline: "none",
-                                border: "1px solid black",
-                                borderRadius: "8px",
-                              }}
-                            >
-                              -
-                            </motion.button>
-                            <p
-                              style={{
-                                margin: "0 1rem",
-                                fontSize: "1.1rem",
-                                fontWeight: "400",
-                              }}
-                            >
-                              {quantity}
-                            </p>
-                            <motion.button
-                              onClick={handleIncreaseQty}
-                              style={{
-                                padding: "10px 15px",
-                                fontSize: "1.050rem",
-                                backgroundColor: "black",
-                                color: "white",
-                                outline: "none",
-                                border: "none",
-                                borderRadius: "8px",
-                              }}
-                            >
-                              +
-                            </motion.button>
-                          </MotionConfig>
-                        </Stack>
-
-                        {/* add to cart */}
-                        {isProductAlreadyInCart ? (
-                          <button
-                            style={{
-                              padding: "10px 15px",
-                              fontSize: "1.050rem",
-                              backgroundColor: "black",
-                              color: "white",
-                              outline: "none",
-                              border: "none",
-                              borderRadius: "8px",
-                            }}
-                            onClick={() => navigate("/cart")}
-                          >
-                            In Cart
-                          </button>
-                        ) : (
                           <motion.button
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 1 }}
-                            onClick={handleAddToCart}
+                            onClick={handleDecreaseQty}
+                            style={{
+                              padding: "10px 15px",
+                              fontSize: "1.050rem",
+                              backgroundColor: "",
+                              color: "black",
+                              outline: "none",
+                              border: "1px solid black",
+                              borderRadius: "8px",
+                            }}
+                          >
+                            -
+                          </motion.button>
+                          <p
+                            style={{
+                              margin: "0 1rem",
+                              fontSize: "1.1rem",
+                              fontWeight: "400",
+                            }}
+                          >
+                            {quantity}
+                          </p>
+                          <motion.button
+                            onClick={handleIncreaseQty}
                             style={{
                               padding: "10px 15px",
                               fontSize: "1.050rem",
@@ -545,30 +494,87 @@ export const ProductDetails = () => {
                               borderRadius: "8px",
                             }}
                           >
-                            Add To Cart
+                            +
                           </motion.button>
-                        )}
+                        </MotionConfig>
+                      </Stack>
 
-                        {/* wishlist */}
-                        <motion.div
+                      {/* add to cart */}
+                      {isProductAlreadyInCart ? (
+                        <button
                           style={{
-                            border: "1px solid grayText",
-                            borderRadius: "4px",
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
+                            padding: "10px 15px",
+                            fontSize: "1.050rem",
+                            backgroundColor: "black",
+                            color: "white",
+                            outline: "none",
+                            border: "none",
+                            borderRadius: "8px",
+                          }}
+                          onClick={() => navigate("/cart")}
+                        >
+                          In Cart
+                        </button>
+                      ) : (
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 1 }}
+                          onClick={handleAddToCart}
+                          style={{
+                            padding: "10px 15px",
+                            fontSize: "1.050rem",
+                            backgroundColor: "black",
+                            color: "white",
+                            outline: "none",
+                            border: "none",
+                            borderRadius: "8px",
                           }}
                         >
-                          <Checkbox
-                            checked={isProductAlreadyinWishlist}
-                            onChange={(e) => handleAddRemoveFromWishlist(e)}
-                            icon={<FavoriteBorder />}
-                            checkedIcon={<Favorite sx={{ color: "red" }} />}
-                          />
-                        </motion.div>
-                      </Stack>
+                          Add To Cart
+                        </motion.button>
+                      )}
+
+                      {/* wishlist */}
+                      <motion.div
+                        style={{
+                          border: "1px solid grayText",
+                          borderRadius: "4px",
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
+                      >
+                        <Checkbox
+                          checked={isProductAlreadyinWishlist}
+                          onChange={(e) => handleAddRemoveFromWishlist(e)}
+                          icon={<FavoriteBorder />}
+                          checkedIcon={<Favorite sx={{ color: "red" }} />}
+                        />
+                      </motion.div>
                     </Stack>
-                  )}
+
+                    {/* Buy Now button */}
+                    <Stack rowGap={"1rem"}>
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 1 }}
+                        onClick={handleBuyNow}
+                        style={{
+                          padding: "12px 24px",
+                          fontSize: "1.1rem",
+                          backgroundColor: "#1976d2",
+                          color: "white",
+                          outline: "none",
+                          border: "none",
+                          borderRadius: "8px",
+                          cursor: "pointer",
+                          width: "100%",
+                        }}
+                      >
+                        Buy Now
+                      </motion.button>
+                    </Stack>
+                  </Stack>
 
                   {/* product perks */}
                   <Stack
@@ -586,7 +592,7 @@ export const ProductDetails = () => {
                       alignItems={"center"}
                       columnGap={"1rem"}
                       width={"100%"}
-                      justifyContent={"flex-sart"}
+                      justifyContent={"flex-start"}
                     >
                       <Box>
                         <LocalShippingOutlinedIcon />
@@ -594,7 +600,7 @@ export const ProductDetails = () => {
                       <Stack>
                         <Typography>Free Delivery</Typography>
                         <Typography>
-                          Enter your postal for delivery availabity
+                          Enter your postal for delivery availability
                         </Typography>
                       </Stack>
                     </Stack>
@@ -621,7 +627,11 @@ export const ProductDetails = () => {
 
               {/* reviews */}
               <Stack width={is1420 ? "auto" : "88rem"} p={is480 ? 2 : 0}>
-                <Reviews productId={id} averageRating={averageRating} />
+                <Reviews
+                  productId={id}
+                  averageRating={averageRating}
+                  loggedInUser={loggedInUser}
+                />
               </Stack>
             </Stack>
           )}

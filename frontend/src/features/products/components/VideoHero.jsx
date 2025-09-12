@@ -1,11 +1,20 @@
 import React, { useState, useEffect } from "react";
-import { Box, Typography, Container, Stack, Fade } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Container,
+  Stack,
+  Fade,
+  useMediaQuery,
+} from "@mui/material";
 
 export const VideoHero = () => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const isMobile = useMediaQuery("(max-width:768px)");
 
-  const slides = [
+  // Define slides for desktop and mobile
+  const desktopSlides = [
     {
       image: "/hero1.jpg", // Replace with your actual image name in public folder
       title: "Your Trusted Source for Quality Dental Supplies",
@@ -26,6 +35,30 @@ export const VideoHero = () => {
     },
   ];
 
+  const mobileSlides = [
+    {
+      image: "/hero4.jpg", // Replace with your actual image name in public folder
+      title: "Your Trusted Source for Quality Dental Supplies",
+      subtitle:
+        "We provide reliable, dentist-approved products that make it easy to care for your smile—delivered straight to your door with comfort, convenience, and care.",
+    },
+    {
+      image: "/hero5.jpg", // Replace with your actual image name in public folder
+      title: "Discover Premium Dental Care Essentials",
+      subtitle:
+        "Explore our curated selection of high-quality dental products designed for professional results and everyday use.",
+    },
+    {
+      image: "/hero6.jpg", // Replace with your actual image name in public folder
+      title: "Achieve a Brighter, Healthier Smile Today",
+      subtitle:
+        "Shop top-rated dental supplies with fast shipping, exclusive deals, and expert support for all your oral care needs.",
+    },
+  ];
+
+  // Use mobile slides if on mobile, otherwise use desktop slides
+  const slides = isMobile ? mobileSlides : desktopSlides;
+
   useEffect(() => {
     // Initial load timer as fallback
     const timer = setTimeout(() => setIsLoaded(true), 500);
@@ -40,7 +73,7 @@ export const VideoHero = () => {
       }, 500); // Time for fade out before changing slide
     }, 5000); // Change slide every 5 seconds
     return () => clearInterval(interval);
-  }, []);
+  }, [slides.length]);
 
   return (
     <Box

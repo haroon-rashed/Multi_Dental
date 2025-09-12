@@ -34,3 +34,11 @@ main.*.js.map
 
 # Build index
 index.html
+
+
+frontend/build/static/media/banner*.*
+frontend/build/index.html
+frontend/build/ejaz.js
+frontend/build/ejaz.map
+frontend/build/hero*.jpg
+frontend/build/shehzad.jpg

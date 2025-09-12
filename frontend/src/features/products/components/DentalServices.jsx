@@ -407,7 +407,7 @@ const DentalServices = () => {
                 overflowX: "auto",
                 gap: 3,
                 pb: 2,
-                px: 6,
+                // px: 0,
                 scrollbarWidth: "none",
                 msOverflowStyle: "none",
                 "&::-webkit-scrollbar": {

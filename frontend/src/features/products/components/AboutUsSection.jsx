@@ -169,6 +169,7 @@ const AboutUsSection = () => {
                 transition: "all 0.3s ease",
                 textAlign: "center",
                 border: "none",
+                whiteSpace: "nowrap",
                 cursor: "pointer",
                 boxShadow: "0px 2px 4px rgba(0, 0, 0, 0.1)",
                 ":hover": {
